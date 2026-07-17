@@ -11,7 +11,7 @@ import RevenueChart  from '@/components/dashboard/RevenueChart'
 import ActivityFeed  from '@/components/dashboard/ActivityFeed'
 import QuickActions  from '@/components/dashboard/QuickActions'
 import ForecastCard  from '@/components/dashboard/ForecastCard'
-import { SkeletonText } from '@/components/ui/Skeleton'
+import { SkeletonText, SkeletonCard, SkeletonPageHeader } from '@/components/ui/Skeleton'
 import { useNotifications, buildInvoiceReminderMailto } from '@/hooks/useNotifications'
 import { getCompanySettings } from '@/services/company.service'
 import { useNavigate } from 'react-router-dom'
@@ -254,23 +254,32 @@ export default function Dashboard() {
 
       {/* CAPA 2 — como va tu negocio */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
-        {KPI_CARDS.map(function(card) {
-          return (
-            <KpiCard
-              key={card.title}
-              title={card.title}
-              value={card.value}
-              subtitle={card.subtitle}
-              icon={card.icon}
-              iconColor={card.iconColor}
-              iconBg={card.iconBg}
-              accent={card.accent}
-              sparklineData={card.sparklineData}
-              sparklineColor={card.sparklineColor}
-              delay={card.delay}
-            />
-          )
-        })}
+        {loading ? (
+          // Show skeleton loading state for KPI cards
+          [1, 2, 3, 4].map(function(i) {
+            return (
+              <SkeletonCard key={i} className="min-h-[140px]" />
+            )
+          })
+        ) : (
+          KPI_CARDS.map(function(card) {
+            return (
+              <KpiCard
+                key={card.title}
+                title={card.title}
+                value={card.value}
+                subtitle={card.subtitle}
+                icon={card.icon}
+                iconColor={card.iconColor}
+                iconBg={card.iconBg}
+                accent={card.accent}
+                sparklineData={card.sparklineData}
+                sparklineColor={card.sparklineColor}
+                delay={card.delay}
+              />
+            )
+          })
+        )}
       </div>
 
       {/* Charts, previsión y acciones rapidas */}

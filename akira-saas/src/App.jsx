@@ -33,6 +33,7 @@ import Quotes from '@/pages/Quotes'
 import Offers from '@/pages/Offers'
 import Documents from '@/pages/Documents'
 import TimeTracking from '@/pages/TimeTracking'
+import AIOperatives from '@/pages/AIOperatives'
 
 function ComingSoon({ name }) {
   return (
@@ -113,6 +114,7 @@ export default function App() {
           <Route path="finance/*"       element={<Finance />} />
           <Route path="invoices/*"      element={<Invoices />} />
           <Route path="time/*"          element={<TimeTracking />} />
+          <Route path="operatives/*"    element={<AIOperatives />} />
           <Route path="quotes/*"        element={<Quotes />} />
           <Route path="calendar/*"      element={<Calendar />} />
           <Route path="knowledge/*"     element={<Knowledge />} />

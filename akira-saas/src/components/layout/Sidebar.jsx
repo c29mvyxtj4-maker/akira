@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, FolderKanban, Wrench,
   CreditCard, TrendingUp, Receipt, FileSignature, Calendar, BookOpen,
   Brain, Settings, ChevronLeft, ChevronRight, ChevronDown,
-  LogOut, Clock,
+  LogOut, Clock, Zap,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useApp }  from '@/context/AppContext'
@@ -32,8 +32,9 @@ var GROUPS = [
   {
     id: 'akira', label: 'Akira', icon: Brain,
     children: [
-      { to: '/brain',     icon: Brain,    label: 'Akira Brain' },
-      { to: '/knowledge', icon: BookOpen, label: 'Conocimiento' },
+      { to: '/brain',       icon: Brain,    label: 'Akira Brain' },
+      { to: '/knowledge',   icon: BookOpen, label: 'Conocimiento' },
+      { to: '/operatives',  icon: Zap,      label: 'AI Operatives' },
     ],
   },
 ]

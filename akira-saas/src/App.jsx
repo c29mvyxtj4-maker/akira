@@ -32,6 +32,7 @@ import JoinOrg from '@/pages/JoinOrg'
 import Quotes from '@/pages/Quotes'
 import Offers from '@/pages/Offers'
 import Documents from '@/pages/Documents'
+import TimeTracking from '@/pages/TimeTracking'
 
 function ComingSoon({ name }) {
   return (
@@ -110,7 +111,9 @@ export default function App() {
           <Route path="services/*"      element={<Services />} />
           <Route path="subscriptions/*" element={<Subscriptions />} />
           <Route path="finance/*"       element={<Finance />} />
-          <Route path="invoices/*"      element={<Invoices />} /> <Route path="quotes/*" element={<Quotes />} />
+          <Route path="invoices/*"      element={<Invoices />} />
+          <Route path="time/*"          element={<TimeTracking />} />
+          <Route path="quotes/*"        element={<Quotes />} />
           <Route path="calendar/*"      element={<Calendar />} />
           <Route path="knowledge/*"     element={<Knowledge />} />
           <Route path="brain/*"         element={<Brain />} />

@@ -112,3 +112,90 @@ export function sumSeconds(entries) {
     return sum + (e.duration_minutes || 0) * 60
   }, 0)
 }
+
+// Get weekly summary for current user
+export async function getWeeklySummary() {
+  var ownerId = await uid()
+  var weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
+  var res = await supabase
+    .from('time_entries')
+    .select('*')
+    .eq('owner_id', ownerId)
+    .gte('started_at', weekAgo)
+    .eq('is_running', false)
+
+  if (res.error) throw res.error
+
+  var entries = res.data || []
+  var totalSeconds = sumSeconds(entries)
+  var billableSeconds = sumSeconds(entries.filter(e => e.billable !== false))
+
+  return {
+    total: totalSeconds,
+    billable: billableSeconds,
+    nonBillable: totalSeconds - billableSeconds,
+    entries: entries,
+    totalHours: (totalSeconds / 3600).toFixed(1),
+    billableHours: (billableSeconds / 3600).toFixed(1)
+  }
+}
+
+// Get all time entries for current user
+export async function getAllTimeEntries(limit = 100) {
+  var ownerId = await uid()
+
+  var res = await supabase
+    .from('time_entries')
+    .select('*, projects(id, name), clients(id, name)')
+    .eq('owner_id', ownerId)
+    .order('started_at', { ascending: false })
+    .limit(limit)
+
+  if (res.error) throw res.error
+  return res.data || []
+}
+
+// Update time entry
+export async function updateTimeEntry(id, updates) {
+  var res = await supabase
+    .from('time_entries')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (res.error) throw res.error
+  return res.data
+}
+
+// Get billable hours for a specific project
+export async function getProjectBillableHours(projectId) {
+  var res = await supabase
+    .from('time_entries')
+    .select('*')
+    .eq('project_id', projectId)
+    .eq('billable', true)
+    .eq('is_running', false)
+
+  if (res.error) throw res.error
+  var entries = res.data || []
+  return {
+    seconds: sumSeconds(entries),
+    hours: (sumSeconds(entries) / 3600).toFixed(2),
+    entries: entries
+  }
+}
+
+// Subscribe to running entry changes (real-time)
+export function subscribeToRunningEntry(callback) {
+  return supabase
+    .channel('running_entry_changes')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'time_entries',
+      filter: 'is_running=eq.true'
+    }, callback)
+    .subscribe()
+}

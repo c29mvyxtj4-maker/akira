@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, FolderKanban, Wrench,
   CreditCard, TrendingUp, Receipt, FileSignature, Calendar, BookOpen,
   Brain, Settings, ChevronLeft, ChevronRight, ChevronDown,
-  LogOut,
+  LogOut, Clock,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useApp }  from '@/context/AppContext'
@@ -18,6 +18,7 @@ var GROUPS = [
     children: [
       { to: '/projects', icon: FolderKanban, label: 'Proyectos' },
       { to: '/calendar', icon: Calendar,     label: 'Calendario' },
+      { to: '/time',     icon: Clock,        label: 'Tiempo' },
     ],
   },
   {

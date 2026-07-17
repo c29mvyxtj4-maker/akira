@@ -21,7 +21,7 @@ import Projects      from '@/pages/Projects'
 import Services      from '@/pages/Services'
 import Subscriptions from '@/pages/Subscriptions'
 import Finance       from '@/pages/Finance'
-import Invoices      from '@/pages/Invoices' // ← NUEVO
+import Invoices      from '@/pages/Invoices'
 import Calendar      from '@/pages/Calendar'
 import Knowledge     from '@/pages/Knowledge'
 import Brain         from '@/pages/Brain'
@@ -34,6 +34,24 @@ import Offers from '@/pages/Offers'
 import Documents from '@/pages/Documents'
 import TimeTracking from '@/pages/TimeTracking'
 import AIOperatives from '@/pages/AIOperatives'
+import AdvancedAI from '@/pages/AdvancedAI'
+
+// Phase 4: API Ecosystem
+import Admin from '@/pages/Admin'
+
+// Phase 5: Enterprise
+import Enterprise from '@/pages/Enterprise'
+
+// Phase 6: Mobile OS
+import Mobile from '@/pages/Mobile'
+
+// Phase 8: Marketplace
+import Integrations from '@/pages/Integrations'
+import Partners from '@/pages/Partners'
+import Marketplace from '@/pages/Marketplace'
+
+// Phase 9: Analytics
+import Analytics from '@/pages/Analytics'
 
 function ComingSoon({ name }) {
   return (
@@ -120,8 +138,28 @@ export default function App() {
           <Route path="knowledge/*"     element={<Knowledge />} />
           <Route path="brain/*"         element={<Brain />} />
           <Route path="settings/*"      element={<Settings />} />
-          <Route path="offers/*" element={<Offers />} />
-          <Route path="documents/*" element={<Documents />} />
+          <Route path="offers/*"        element={<Offers />} />
+          <Route path="documents/*"     element={<Documents />} />
+
+          {/* Phase 4: API Ecosystem */}
+          <Route path="admin/*"         element={<Admin />} />
+
+          {/* Phase 5: Enterprise */}
+          <Route path="enterprise/*"    element={<Enterprise />} />
+
+          {/* Phase 6: Mobile OS */}
+          <Route path="mobile/*"        element={<Mobile />} />
+
+          {/* Phase 7: Advanced AI */}
+          <Route path="advanced-ai/*"   element={<AdvancedAI />} />
+
+          {/* Phase 8: Marketplace */}
+          <Route path="integrations/*"  element={<Integrations />} />
+          <Route path="partners/*"      element={<Partners />} />
+          <Route path="marketplace/*"   element={<Marketplace />} />
+
+          {/* Phase 9: Analytics */}
+          <Route path="analytics/*"     element={<Analytics />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

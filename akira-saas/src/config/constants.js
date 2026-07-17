@@ -32,16 +32,45 @@ export var BADGE_COLORS = {
 }
 
 export var ROUTES = {
-  HOME:          '/',
-  LOGIN:         '/login',
-  RESET:         '/reset-password',
-  CLIENTS:       '/clients',
-  PROJECTS:      '/projects',
-  SERVICES:      '/services',
-  SUBSCRIPTIONS: '/subscriptions',
-  FINANCE:       '/finance',
-  CALENDAR:      '/calendar',
-  KNOWLEDGE:     '/knowledge',
-  BRAIN:         '/brain',
-  SETTINGS:      '/settings',
+  HOME:           '/',
+  LOGIN:          '/login',
+  RESET:          '/reset-password',
+
+  // Core
+  CLIENTS:        '/clients',
+  PROJECTS:       '/projects',
+  SERVICES:       '/services',
+  SUBSCRIPTIONS:  '/subscriptions',
+  FINANCE:        '/finance',
+  INVOICES:       '/invoices',
+  CALENDAR:       '/calendar',
+  KNOWLEDGE:      '/knowledge',
+  BRAIN:          '/brain',
+  SETTINGS:       '/settings',
+
+  // Phase 2: Time Tracking
+  TIME_TRACKING:  '/time',
+
+  // Phase 3: AI Operatives
+  OPERATIVES:     '/operatives',
+
+  // Phase 4: API Ecosystem
+  ADMIN:          '/admin',
+
+  // Phase 5: Enterprise
+  ENTERPRISE:     '/enterprise',
+
+  // Phase 6: Mobile OS
+  MOBILE:         '/mobile',
+
+  // Phase 7: Advanced AI
+  ADVANCED_AI:    '/advanced-ai',
+
+  // Phase 8: Marketplace
+  INTEGRATIONS:   '/integrations',
+  PARTNERS:       '/partners',
+  MARKETPLACE:    '/marketplace',
+
+  // Phase 9: Analytics
+  ANALYTICS:      '/analytics',
 }

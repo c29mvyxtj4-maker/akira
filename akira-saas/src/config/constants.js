@@ -60,16 +60,8 @@ export var ROUTES = {
   // Phase 5: Enterprise
   ENTERPRISE:     '/enterprise',
 
-  // Phase 6: Mobile OS
-  MOBILE:         '/mobile',
-
   // Phase 7: Advanced AI
   ADVANCED_AI:    '/advanced-ai',
-
-  // Phase 8: Marketplace
-  INTEGRATIONS:   '/integrations',
-  PARTNERS:       '/partners',
-  MARKETPLACE:    '/marketplace',
 
   // Phase 9: Analytics
   ANALYTICS:      '/analytics',

@@ -42,14 +42,6 @@ import Admin from '@/pages/Admin'
 // Phase 5: Enterprise
 import Enterprise from '@/pages/Enterprise'
 
-// Phase 6: Mobile OS
-import Mobile from '@/pages/Mobile'
-
-// Phase 8: Marketplace
-import Integrations from '@/pages/Integrations'
-import Partners from '@/pages/Partners'
-import Marketplace from '@/pages/Marketplace'
-
 // Phase 9: Analytics
 import Analytics from '@/pages/Analytics'
 
@@ -145,16 +137,8 @@ export default function App() {
           {/* Phase 5: Enterprise */}
           <Route path="enterprise/*"    element={<Enterprise />} />
 
-          {/* Phase 6: Mobile OS */}
-          <Route path="mobile/*"        element={<Mobile />} />
-
           {/* Phase 7: Advanced AI */}
           <Route path="advanced-ai/*"   element={<AdvancedAI />} />
-
-          {/* Phase 8: Marketplace */}
-          <Route path="integrations/*"  element={<Integrations />} />
-          <Route path="partners/*"      element={<Partners />} />
-          <Route path="marketplace/*"   element={<Marketplace />} />
 
           {/* Phase 9: Analytics */}
           <Route path="analytics/*"     element={<Analytics />} />

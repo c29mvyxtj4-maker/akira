@@ -5,8 +5,7 @@ import {
   LayoutDashboard, Users, FolderKanban, Wrench,
   CreditCard, TrendingUp, Receipt, FileSignature, Calendar, BookOpen,
   Brain, Settings, ChevronLeft, ChevronRight, ChevronDown,
-  LogOut, Clock, Zap, Shield, Package, Store, BarChart3,
-  Smartphone, AlertCircle, Cpu,
+  LogOut, Clock, Zap, Shield, BarChart3, Cpu,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useApp }  from '@/context/AppContext'
@@ -40,25 +39,9 @@ var GROUPS = [
     ],
   },
   // Phase 4: API & Admin
-  {
-    id: 'ecosystem', label: 'Ecosistema', icon: Shield,
-    children: [
-      { to: '/admin',         icon: Shield,      label: 'Admin Panel' },
-      { to: '/integrations',  icon: Package,     label: 'Integraciones' },
-    ],
-  },
+  { id: 'admin', label: 'Admin Panel', icon: Shield, to: '/admin' },
   // Phase 5: Enterprise
   { id: 'enterprise', label: 'Empresa', icon: Users, to: '/enterprise' },
-  // Phase 6: Mobile
-  { id: 'mobile', label: 'Móvil', icon: Smartphone, to: '/mobile' },
-  // Phase 8: Marketplace
-  {
-    id: 'marketplace', label: 'Marketplace', icon: Store,
-    children: [
-      { to: '/marketplace', icon: Store,    label: 'App Store' },
-      { to: '/partners',    icon: Users,    label: 'Partners' },
-    ],
-  },
   // Phase 9: Analytics
   { id: 'analytics', label: 'Analytics', icon: BarChart3, to: '/analytics' },
 ]

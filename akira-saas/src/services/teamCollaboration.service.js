@@ -425,3 +425,38 @@ export async function getAuditLogs(workspaceId, limit = 100) {
   if (error) throw error
   return data || []
 }
+
+// ========================================
+// ALIASES FOR COMPONENT COMPATIBILITY
+// ========================================
+
+// Alias: getWorkspaces → getUserWorkspaces
+export async function getWorkspaces() {
+  return getUserWorkspaces()
+}
+
+// Alias: switchWorkspace → setCurrentWorkspace
+export function switchWorkspace(workspaceId) {
+  return setCurrentWorkspace(workspaceId)
+}
+
+// Alias: getTeamMembers → getWorkspaceMembers
+export async function getTeamMembers(workspaceId) {
+  return getWorkspaceMembers(workspaceId)
+}
+
+// Alias: addTeamMember → addWorkspaceMember
+export async function addTeamMember(workspaceId, userId, role = 'member') {
+  return addWorkspaceMember(workspaceId, userId, role)
+}
+
+// Remove team member
+export async function removeTeamMember(workspaceId, userId) {
+  const { error } = await supabase
+    .from('workspace_members')
+    .delete()
+    .eq('workspace_id', workspaceId)
+    .eq('user_id', userId)
+
+  if (error) throw error
+}

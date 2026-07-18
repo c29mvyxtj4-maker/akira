@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 1024 1024">
   <defs>
-    <radialGradient id="g" cx="50%" cy="35%" r="60%">
-      <stop offset="0%" stop-color="#ff8a3d"/>
-      <stop offset="45%" stop-color="#ff3b30"/>
-      <stop offset="100%" stop-color="#b30018"/>
+    <!-- Sphere shading: bright amber top-light easing into a full red body -->
+    <radialGradient id="sun" cx="50%" cy="34%" r="66%">
+      <stop offset="0%"  stop-color="#ff8a3a"/>
+      <stop offset="26%" stop-color="#ff5a1e"/>
+      <stop offset="58%" stop-color="#ff2a06"/>
+      <stop offset="100%" stop-color="#ee1400"/>
     </radialGradient>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="12" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+    <!-- Soft red-orange halo bleeding into the black -->
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#ff3a12" stop-opacity="0.55"/>
+      <stop offset="60%"  stop-color="#ff2a06" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#ff2a06" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="9"/>
     </filter>
   </defs>
-  <rect width="512" height="512" fill="#000000"/>
-  <circle cx="256" cy="256" r="180" fill="url(#g)" filter="url(#glow)"/>
+
+  <rect width="1024" height="1024" fill="#000000"/>
+  <!-- Glow halo -->
+  <circle cx="512" cy="512" r="430" fill="url(#halo)"/>
+  <!-- Sun body with a gently blurred edge -->
+  <circle cx="512" cy="512" r="330" fill="url(#sun)" filter="url(#soft)"/>
 </svg>

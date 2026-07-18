@@ -52,7 +52,7 @@ export default function Login() {
       >
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: 'var(--gradient-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', boxShadow: '0 0 32px rgba(230,57,70,0.4)', fontSize: '22px', fontWeight: 900, color: '#fff', letterSpacing: '-0.05em' }}>A</div>
+          <img src="/icons/icon.svg" alt="AKIRA" style={{ width: '52px', height: '52px', borderRadius: '14px', display: 'block', margin: '0 auto 14px', boxShadow: '0 0 32px rgba(230,57,70,0.4)' }} />
           <h1 style={{ fontSize: '26px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em', marginBottom: '6px' }}>AKIRA OS</h1>
           <p style={{ fontSize: '13px', color: 'var(--text-4)' }}>Business Operating System</p>
         </div>

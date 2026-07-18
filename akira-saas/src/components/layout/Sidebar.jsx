@@ -66,7 +66,7 @@ var GROUPS = [
 function Logo({ collapsed }) {
   return (
     <div className="sidebar-logo">
-      <div className="sidebar-logo-mark">A</div>
+      <div className="sidebar-logo-mark" role="img" aria-label="AKIRA" />
       <AnimatePresence>
         {!collapsed && (
           <motion.div

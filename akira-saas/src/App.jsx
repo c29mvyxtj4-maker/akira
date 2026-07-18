@@ -71,9 +71,7 @@ function AppLoadingScreen() {
   return (
     <div className="h-screen flex items-center justify-center bg-surface-0">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-brand-500 flex items-center justify-center">
-          <span className="text-white font-black text-lg">A</span>
-        </div>
+        <img src="/icons/icon.svg" alt="AKIRA" className="w-10 h-10 rounded-xl" />
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce"
                style={{ animationDelay: '0ms' }} />

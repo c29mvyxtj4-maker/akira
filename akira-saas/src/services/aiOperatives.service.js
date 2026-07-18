@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { supabase } from '@/lib/supabase'
 
-const genAI = new GoogleGenerativeAI(process.env.VITE_GOOGLE_AI_KEY)
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_AI_KEY || '')
 
 /**
  * AI Operatives Service

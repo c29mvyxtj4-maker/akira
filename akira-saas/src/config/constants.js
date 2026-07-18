@@ -51,18 +51,6 @@ export var ROUTES = {
   // Phase 2: Time Tracking
   TIME_TRACKING:  '/time',
 
-  // Phase 3: AI Operatives
+  // AI Operatives
   OPERATIVES:     '/operatives',
-
-  // Phase 4: API Ecosystem
-  ADMIN:          '/admin',
-
-  // Phase 5: Enterprise
-  ENTERPRISE:     '/enterprise',
-
-  // Phase 7: Advanced AI
-  ADVANCED_AI:    '/advanced-ai',
-
-  // Phase 9: Analytics
-  ANALYTICS:      '/analytics',
 }

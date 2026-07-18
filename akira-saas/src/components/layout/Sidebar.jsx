@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Users, FolderKanban, Wrench,
   CreditCard, TrendingUp, Receipt, FileSignature, Calendar, BookOpen,
   Brain, Settings, ChevronLeft, ChevronRight, ChevronDown,
-  LogOut, Clock, Zap, Shield, BarChart3, Cpu,
+  LogOut, Clock, Zap,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useApp }  from '@/context/AppContext'
@@ -35,15 +35,8 @@ var GROUPS = [
       { to: '/brain',       icon: Brain,    label: 'Akira Brain' },
       { to: '/knowledge',   icon: BookOpen, label: 'Conocimiento' },
       { to: '/operatives',  icon: Zap,      label: 'AI Operatives' },
-      { to: '/advanced-ai', icon: Cpu,      label: 'Advanced AI' },
     ],
   },
-  // Phase 4: API & Admin
-  { id: 'admin', label: 'Admin Panel', icon: Shield, to: '/admin' },
-  // Phase 5: Enterprise
-  { id: 'enterprise', label: 'Empresa', icon: Users, to: '/enterprise' },
-  // Phase 9: Analytics
-  { id: 'analytics', label: 'Analytics', icon: BarChart3, to: '/analytics' },
 ]
 
 function Logo({ collapsed }) {

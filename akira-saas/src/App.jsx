@@ -34,16 +34,6 @@ const Offers        = lazy(() => import('@/pages/Offers'))
 const Documents     = lazy(() => import('@/pages/Documents'))
 const TimeTracking  = lazy(() => import('@/pages/TimeTracking'))
 const AIOperatives  = lazy(() => import('@/pages/AIOperatives'))
-const AdvancedAI    = lazy(() => import('@/pages/AdvancedAI'))
-
-// Phase 4: API Ecosystem
-const Admin         = lazy(() => import('@/pages/Admin'))
-
-// Phase 5: Enterprise
-const Enterprise    = lazy(() => import('@/pages/Enterprise'))
-
-// Phase 9: Analytics
-const Analytics     = lazy(() => import('@/pages/Analytics'))
 
 function ComingSoon({ name }) {
   return (
@@ -131,18 +121,6 @@ export default function App() {
           <Route path="settings/*"      element={<Settings />} />
           <Route path="offers/*"        element={<Offers />} />
           <Route path="documents/*"     element={<Documents />} />
-
-          {/* Phase 4: API Ecosystem */}
-          <Route path="admin/*"         element={<Admin />} />
-
-          {/* Phase 5: Enterprise */}
-          <Route path="enterprise/*"    element={<Enterprise />} />
-
-          {/* Phase 7: Advanced AI */}
-          <Route path="advanced-ai/*"   element={<AdvancedAI />} />
-
-          {/* Phase 9: Analytics */}
-          <Route path="analytics/*"     element={<Analytics />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

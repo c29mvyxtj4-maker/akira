@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Sidebar       from './Sidebar'
 import Topbar        from './Topbar'
 import CommandPalette from './CommandPalette'
 import InstallBanner from '@/components/pwa/InstallBanner'
+import { PageSpinner } from '@/components/ui/Spinner'
 import { useApp } from '@/context/AppContext'
 
 export default function AppShell() {
@@ -76,7 +77,9 @@ export default function AppShell() {
             transition={{ duration: 0.22, ease: 'easeOut' }}
             style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}
           >
-            <Outlet />
+            <Suspense fallback={<PageSpinner />}>
+              <Outlet />
+            </Suspense>
           </motion.div>
         </main>
       </div>

@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { ROUTES }  from '@/config/constants'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 
-// Auth pages
+// Auth pages — eager so the login screen paints instantly on first load
 import Login         from '@/pages/auth/Login'
 import ResetPassword from '@/pages/auth/ResetPassword'
 
@@ -14,36 +14,36 @@ import AppShell from '@/components/layout/AppShell'
 // Components
 import KeyboardShortcutsModal from '@/components/ui/KeyboardShortcutsModal'
 
-// Pages
-import Dashboard     from '@/pages/Dashboard'
-import Clients       from '@/pages/Clients'
-import Projects      from '@/pages/Projects'
-import Services      from '@/pages/Services'
-import Subscriptions from '@/pages/Subscriptions'
-import Finance       from '@/pages/Finance'
-import Invoices      from '@/pages/Invoices'
-import Calendar      from '@/pages/Calendar'
-import Knowledge     from '@/pages/Knowledge'
-import Brain         from '@/pages/Brain'
-import Settings      from '@/pages/Settings'
-import PortalLogin     from '@/pages/portal/PortalLogin'
-import PortalDashboard from '@/pages/portal/PortalDashboard'
-import JoinOrg from '@/pages/JoinOrg'
-import Quotes from '@/pages/Quotes'
-import Offers from '@/pages/Offers'
-import Documents from '@/pages/Documents'
-import TimeTracking from '@/pages/TimeTracking'
-import AIOperatives from '@/pages/AIOperatives'
-import AdvancedAI from '@/pages/AdvancedAI'
+// Pages — lazy-loaded so each route ships its own chunk (keeps the initial bundle small)
+const Dashboard     = lazy(() => import('@/pages/Dashboard'))
+const Clients       = lazy(() => import('@/pages/Clients'))
+const Projects      = lazy(() => import('@/pages/Projects'))
+const Services      = lazy(() => import('@/pages/Services'))
+const Subscriptions = lazy(() => import('@/pages/Subscriptions'))
+const Finance       = lazy(() => import('@/pages/Finance'))
+const Invoices      = lazy(() => import('@/pages/Invoices'))
+const Calendar      = lazy(() => import('@/pages/Calendar'))
+const Knowledge     = lazy(() => import('@/pages/Knowledge'))
+const Brain         = lazy(() => import('@/pages/Brain'))
+const Settings      = lazy(() => import('@/pages/Settings'))
+const PortalLogin     = lazy(() => import('@/pages/portal/PortalLogin'))
+const PortalDashboard = lazy(() => import('@/pages/portal/PortalDashboard'))
+const JoinOrg       = lazy(() => import('@/pages/JoinOrg'))
+const Quotes        = lazy(() => import('@/pages/Quotes'))
+const Offers        = lazy(() => import('@/pages/Offers'))
+const Documents     = lazy(() => import('@/pages/Documents'))
+const TimeTracking  = lazy(() => import('@/pages/TimeTracking'))
+const AIOperatives  = lazy(() => import('@/pages/AIOperatives'))
+const AdvancedAI    = lazy(() => import('@/pages/AdvancedAI'))
 
 // Phase 4: API Ecosystem
-import Admin from '@/pages/Admin'
+const Admin         = lazy(() => import('@/pages/Admin'))
 
 // Phase 5: Enterprise
-import Enterprise from '@/pages/Enterprise'
+const Enterprise    = lazy(() => import('@/pages/Enterprise'))
 
 // Phase 9: Analytics
-import Analytics from '@/pages/Analytics'
+const Analytics     = lazy(() => import('@/pages/Analytics'))
 
 function ComingSoon({ name }) {
   return (
@@ -100,6 +100,7 @@ export default function App() {
 
   return (
     <>
+      <Suspense fallback={<AppLoadingScreen />}>
       <Routes>
         {/* Públicas */}
         <Route path={ROUTES.LOGIN} element={<Login />} />
@@ -150,6 +151,7 @@ export default function App() {
         <Route path="/portal/dashboard" element={<PortalDashboard />} />
         <Route path="/join" element={<JoinOrg />} />
       </Routes>
+      </Suspense>
 
       {/* Keyboard Shortcuts Help Modal */}
       <KeyboardShortcutsModal

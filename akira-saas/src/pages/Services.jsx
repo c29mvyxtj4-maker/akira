@@ -51,7 +51,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <input value={form.name} onChange={set('name')} placeholder="Pack de video corporativo" style={INP} />
         </div>
         <div>
-          <label className="label-base">Categoria</label>
+          <label className="label-base">Categoría</label>
           <select value={form.category} onChange={set('category')} style={INP}>
             {SERVICE_CATEGORIES.map(function(c) { return <option key={c} value={c}>{c}</option> })}
           </select>
@@ -71,7 +71,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <input type="number" min="0" step="0.01" value={form.cost} onChange={set('cost')} placeholder="0" style={INP} />
         </div>
         <div className="col-span-2">
-          <label className="label-base">Descripcion</label>
+          <label className="label-base">Descripción</label>
           <textarea value={form.description} onChange={set('description')} rows={2} placeholder="Que incluye este servicio..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
       </div>

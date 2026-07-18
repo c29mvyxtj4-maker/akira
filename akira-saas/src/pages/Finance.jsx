@@ -111,7 +111,7 @@ function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading
 
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
-          <label className="label-base">Descripcion *</label>
+          <label className="label-base">Descripción *</label>
           <input value={form.description} onChange={set('description')} placeholder="Factura cliente / Gasto equipo..." style={INP} />
         </div>
         <div>
@@ -123,7 +123,7 @@ function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading
           <input type="date" value={form.entry_date} onChange={set('entry_date')} style={INP} />
         </div>
         <div>
-          <label className="label-base">Categoria</label>
+          <label className="label-base">Categoría</label>
           <select value={form.category} onChange={set('category')} style={INP}>
             {categories.map(function(c) { return <option key={c} value={c}>{c}</option> })}
           </select>

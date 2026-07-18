@@ -435,7 +435,7 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
               )}
 
               <div>
-                <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-3">Informacion</h4>
+                <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-3">Información</h4>
                 <div className="surface-card divide-y divide-border">
                   {[
                     ['Origen',          SOURCES[client.source] || '--'],

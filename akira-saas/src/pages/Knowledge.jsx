@@ -94,7 +94,7 @@ function DocMetaPanel({ doc, onMetaChange, onClose }) {
         </div>
 
         <div>
-          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Categoria</p>
+          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Categoría</p>
           <input value={doc.category || ''} onChange={function(e) { onMetaChange(doc.id, { category: e.target.value }) }} placeholder="Ej: Procedimientos" style={INP} />
         </div>
 
@@ -489,7 +489,7 @@ export default function Knowledge() {
                   <input
                     value={hook.activeDoc.subtitle || ''}
                     onChange={function(e) { hook.handleMetaChange(hook.activeDoc.id, { subtitle: e.target.value }) }}
-                    placeholder="Subtitulo opcional..."
+                    placeholder="Subtítulo opcional..."
                     style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: '16px', fontWeight: 400, color: 'rgba(255,255,255,0.35)', fontFamily: 'inherit', marginTop: '6px', boxSizing: 'border-box' }}
                   />
                   <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '16px 0 0' }} />

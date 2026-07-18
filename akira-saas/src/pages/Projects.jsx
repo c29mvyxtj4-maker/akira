@@ -574,12 +574,12 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
           <div className="space-y-4">
             {project.description && (
               <div>
-                <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-2">Descripcion</h4>
+                <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-2">Descripción</h4>
                 <div className="surface-card p-4"><p className="text-sm text-text-2 leading-relaxed whitespace-pre-wrap">{project.description}</p></div>
               </div>
             )}
             <div>
-              <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-2">Informacion</h4>
+              <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-2">Información</h4>
               <div className="surface-card divide-y divide-border">
                 {[
                   ['Cliente',   project.clients ? project.clients.name : '--'],
@@ -781,7 +781,7 @@ function ProjectForm({ initial, clients, onSave, onCancel, loading }) {
               {opts.map(function(o) { return <option key={o.value} value={o.value}>{o.label}</option> })}
             </select>
           </div>
-          <div><label className="label-base">Descripcion</label><textarea value={form.description} onChange={set('description')} rows={2} placeholder="Brief..." style={Object.assign({}, I, { resize: 'vertical' })} /></div>
+          <div><label className="label-base">Descripción</label><textarea value={form.description} onChange={set('description')} rows={2} placeholder="Brief..." style={Object.assign({}, I, { resize: 'vertical' })} /></div>
         </div>
       </div>
       <div>

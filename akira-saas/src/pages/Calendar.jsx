@@ -441,7 +441,7 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
       <div>
-        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Titulo *</label>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Título *</label>
         <input value={form.title} onChange={set('title')} placeholder="Nombre del evento" style={INP} autoFocus />
       </div>
 
@@ -485,7 +485,7 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
       </div>
 
       <div>
-        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Descripcion</label>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Descripción</label>
         <textarea value={form.description} onChange={set('description')} placeholder="Notas adicionales..." rows={3} style={Object.assign({}, INP, { resize: 'vertical' })} />
       </div>
 

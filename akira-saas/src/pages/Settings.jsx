@@ -369,7 +369,7 @@ function BillingTab() {
             <input value={cs.tax_id || ''} onChange={set('tax_id')} placeholder="12345678A" style={INP} onFocus={onFocus} onBlur={onBlur} />
           </Field>
           <Field label="Direccion">
-            <input value={cs.address || ''} onChange={set('address')} placeholder="Calle, numero" style={INP} onFocus={onFocus} onBlur={onBlur} />
+            <input value={cs.address || ''} onChange={set('address')} placeholder="Calle, número" style={INP} onFocus={onFocus} onBlur={onBlur} />
           </Field>
           <Field label="Ciudad">
             <input value={cs.city || ''} onChange={set('city')} placeholder="Badalona" style={INP} onFocus={onFocus} onBlur={onBlur} />
@@ -389,7 +389,7 @@ function BillingTab() {
         </div>
       </Section>
 
-      <Section title="Numeracion y facturacion" description="Como se numeran tus facturas y el IVA por defecto">
+      <Section title="Numeración y facturación" description="Cómo se numeran tus facturas y el IVA por defecto">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
           <Field label="Prefijo de factura" hint="Ej: FAC-2026-001">
             <input value={cs.invoice_prefix || ''} onChange={set('invoice_prefix')} placeholder="FAC" style={INP} onFocus={onFocus} onBlur={onBlur} />
@@ -492,7 +492,7 @@ function CategoriesTab() {
           <input
             value={newName}
             onChange={function(e) { setNewName(e.target.value) }}
-            placeholder="Nombre de la nueva categoria"
+            placeholder="Nombre de la nueva categoría"
             style={INP}
             onKeyDown={function(e) { if (e.key === 'Enter') handleAdd() }}
             onFocus={onFocus}
@@ -1459,7 +1459,7 @@ function DangerZoneTab() {
         Las acciones de aqui abajo son delicadas. Leelas bien antes de tocar nada.
       </div>
 
-      <Section title="Cerrar sesion en todos los dispositivos" description="Util si crees que alguien mas tiene acceso a tu cuenta">
+      <Section title="Cerrar sesión en todos los dispositivos" description="Útil si crees que alguien más tiene acceso a tu cuenta">
         {confirming === 'signout' ? (
           <div style={{ display: 'flex', gap: '8px' }}>
             <button type="button" onClick={function() { setConfirming(null) }}

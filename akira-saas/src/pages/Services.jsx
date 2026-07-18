@@ -13,7 +13,7 @@ import EmptyState      from '@/components/ui/EmptyState'
 import { PageSpinner } from '@/components/ui/Spinner'
 import clsx            from 'clsx'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'E' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
 
 var INP = {
   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',

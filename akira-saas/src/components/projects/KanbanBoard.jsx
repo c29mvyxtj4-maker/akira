@@ -4,7 +4,7 @@ import { PROJECT_STAGE_MAP, PROJECT_STATUS_MAP } from '@/services/projects.servi
 
 var STAGES = ['preproduction', 'production', 'postproduction', 'delivery', 'closed']
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'E' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
 
 function KanbanCard({ project, onSelect, onDragStart }) {
   var sc = PROJECT_STATUS_MAP[project.status]

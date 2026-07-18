@@ -30,7 +30,7 @@ function fmtDate(d) {
   if (!d) return '--'
   return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
 }
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'E' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
 function daysLeft(d) { if (!d) return null; return Math.ceil((new Date(d) - Date.now()) / 86400000) }
 
 var PRIO_COLOR = { low: '#6b7280', medium: '#3b82f6', high: '#f59e0b', urgent: '#ef4444' }
@@ -485,7 +485,7 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
     'Estado: ' + (sc ? sc.label : project.status),
     'Etapa: ' + (sgc ? sgc.label : project.stage),
     'Progreso: ' + (project.progress || 0) + '%',
-    budget > 0 ? 'Presupuesto: ' + budget + 'E, coste real: ' + cost + 'E' : null,
+    budget > 0 ? 'Presupuesto: ' + budget + '€, coste real: ' + cost + '€' : null,
     tasks.length > 0 ? 'Tareas: ' + doneT + ' completadas de ' + tasks.length : null,
     project.due_date ? 'Entrega prevista: ' + project.due_date : null,
     project.description ? 'Descripcion: ' + project.description : null,

@@ -14,7 +14,7 @@ import EmptyState      from '@/components/ui/EmptyState'
 import { PageSpinner } from '@/components/ui/Spinner'
 import clsx            from 'clsx'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'E' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
 function fmtDate(d) { if (!d) return '--'; return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 function daysLeft(d) { if (!d) return null; return Math.ceil((new Date(d) - Date.now()) / 86400000) }
 

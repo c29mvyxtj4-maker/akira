@@ -40,7 +40,7 @@ function fmtDate(d, opts) {
   })
 }
 function fmtCur(n) {
-  return (Number(n) || 0).toLocaleString('es-ES') + 'E'
+  return (Number(n) || 0).toLocaleString('es-ES') + '€'
 }
 function incomeSign(type) {
   return ['income', 'payment'].includes(type) ? '+' : '-'
@@ -159,7 +159,7 @@ function ClientKpis({ clients }) {
     { label: 'Activos',   value: active,                              icon: UserCheck,     color: 'text-status-success', bg: 'bg-status-success/10' },
     { label: 'Leads',     value: leads,                               icon: Users,         color: 'text-brand-400',      bg: 'bg-brand-500/10' },
     { label: 'En riesgo', value: atRisk,                              icon: AlertTriangle, color: 'text-status-danger',  bg: 'bg-status-danger/10' },
-    { label: 'MRV total', value: mrv.toLocaleString('es-ES') + 'E',  icon: TrendingUp,    color: 'text-status-warning', bg: 'bg-status-warning/10' },
+    { label: 'MRV total', value: mrv.toLocaleString('es-ES') + '€',  icon: TrendingUp,    color: 'text-status-warning', bg: 'bg-status-warning/10' },
   ]
 
   return (
@@ -288,7 +288,7 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
   var akiraContext = [
     'Cliente: ' + client.name + (client.company ? ' (' + client.company + ')' : ''),
     'Estado: ' + (cfg ? cfg.label : client.status),
-    client.monthly_value > 0 ? 'Valor mensual: ' + client.monthly_value + 'E' : null,
+    client.monthly_value > 0 ? 'Valor mensual: ' + client.monthly_value + '€' : null,
     client.niche ? 'Nicho: ' + client.niche : null,
     'Proyectos vinculados: ' + projects.length,
     finance ? 'Ingresos totales de este cliente: ' + fmtCur(finance.income) : null,

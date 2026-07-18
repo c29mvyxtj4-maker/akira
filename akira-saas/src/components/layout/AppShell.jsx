@@ -67,7 +67,17 @@ export default function AppShell() {
 
         {/* Contenido principal */}
         <main className="app-main" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
-          <Outlet />
+          {/* Transición de entrada por sección — se remonta solo al cambiar de sección,
+              no en la navegación interna (p. ej. abrir un cliente) para no perder estado */}
+          <motion.div
+            key={location.pathname.split('/')[1] || 'home'}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}
+          >
+            <Outlet />
+          </motion.div>
         </main>
       </div>
 

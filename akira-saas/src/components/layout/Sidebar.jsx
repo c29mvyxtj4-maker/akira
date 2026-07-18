@@ -203,14 +203,14 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen }) {
         <NavLink
           to="/settings"
           className={'nav-item' + (location.pathname === '/settings' ? ' active' : '')}
-          title={collapsed ? 'Configuracion' : ''}
+          title={collapsed ? 'Configuración' : ''}
           style={{ justifyContent: collapsed ? 'center' : 'flex-start', marginBottom: '2px' }}
         >
           <Settings style={{ width: '15px', height: '15px', flexShrink: 0 }} />
           <AnimatePresence>
             {!collapsed && (
               <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }} exit={{ opacity: 0, width: 0 }} transition={{ duration: 0.15 }} style={{ overflow: 'hidden', whiteSpace: 'nowrap', fontSize: 'var(--text-sm)' }}>
-                Configuracion
+                Configuración
               </motion.span>
             )}
           </AnimatePresence>
@@ -238,7 +238,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen }) {
             <button
               type="button"
               onClick={signOut}
-              title="Cerrar sesion"
+              title="Cerrar sesión"
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-5)', display: 'flex', alignItems: 'center', padding: '2px', borderRadius: '4px', flexShrink: 0 }}
               onMouseEnter={function(e) { e.currentTarget.style.color = 'var(--brand)' }}
               onMouseLeave={function(e) { e.currentTarget.style.color = 'var(--text-5)' }}

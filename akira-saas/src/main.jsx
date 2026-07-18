@@ -5,16 +5,19 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { AppProvider }  from './context/AppContext.jsx'
 import { OrgProvider }  from './context/OrgContext.jsx'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <AuthProvider>
-      <OrgProvider>
-        <AppProvider>
-          <App />
-        </AppProvider>
-      </OrgProvider>
-    </AuthProvider>
-  </BrowserRouter>
+  <ErrorBoundary>
+    <BrowserRouter>
+      <AuthProvider>
+        <OrgProvider>
+          <AppProvider>
+            <App />
+          </AppProvider>
+        </OrgProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </ErrorBoundary>
 )

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Watch, Plus, Trash2, Toggle2, Smartphone, Check } from 'lucide-react'
+import { Watch, Plus, Trash2, ToggleRight, Smartphone, Check } from 'lucide-react'
 import Card from '@/components/ui/Card'
 
 /**
@@ -134,7 +134,7 @@ export default function WearOSConfig() {
                               : 'bg-surface-2 text-text-4'
                           }`}
                         >
-                          <Toggle2 size={18} />
+                          <ToggleRight size={18} />
                         </button>
                         <button
                           onClick={() => removeTile(tile.id)}

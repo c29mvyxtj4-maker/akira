@@ -4,8 +4,9 @@ import {
   Search, SlidersHorizontal, UserPlus, Archive,
   Edit3, ChevronRight, ChevronLeft, Phone, Mail, Globe,
   Instagram, TrendingUp, FolderKanban, AlertTriangle,
-  Clock, CalendarCheck, Users, UserCheck, FileText,
+  Clock, CalendarCheck, Users, UserCheck, FileText, Download,
 } from 'lucide-react'
+import { exportToCsv } from '@/utils/exportCsv'
 import { useClients } from '@/hooks/useClients'
 import { CLIENT_NICHES } from '@/services/clients.service'
 import { CLIENT_STATUS, PROJECT_STATUS } from '@/config/constants'
@@ -545,15 +546,45 @@ export default function Clients() {
 
   const [showFilters, setShowFilters] = useState(false)
 
+  function handleExport() {
+    if (!clients.length) return
+    const columns = [
+      { key: 'name',          label: 'Nombre' },
+      { key: 'company',       label: 'Empresa' },
+      { key: 'email',         label: 'Email' },
+      { key: 'phone',         label: 'Teléfono' },
+      { key: 'status_label',  label: 'Estado' },
+      { key: 'niche',         label: 'Nicho' },
+      { key: 'source',        label: 'Origen' },
+      { key: 'monthly_value', label: 'Valor mensual (€)' },
+    ]
+    const rows = clients.map(c => ({
+      name:          c.name || '',
+      company:       c.company || '',
+      email:         c.email || '',
+      phone:         c.phone || '',
+      status_label:  (CLIENT_STATUS[c.status] && CLIENT_STATUS[c.status].label) || c.status || '',
+      niche:         c.niche || '',
+      source:        SOURCES[c.source] || c.source || '',
+      monthly_value: Number(c.monthly_value) || 0,
+    }))
+    exportToCsv('clientes_' + new Date().toISOString().slice(0, 10), columns, rows)
+  }
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <PageHeader
         title="Clientes"
         description={clients.length + ' cliente' + (clients.length !== 1 ? 's' : '')}
         actions={
-          <Button icon={<UserPlus className="w-4 h-4" />} onClick={openCreate}>
-            Nuevo cliente
-          </Button>
+          <>
+            <Button variant="secondary" icon={<Download className="w-4 h-4" />} onClick={handleExport} disabled={!clients.length}>
+              Exportar CSV
+            </Button>
+            <Button icon={<UserPlus className="w-4 h-4" />} onClick={openCreate}>
+              Nuevo cliente
+            </Button>
+          </>
         }
       />
 

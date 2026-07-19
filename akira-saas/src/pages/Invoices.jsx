@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Trash2, FileText, Archive, ChevronLeft,
-  Building2, Wrench,
+  Building2, Wrench, Download,
 } from 'lucide-react'
+import { exportToCsv } from '@/utils/exportCsv'
 import {
   getInvoices, getInvoiceById, createInvoice, updateInvoice,
   updateInvoiceStatus, archiveInvoice, INVOICE_STATUS,
@@ -360,6 +361,30 @@ export default function Invoices() {
   function openEdit(inv) { setEditing(inv); setModalOpen(true) }
   function closeModal() { setModalOpen(false); setEditing(null) }
 
+  function handleExport() {
+    if (!invoices.length) return
+    var columns = [
+      { key: 'number',      label: 'Número' },
+      { key: 'client',      label: 'Cliente' },
+      { key: 'issue_date',  label: 'Emisión' },
+      { key: 'due_date',    label: 'Vencimiento' },
+      { key: 'total',       label: 'Total (€)' },
+      { key: 'status_label',label: 'Estado' },
+    ]
+    var rows = invoices.map(function(inv) {
+      var sc = INVOICE_STATUS[inv.status] || INVOICE_STATUS.draft
+      return {
+        number:       inv.invoice_number || '',
+        client:       inv.clients ? (inv.clients.company || inv.clients.name) : '',
+        issue_date:   inv.issue_date || '',
+        due_date:     inv.due_date || '',
+        total:        Number(inv.total) || 0,
+        status_label: sc.label,
+      }
+    })
+    exportToCsv('facturas_' + new Date().toISOString().slice(0, 10), columns, rows)
+  }
+
   function handleSave(form) {
     setFormLoading(true)
     var promise = editing ? updateInvoice(editing.id, form) : createInvoice(form)
@@ -435,7 +460,10 @@ export default function Invoices() {
       <PageHeader
         title="Facturas"
         description={invoices.length + ' factura' + (invoices.length !== 1 ? 's' : '')}
-        actions={<Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>Nueva factura</Button>}
+        actions={<>
+          <Button variant="secondary" icon={<Download className="w-4 h-4" />} onClick={handleExport} disabled={!invoices.length}>Exportar CSV</Button>
+          <Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>Nueva factura</Button>
+        </>}
       />
 
       <div className="flex-1 overflow-y-auto p-6">

@@ -14,6 +14,7 @@
     "@capacitor/core": "^8.4.1",
     "@capacitor/ios": "^8.4.1",
     "@google/generative-ai": "^0.24.1",
+    "@sentry/react": "^10.66.0",
     "@supabase/supabase-js": "^2.110.2",
     "@tiptap/extension-bubble-menu": "^3.27.3",
     "@tiptap/extension-character-count": "^3.27.3",

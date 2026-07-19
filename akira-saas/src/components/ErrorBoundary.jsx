@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import { captureError } from '@/lib/sentry'
 
 /**
  * Límite de error global.
@@ -23,7 +24,8 @@ export default class ErrorBoundary extends Component {
   componentDidCatch(error, info) {
     // Visible en consola en desarrollo y producción.
     console.error('[AKIRA] Error no controlado:', error, info)
-    // TODO (roadmap P1): reportar a Sentry aquí.
+    // Reportar a Sentry si está configurado (no-op si no hay DSN).
+    captureError(error, { componentStack: info?.componentStack })
   }
 
   handleReload = () => {

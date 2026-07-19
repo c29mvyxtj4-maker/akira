@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, Plus, Archive, Edit3, AlertTriangle,
   TrendingUp, TrendingDown, DollarSign, Clock,
-  Filter, ChevronDown, ChevronUp,
+  Filter, ChevronDown, ChevronUp, Download,
 } from 'lucide-react'
+import { exportToCsv } from '@/utils/exportCsv'
 import {
   getFinanceEntries, createFinanceEntry, updateFinanceEntry,
   archiveFinanceEntry, getFinanceKpis, getClientRanking,
@@ -187,7 +188,7 @@ function EntriesTable({ entries, onEdit, onArchive, loading }) {
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            {['Fecha', 'Tipo', 'Descripcion', 'Cliente', 'Proyecto', 'Importe', 'Estado', ''].map(function(h) {
+            {['Fecha', 'Tipo', 'Descripción', 'Cliente', 'Proyecto', 'Importe', 'Estado', ''].map(function(h) {
               return (
                 <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
                   {h}
@@ -345,6 +346,34 @@ export default function Finance() {
   function openEdit(e)  { setEditing(e);   setModalOpen(true) }
   function closeModal() { setModalOpen(false); setEditing(null) }
 
+  function handleExport() {
+    if (!entries.length) return
+    var columns = [
+      { key: 'entry_date',  label: 'Fecha' },
+      { key: 'type_label',  label: 'Tipo' },
+      { key: 'description', label: 'Descripción' },
+      { key: 'client',      label: 'Cliente' },
+      { key: 'project',     label: 'Proyecto' },
+      { key: 'amount',      label: 'Importe (€)' },
+      { key: 'status_label',label: 'Estado' },
+    ]
+    var rows = entries.map(function(e) {
+      var tc = FINANCE_TYPES[e.type] || FINANCE_TYPES.income
+      var sc = FINANCE_STATUS[e.status] || FINANCE_STATUS.confirmed
+      return {
+        entry_date:   e.entry_date,
+        type_label:   tc.label,
+        description:  e.description || '',
+        client:       e.clients ? (e.clients.company || e.clients.name) : '',
+        project:      e.projects ? e.projects.name : '',
+        amount:       (tc.sign > 0 ? '' : '-') + (Number(e.amount) || 0),
+        status_label: sc.label,
+      }
+    })
+    var today = new Date().toISOString().slice(0, 10)
+    exportToCsv('finanzas_' + today, columns, rows)
+  }
+
   function handleSave(form) {
     setFormLoading(true)
     var promise = editing ? updateFinanceEntry(editing.id, form) : createFinanceEntry(form)
@@ -386,7 +415,10 @@ export default function Finance() {
       <PageHeader
         title="Finanzas"
         description="Ingresos, gastos y rentabilidad del negocio"
-        actions={<Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>Nuevo movimiento</Button>}
+        actions={<>
+          <Button variant="secondary" icon={<Download className="w-4 h-4" />} onClick={handleExport} disabled={!entries.length}>Exportar CSV</Button>
+          <Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>Nuevo movimiento</Button>
+        </>}
       />
 
       <div className="flex-1 overflow-y-auto p-6">

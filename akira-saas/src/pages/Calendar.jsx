@@ -480,7 +480,7 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
       )}
 
       <div>
-        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Ubicacion</label>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Ubicación</label>
         <input value={form.location} onChange={set('location')} placeholder="Direccion o enlace" style={INP} />
       </div>
 

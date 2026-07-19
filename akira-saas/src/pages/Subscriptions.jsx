@@ -96,7 +96,7 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
           <input type="date" value={form.start_date} onChange={set('start_date')} style={INP} />
         </div>
         <div>
-          <label className="label-base">Proximo cobro</label>
+          <label className="label-base">Próximo cobro</label>
           <input type="date" value={form.next_billing} onChange={set('next_billing')} style={INP} />
         </div>
         <div className="col-span-2">

@@ -248,7 +248,7 @@ function InvoicePreview({ invoice, company, onBack }) {
           <div style={{ textAlign: 'right' }}>
             <h1 style={{ fontSize: '26px', fontWeight: 900, margin: 0, letterSpacing: '-0.02em' }}>FACTURA</h1>
             <p style={{ fontSize: '14px', fontWeight: 700, color: '#e63946', margin: '4px 0' }}>{invoice.invoice_number}</p>
-            <p style={{ fontSize: '12px', color: '#666', margin: '2px 0' }}>Emision: {fmtDate(invoice.issue_date)}</p>
+            <p style={{ fontSize: '12px', color: '#666', margin: '2px 0' }}>Emisión: {fmtDate(invoice.issue_date)}</p>
             {invoice.due_date && <p style={{ fontSize: '12px', color: '#666', margin: '2px 0' }}>Vencimiento: {fmtDate(invoice.due_date)}</p>}
           </div>
         </div>
@@ -459,7 +459,7 @@ export default function Invoices() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  {['Numero', 'Cliente', 'Emision', 'Total', 'Estado', ''].map(function(h) {
+                  {['Número', 'Cliente', 'Emisión', 'Total', 'Estado', ''].map(function(h) {
                     return <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
                   })}
                 </tr>

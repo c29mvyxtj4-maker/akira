@@ -124,7 +124,7 @@ function DocMetaPanel({ doc, onMetaChange, onClose }) {
         </div>
 
         <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
-          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Estadisticas</p>
+          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Estadísticas</p>
           {[
             ['Palabras',  doc.word_count    || 0],
             ['Tiempo',    (doc.read_time_min || 1) + ' min'],

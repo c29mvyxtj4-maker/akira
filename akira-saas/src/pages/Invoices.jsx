@@ -208,12 +208,30 @@ function InvoicePreview({ invoice, company, onBack }) {
   var items = Array.isArray(invoice.items) ? invoice.items : []
   var client = invoice.clients
   var [downloading, setDownloading] = useState(false)
+  var [charging, setCharging] = useState(false)
+  var canCharge = invoice.status !== 'paid' && invoice.status !== 'void'
 
   function handleDownload() {
     setDownloading(true)
     downloadInvoicePdf(invoice, company)
       .catch(function(e) { window.alert('Error al generar el PDF: ' + e.message) })
       .finally(function() { setDownloading(false) })
+  }
+
+  async function handleCharge() {
+    setCharging(true)
+    try {
+      var res = await supabase.functions.invoke('create-checkout', { body: { invoice_id: invoice.id } })
+      if (res.error) throw res.error
+      var url = res.data && res.data.url
+      if (!url) throw new Error((res.data && res.data.error) || 'No se recibió el enlace de pago')
+      try { await navigator.clipboard.writeText(url) } catch (_) { /* sin permiso de portapapeles */ }
+      window.open(url, '_blank')
+    } catch (e) {
+      window.alert('No se pudo generar el cobro: ' + (e.message || e))
+    } finally {
+      setCharging(false)
+    }
   }
 
   return (
@@ -223,9 +241,16 @@ function InvoicePreview({ invoice, company, onBack }) {
           style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: 'var(--text-3)', fontSize: '13px', cursor: 'pointer' }}
         ><ChevronLeft style={{ width: '15px', height: '15px' }} /> Volver a facturas</button>
 
-        <button type="button" onClick={handleDownload} disabled={downloading}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'var(--gradient-brand)', border: 'none', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: downloading ? 'not-allowed' : 'pointer', opacity: downloading ? 0.7 : 1 }}
-        >{downloading ? 'Generando...' : 'Descargar PDF'}</button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          {canCharge && (
+            <button type="button" onClick={handleCharge} disabled={charging}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: charging ? 'not-allowed' : 'pointer', opacity: charging ? 0.7 : 1 }}
+            >{charging ? 'Generando enlace...' : 'Cobrar'}</button>
+          )}
+          <button type="button" onClick={handleDownload} disabled={downloading}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'var(--gradient-brand)', border: 'none', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: downloading ? 'not-allowed' : 'pointer', opacity: downloading ? 0.7 : 1 }}
+          >{downloading ? 'Generando...' : 'Descargar PDF'}</button>
+        </div>
       </div>
 
       <div style={{ background: '#ffffff', color: '#1a1a1a', borderRadius: '12px', padding: '48px', boxShadow: '0 8px 40px rgba(0,0,0,0.3)' }}>

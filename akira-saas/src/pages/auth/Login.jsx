@@ -1,32 +1,57 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom' // ← NUEVO
+import { Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/context/AuthContext'
-import { Eye, EyeOff, ArrowRight, AlertTriangle } from 'lucide-react'
+import { Eye, EyeOff, ArrowRight, AlertTriangle, CheckCircle } from 'lucide-react'
 
 export default function Login() {
-  var { signIn, isAuthenticated, loading: authLoading } = useAuth() // ← NUEVO: tambien sacamos isAuthenticated
+  var { signIn, signUp, isAuthenticated, loading: authLoading } = useAuth()
+  var [mode,     setMode]     = useState('login') // 'login' | 'signup'
+  var [fullName, setFullName] = useState('')
   var [email,    setEmail]    = useState('')
   var [password, setPassword] = useState('')
   var [showPwd,  setShowPwd]  = useState(false)
   var [loading,  setLoading]  = useState(false)
   var [error,    setError]    = useState('')
+  var [notice,   setNotice]   = useState('')
 
-  // ← NUEVO: si ya hay sesion iniciada, no te deja quedarte en el login
   if (!authLoading && isAuthenticated) {
     return <Navigate to="/" replace />
   }
 
+  var isSignup = mode === 'signup'
+
+  function switchMode() {
+    setMode(isSignup ? 'login' : 'signup')
+    setError('')
+    setNotice('')
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
+    if (loading) return
     if (!email || !password) { setError('Completa todos los campos'); return }
-    if (loading) return // ← NUEVO: evita que se envie dos veces si se hace doble clic
+    if (isSignup && !fullName.trim()) { setError('Escribe tu nombre'); return }
+    if (isSignup && password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return }
+
     setLoading(true)
     setError('')
+    setNotice('')
     try {
-      await signIn(email, password)
+      if (isSignup) {
+        var data = await signUp(email, password, fullName.trim())
+        // Si el proyecto exige confirmación por email, no hay sesión todavía.
+        if (!data || !data.session) {
+          setNotice('Cuenta creada. Revisa tu correo para confirmarla y luego inicia sesión.')
+          setMode('login')
+          setPassword('')
+        }
+        // Si hay sesión, isAuthenticated cambiará y redirige solo.
+      } else {
+        await signIn(email, password)
+      }
     } catch (err) {
-      setError(err.message || 'Error al iniciar sesion')
+      setError(err.message || (isSignup ? 'Error al crear la cuenta' : 'Error al iniciar sesión'))
     } finally {
       setLoading(false)
     }
@@ -59,10 +84,29 @@ export default function Login() {
 
         {/* Card */}
         <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '20px', padding: '28px', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '4px' }}>Bienvenido</h2>
-          <p style={{ fontSize: '12px', color: 'var(--text-4)', marginBottom: '24px' }}>Inicia sesion en tu cuenta</p>
+          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '4px' }}>
+            {isSignup ? 'Crea tu cuenta' : 'Bienvenido'}
+          </h2>
+          <p style={{ fontSize: '12px', color: 'var(--text-4)', marginBottom: '24px' }}>
+            {isSignup ? 'Empieza tu prueba de AKIRA' : 'Inicia sesión en tu cuenta'}
+          </p>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {isSignup && (
+              <div>
+                <label className="label-base">Nombre</label>
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={function(e) { setFullName(e.target.value); setError('') }}
+                  placeholder="Tu nombre"
+                  className="input-base"
+                  autoComplete="name"
+                  style={{ marginTop: '5px' }}
+                />
+              </div>
+            )}
+
             <div>
               <label className="label-base">Email</label>
               <input
@@ -77,15 +121,15 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="label-base">Contrasena</label>
+              <label className="label-base">Contraseña</label>
               <div style={{ position: 'relative', marginTop: '5px' }}>
                 <input
                   type={showPwd ? 'text' : 'password'}
                   value={password}
                   onChange={function(e) { setPassword(e.target.value); setError('') }}
-                  placeholder="Tu contrasena"
+                  placeholder={isSignup ? 'Mínimo 6 caracteres' : 'Tu contraseña'}
                   className="input-base"
-                  autoComplete="current-password"
+                  autoComplete={isSignup ? 'new-password' : 'current-password'}
                   style={{ paddingRight: '40px' }}
                 />
                 <button type="button" onClick={function() { setShowPwd(function(v) { return !v }) }}
@@ -104,6 +148,17 @@ export default function Login() {
               >
                 <AlertTriangle style={{ width: '13px', height: '13px', flexShrink: 0 }} />
                 {error}
+              </motion.div>
+            )}
+
+            {notice && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: '8px', fontSize: '12px', color: '#22c55e' }}
+              >
+                <CheckCircle style={{ width: '13px', height: '13px', flexShrink: 0 }} />
+                {notice}
               </motion.div>
             )}
 
@@ -127,16 +182,26 @@ export default function Login() {
                 </svg>
               ) : (
                 <>
-                  Iniciar sesion
+                  {isSignup ? 'Crear cuenta' : 'Iniciar sesión'}
                   <ArrowRight style={{ width: '15px', height: '15px' }} />
                 </>
               )}
             </motion.button>
           </form>
+
+          {/* Cambiar entre login y registro */}
+          <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-4)', marginTop: '18px' }}>
+            {isSignup ? '¿Ya tienes cuenta? ' : '¿No tienes cuenta? '}
+            <button type="button" onClick={switchMode}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--brand)', fontSize: '12px', fontWeight: 700, padding: 0 }}
+            >
+              {isSignup ? 'Inicia sesión' : 'Crear cuenta'}
+            </button>
+          </p>
         </div>
 
         <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-5)', marginTop: '20px' }}>
-          AKIRA Business OS v2.0
+          AKIRA Business OS · Beta
         </p>
       </motion.div>
 

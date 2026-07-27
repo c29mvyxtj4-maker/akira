@@ -12,6 +12,7 @@ import {
   sendMessageStream,
 } from '@/services/brain.service'
 import { executeAction, summarizeAction, ACTION_LABELS } from '@/services/brainActions.service'
+import DOMPurify from 'dompurify'
 
 var ACTION_START = '[AKIRA_ACTION]'
 var ACTION_END   = '[/AKIRA_ACTION]'
@@ -235,13 +236,13 @@ function Message({ msg, isStreaming, onActionConfirmed }) {
         ) : action ? (
           <div>
             {action.before && (
-              <div style={{ fontSize: '14px', lineHeight: 1.7 }} dangerouslySetInnerHTML={{ __html: renderMarkdown(action.before) }} />
+              <div style={{ fontSize: '14px', lineHeight: 1.7 }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderMarkdown(action.before)) }} />
             )}
           </div>
         ) : (
           <div
             style={{ fontSize: '14px', lineHeight: 1.7 }}
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) + (isStreaming ? '<span style="display:inline-block;width:2px;height:14px;background:#e63946;margin-left:2px;animation:blink 1s infinite;vertical-align:middle"></span>' : '') }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderMarkdown(msg.content)) + (isStreaming ? '<span style="display:inline-block;width:2px;height:14px;background:#e63946;margin-left:2px;animation:blink 1s infinite;vertical-align:middle"></span>' : '') }}
           />
         )}
       </div>

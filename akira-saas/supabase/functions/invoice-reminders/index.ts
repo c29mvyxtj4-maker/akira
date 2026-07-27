@@ -16,6 +16,7 @@
 //   SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY los inyecta Supabase.
 // ============================================================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { rateLimit, clientIp } from '../_shared/rateLimit.ts'
 
 const DAYS_BETWEEN_REMINDERS = 7
 
@@ -54,6 +55,16 @@ function buildEmail(inv: any, clientName: string) {
 }
 
 Deno.serve(async (req: Request) => {
+  // Rate-limit por IP ANTES de validar el secreto: frena la fuerza bruta del
+  // CRON_SECRET. El cron legítimo llama 1 vez/día, así que no le afecta.
+  const rl = rateLimit(`reminders:${clientIp(req)}`, 12, 60_000)
+  if (rl.limited) {
+    return new Response(JSON.stringify({ error: 'demasiadas peticiones' }), {
+      status: 429,
+      headers: { 'Content-Type': 'application/json', 'Retry-After': String(rl.retryAfterSec) },
+    })
+  }
+
   // Protección: exige el header con el secreto de cron.
   const cronSecret = Deno.env.get('CRON_SECRET')
   if (cronSecret && req.headers.get('x-cron-secret') !== cronSecret) {

@@ -33,8 +33,10 @@ Deno.serve(async (req: Request) => {
     { global: { headers: { Authorization: authHeader } } },
   )
 
-  const { invoice_id } = await req.json().catch(() => ({}))
+  const { invoice_id, return_path } = await req.json().catch(() => ({}))
   if (!invoice_id) return json({ error: 'falta invoice_id' }, 400)
+  // Ruta de retorno segura (solo rutas internas que empiezan por "/").
+  const retPath = typeof return_path === 'string' && return_path.startsWith('/') ? return_path : '/invoices'
 
   const { data: inv, error } = await supabase
     .from('invoices')
@@ -65,8 +67,8 @@ Deno.serve(async (req: Request) => {
       }],
       customer_email: client?.email ?? undefined,
       metadata: { invoice_id: inv.id },
-      success_url: `${origin}/invoices?paid=1`,
-      cancel_url: `${origin}/invoices`,
+      success_url: `${origin}${retPath}?paid=1`,
+      cancel_url: `${origin}${retPath}`,
     })
     return json({ url: session.url })
   } catch (e) {

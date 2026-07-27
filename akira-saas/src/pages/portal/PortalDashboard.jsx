@@ -6,7 +6,7 @@ import { getPortalClientData, getPortalBranding } from '@/services/portal.servic
 import {
   LogOut, FolderKanban, MessageSquare,
   FileText, Check, Clock, Send,
-  Download, ChevronRight,
+  Download, ChevronRight, Receipt,
 } from 'lucide-react'
 
 var STATUS_CFG = {
@@ -62,6 +62,7 @@ export default function PortalDashboard() {
   var [msgInput, setMsgInput] = useState('')
   var [sending,  setSending]  = useState(false)
   var [messages, setMessages] = useState([])
+  var [paying,   setPaying]   = useState(null)
   var endRef = useRef(null)
   var navigate = useNavigate()
 
@@ -115,6 +116,20 @@ export default function PortalDashboard() {
 
   function handleSignOut() {
     supabase.auth.signOut().then(function() { navigate('/portal', { replace: true }) })
+  }
+
+  function handlePay(inv) {
+    setPaying(inv.id)
+    supabase.functions
+      .invoke('create-checkout', { body: { invoice_id: inv.id, return_path: '/portal/dashboard' } })
+      .then(function(res) {
+        if (res.error) throw res.error
+        var url = res.data && res.data.url
+        if (!url) throw new Error((res.data && res.data.error) || 'No se pudo iniciar el pago')
+        window.location.href = url
+      })
+      .catch(function(e) { window.alert('No se pudo iniciar el pago: ' + (e.message || e)) })
+      .finally(function() { setPaying(null) })
   }
 
   function handleSendMessage() {
@@ -193,9 +208,11 @@ export default function PortalDashboard() {
   var projects  = data && data.projects  || []
   var files     = data && data.files     || []
   var approvals = data && data.approvals || []
+  var invoices = data && data.invoices || []
 
   var TABS = [
     { id: 'projects',  label: 'Proyectos',    icon: FolderKanban, count: projects.length },
+    { id: 'invoices',  label: 'Facturas',     icon: Receipt,      count: invoices.filter(function(i) { return i.status === 'sent' }).length },
     { id: 'messages',  label: 'Mensajes',     icon: MessageSquare, count: messages.filter(function(m) { return m.sender_type === 'owner' && !m.read }).length },
     { id: 'files',     label: 'Archivos',     icon: FileText,     count: files.length },
     { id: 'approvals', label: 'Aprobaciones', icon: Check,        count: approvals.filter(function(a) { return a.status === 'pending' }).length },
@@ -297,6 +314,44 @@ export default function PortalDashboard() {
                       </div>
                     )}
                   </motion.div>
+                )
+              })
+            )}
+          </div>
+        )}
+
+        {tab === 'invoices' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {invoices.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-4)' }}>
+                <Receipt style={{ width: '40px', height: '40px', margin: '0 auto 12px', opacity: 0.4 }} />
+                <p style={{ fontSize: '13px' }}>No tienes facturas todavía</p>
+              </div>
+            ) : (
+              invoices.map(function(inv) {
+                var paid = inv.status === 'paid'
+                return (
+                  <div key={inv.id} style={{ background: 'var(--bg-1)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)' }}>{inv.invoice_number}</p>
+                      <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '2px' }}>
+                        {inv.due_date ? 'Vence: ' + new Date(inv.due_date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : ''}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                      <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-1)', fontVariantNumeric: 'tabular-nums' }}>
+                        {(Number(inv.total) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€
+                      </p>
+                      {paid ? (
+                        <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, background: 'rgba(34,197,94,0.12)', color: '#22c55e' }}>Pagada</span>
+                      ) : (
+                        <button type="button" onClick={function() { handlePay(inv) }} disabled={paying === inv.id}
+                          style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: 'var(--gradient-brand)', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: paying === inv.id ? 'not-allowed' : 'pointer', opacity: paying === inv.id ? 0.7 : 1, whiteSpace: 'nowrap' }}>
+                          {paying === inv.id ? 'Abriendo…' : 'Pagar'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 )
               })
             )}

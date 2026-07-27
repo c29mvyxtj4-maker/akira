@@ -251,6 +251,8 @@ export async function getPortalClientData(clientId, ownerId) {
     supabase.from('portal_messages').select('*').eq('client_id', clientId).eq('owner_id', ownerId).order('created_at', { ascending: true }),
     supabase.from('portal_files').select('*').eq('client_id', clientId).eq('owner_id', ownerId).order('created_at', { ascending: false }),
     supabase.from('portal_approvals').select('*').eq('client_id', clientId).eq('owner_id', ownerId).order('created_at', { ascending: false }),
+    // Facturas visibles para el cliente (solo enviadas/pagadas), vía política RLS de portal
+    supabase.from('invoices').select('id,invoice_number,total,status,issue_date,due_date').eq('client_id', clientId).in('status', ['sent', 'paid']).order('issue_date', { ascending: false }),
   ])
 
   function safe(r) { return r.status === 'fulfilled' && !r.value.error ? r.value.data : null }
@@ -261,6 +263,7 @@ return {
     messages:  safe(results[2]) || [],
     files:     safe(results[3]) || [],
     approvals: safe(results[4]) || [],
+    invoices:  safe(results[5]) || [],
   }
 }
 

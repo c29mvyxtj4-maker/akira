@@ -124,12 +124,14 @@ export default function App() {
           <Route path="documents/*"     element={<Documents />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
         {/* Portal de clientes — rutas públicas */}
         <Route path="/portal"           element={<PortalLogin />} />
         <Route path="/portal/dashboard" element={<PortalDashboard />} />
         <Route path="/join" element={<JoinOrg />} />
         <Route path="/legal" element={<Legal />} />
+
+        {/* Catch-all al final para no interceptar las rutas públicas de arriba */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       </Suspense>
 

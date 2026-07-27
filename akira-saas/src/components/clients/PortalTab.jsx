@@ -12,9 +12,12 @@ import {
   getPortalMessages, sendOwnerMessage, markMessagesAsRead,
   getPortalFiles, uploadPortalFile, deletePortalFile,
   getPortalApprovals, createPortalApproval, updatePortalApproval, deletePortalApproval,
+  getPortalClientData, getPortalBranding,
 } from '@/services/portal.service'
+import { supabase } from '@/lib/supabase'
 import EmptyState from '@/components/ui/EmptyState'
 import Spinner    from '@/components/ui/Spinner'
+import PortalView from '@/components/portal/PortalView'
 
 var PORTAL_URL = window.location.origin + '/portal'
 
@@ -549,10 +552,53 @@ function ApprovalsSection({ clientId }) {
 /* ══════════════════════════════════════════════════════════
    COMPONENTE PRINCIPAL
 ══════════════════════════════════════════════════════════ */
+// Vista previa del portal tal como lo ve el cliente (solo lectura, dentro del owner).
+function PreviewSection({ client }) {
+  var [data,     setData]     = useState(null)
+  var [branding, setBranding] = useState({ company_name: null, logo_url: null, brand_color: '#e63946' })
+  var [loading,  setLoading]  = useState(true)
+  var [error,    setError]    = useState('')
+
+  useEffect(function() {
+    var alive = true
+    async function load() {
+      setLoading(true); setError('')
+      try {
+        var res = await supabase.auth.getUser()
+        var ownerId = res.data && res.data.user && res.data.user.id
+        if (!ownerId) throw new Error('No autenticado')
+        var results = await Promise.all([
+          getPortalClientData(client.id, ownerId),
+          getPortalBranding(ownerId),
+        ])
+        if (!alive) return
+        setData(Object.assign({}, results[0], { ownerId: ownerId }))
+        setBranding(results[1])
+      } catch (e) {
+        if (alive) setError(e.message || 'Error cargando la vista previa')
+      } finally {
+        if (alive) setLoading(false)
+      }
+    }
+    load()
+    return function() { alive = false }
+  }, [client.id])
+
+  if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-4)' }}>Cargando vista previa…</div>
+  if (error)   return <div style={{ padding: '20px', textAlign: 'center', color: 'var(--brand)' }}>{error}</div>
+
+  return (
+    <div style={{ height: '640px', maxHeight: '75vh', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+      <PortalView data={data} branding={branding} mode="preview" />
+    </div>
+  )
+}
+
 export default function PortalTab({ client }) {
   var [activeSection, setActiveSection] = useState('users')
 
   var SECTIONS = [
+    { id: 'preview',   label: 'Vista previa', icon: Eye },
     { id: 'users',     label: 'Accesos',      icon: Mail },
     { id: 'messages',  label: 'Mensajes',     icon: MessageSquare },
     { id: 'files',     label: 'Archivos',     icon: FileText },
@@ -590,6 +636,7 @@ export default function PortalTab({ client }) {
       </div>
 
       {/* Contenido de cada sección */}
+      {activeSection === 'preview'   && <PreviewSection   client={client} />}
       {activeSection === 'users'     && <UsersSection     clientId={client.id} clientName={client.name} />}
       {activeSection === 'messages'  && <MessagesSection  clientId={client.id} />}
       {activeSection === 'files'     && <FilesSection     clientId={client.id} />}

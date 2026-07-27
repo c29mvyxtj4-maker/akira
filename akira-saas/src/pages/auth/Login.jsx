@@ -187,6 +187,13 @@ export default function Login() {
                 </>
               )}
             </motion.button>
+
+            {isSignup && (
+              <p style={{ fontSize: '11px', color: 'var(--text-5)', textAlign: 'center', lineHeight: 1.5, marginTop: '2px' }}>
+                Al crear una cuenta aceptas la{' '}
+                <a href="/legal" target="_blank" rel="noreferrer" style={{ color: 'var(--brand)', fontWeight: 600 }}>Política de Privacidad y los Términos</a>.
+              </p>
+            )}
           </form>
 
           {/* Cambiar entre login y registro */}

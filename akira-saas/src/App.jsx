@@ -29,6 +29,7 @@ const Settings      = lazy(() => import('@/pages/Settings'))
 const PortalLogin     = lazy(() => import('@/pages/portal/PortalLogin'))
 const PortalDashboard = lazy(() => import('@/pages/portal/PortalDashboard'))
 const JoinOrg       = lazy(() => import('@/pages/JoinOrg'))
+const Legal         = lazy(() => import('@/pages/Legal'))
 const Quotes        = lazy(() => import('@/pages/Quotes'))
 const Offers        = lazy(() => import('@/pages/Offers'))
 const Documents     = lazy(() => import('@/pages/Documents'))
@@ -128,6 +129,7 @@ export default function App() {
         <Route path="/portal"           element={<PortalLogin />} />
         <Route path="/portal/dashboard" element={<PortalDashboard />} />
         <Route path="/join" element={<JoinOrg />} />
+        <Route path="/legal" element={<Legal />} />
       </Routes>
       </Suspense>
 

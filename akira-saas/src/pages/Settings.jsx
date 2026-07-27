@@ -1570,6 +1570,12 @@ function AccountTab({ user, onSignOut }) {
           >Cerrar sesion</button>
         </div>
       </Section>
+
+      <Section title="Privacidad y términos" description="Cómo tratamos tus datos y las condiciones del servicio">
+        <a href="/legal" target="_blank" rel="noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#e63946', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}
+        >Ver Política de Privacidad y Términos →</a>
+      </Section>
     </div>
   )
 }

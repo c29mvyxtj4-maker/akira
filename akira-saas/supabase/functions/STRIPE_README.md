@@ -10,7 +10,14 @@ se lo pasas al cliente (se copia al portapapeles y se abre) → cuando paga, el
 ```bash
 supabase secrets set STRIPE_SECRET_KEY=sk_test_...        # modo test primero
 supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...      # lo obtienes en el paso 3
+# CORS: dominios permitidos para llamar a create-checkout (coma-separados).
+# Si no se define, usa el dominio de producción + localhost:3000 por defecto.
+supabase secrets set ALLOWED_ORIGINS=https://tu-dominio.com,http://localhost:3000
 ```
+
+> **Requiere migraciones aplicadas.** El webhook usa la tabla `stripe_events`
+> (idempotencia) y `invoices.status`. Aplica antes las migraciones de
+> `supabase/migrations/` (`supabase db push`).
 
 ### 2. Despliega las funciones
 ```bash
@@ -21,9 +28,15 @@ supabase functions deploy stripe-webhook --no-verify-jwt   # ⚠️ Stripe no en
 ### 3. Registra el webhook en Stripe
 - Stripe Dashboard → *Developers → Webhooks → Add endpoint*.
 - URL: `https://<PROJECT_REF>.functions.supabase.co/stripe-webhook`
-- Evento: **`checkout.session.completed`**.
+- Eventos a suscribir:
+  - **`checkout.session.completed`** → factura `paid`
+  - **`charge.refunded`** → factura `refunded`
+  - **`charge.dispute.created`** → factura `disputed`
+  - **`checkout.session.async_payment_failed`** / **`checkout.session.expired`** → solo log
 - Copia el *Signing secret* (`whsec_...`) y ponlo como `STRIPE_WEBHOOK_SECRET`
   (paso 1), luego **redeploy** de `stripe-webhook`.
+- Idempotencia: cada `event.id` se registra en `stripe_events`; los reenvíos de
+  Stripe se ignoran automáticamente (no marca facturas dos veces).
 
 ### 4. Prueba (modo test)
 - En AKIRA, abre una factura no pagada → **Cobrar** → se abre Checkout.

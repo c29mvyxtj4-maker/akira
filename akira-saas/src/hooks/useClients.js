@@ -187,7 +187,6 @@ export function useClients() {
           .select()
           .single()
 
-        console.log('[useClients] insert result:', data, insertErr)
         if (insertErr) throw insertErr
 
         setClients(prev => [data, ...prev])

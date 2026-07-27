@@ -9,14 +9,14 @@ import {
   Download, ChevronRight, Receipt,
 } from 'lucide-react'
 
-var STATUS_CFG = {
+const STATUS_CFG = {
   pending:   { label: 'Pendiente',  color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' },
   active:    { label: 'En curso',   color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
   review:    { label: 'Revision',   color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
   completed: { label: 'Completado', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
   cancelled: { label: 'Cancelado',  color: '#e63946', bg: 'rgba(230,57,70,0.1)' },
 }
-var APPROVAL_CFG = {
+const APPROVAL_CFG = {
   pending:  { label: 'Pendiente', color: '#f59e0b' },
   approved: { label: 'Aprobado',  color: '#22c55e' },
   rejected: { label: 'Rechazado', color: '#e63946' },
@@ -43,137 +43,144 @@ function fileIcon(type) {
 
 // ── NUEVO: oscurece un color hex un porcentaje, para el degradado de marca ──
 function darken(hex, amount) {
-  var h = hex.replace('#', '')
-  if (h.length === 3) h = h.split('').map(function(c) { return c + c }).join('')
-  var num = parseInt(h, 16)
-  var r = Math.max(0, ((num >> 16) & 255) - amount)
-  var g = Math.max(0, ((num >> 8) & 255) - amount)
-  var b = Math.max(0, (num & 255) - amount)
-  return '#' + [r, g, b].map(function(v) { return v.toString(16).padStart(2, '0') }).join('')
+  let h = hex.replace('#', '')
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('')
+  const num = parseInt(h, 16)
+  const r = Math.max(0, ((num >> 16) & 255) - amount)
+  const g = Math.max(0, ((num >> 8) & 255) - amount)
+  const b = Math.max(0, (num & 255) - amount)
+  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')
 }
 
 export default function PortalDashboard() {
-  var [user,    setUser]    = useState(null)
-  var [data,    setData]    = useState(null)
-  var [branding, setBranding] = useState({ company_name: null, logo_url: null, brand_color: '#e63946' }) // ← NUEVO
-  var [loading, setLoading] = useState(true)
-  var [error,   setError]   = useState('')
-  var [tab,     setTab]     = useState('projects')
-  var [msgInput, setMsgInput] = useState('')
-  var [sending,  setSending]  = useState(false)
-  var [messages, setMessages] = useState([])
-  var [paying,   setPaying]   = useState(null)
-  var endRef = useRef(null)
-  var navigate = useNavigate()
+  const [user,    setUser]    = useState(null)
+  const [data,    setData]    = useState(null)
+  const [branding, setBranding] = useState({ company_name: null, logo_url: null, brand_color: '#e63946' })
+  const [loading, setLoading] = useState(true)
+  const [error,   setError]   = useState('')
+  const [tab,     setTab]     = useState('projects')
+  const [msgInput, setMsgInput] = useState('')
+  const [sending,  setSending]  = useState(false)
+  const [messages, setMessages] = useState([])
+  const [paying,   setPaying]   = useState(null)
+  const endRef = useRef(null)
+  const navigate = useNavigate()
 
-  useEffect(function() {
-    supabase.auth.getSession().then(function(res) {
-      if (!res.data || !res.data.session) {
+  useEffect(() => {
+    async function loadPortal() {
+      const { data: sessionData } = await supabase.auth.getSession()
+      if (!sessionData || !sessionData.session) {
         navigate('/portal', { replace: true })
         return
       }
-      var u = res.data.session.user
+      const u = sessionData.session.user
       setUser(u)
-      supabase
-        .from('portal_users')
-        .select('*, clients(id, name, company, owner_id)')
-        .eq('email', u.email.toLowerCase())
-        .eq('active', true)
-        .single()
-        .then(function(r) {
-          if (r.error || !r.data) {
-            setError('No tienes acceso al portal. Contacta con tu proveedor.')
-            setLoading(false)
-            return
-          }
-          var portalUser = r.data
-          var client     = portalUser.clients
-          var ownerId    = client.owner_id
 
-          supabase.from('portal_users').update({ last_login: new Date().toISOString() }).eq('id', portalUser.id)
+      try {
+        const r = await supabase
+          .from('portal_users')
+          .select('*, clients(id, name, company, owner_id)')
+          .eq('email', u.email.toLowerCase())
+          .eq('active', true)
+          .single()
 
-          return Promise.all([
-            getPortalClientData(client.id, ownerId),
-            getPortalBranding(ownerId), // ← NUEVO
-          ]).then(function(results) {
-            var clientData = results[0]
-            setBranding(results[1])
-            setData(Object.assign({}, clientData, { portalUser: portalUser, ownerId: ownerId }))
-            setMessages(clientData.messages || [])
-            setLoading(false)
-          })
-        })
-        .catch(function(e) {
-          setError(e.message)
+        if (r.error || !r.data) {
+          setError('No tienes acceso al portal. Contacta con tu proveedor.')
           setLoading(false)
-        })
-    })
+          return
+        }
+
+        const portalUser = r.data
+        const client     = portalUser.clients
+        const ownerId    = client.owner_id
+
+        supabase.from('portal_users').update({ last_login: new Date().toISOString() }).eq('id', portalUser.id)
+
+        const [clientData, brandingData] = await Promise.all([
+          getPortalClientData(client.id, ownerId),
+          getPortalBranding(ownerId),
+        ])
+        setBranding(brandingData)
+        setData({ ...clientData, portalUser, ownerId })
+        setMessages(clientData.messages || [])
+        setLoading(false)
+      } catch (e) {
+        setError(e.message)
+        setLoading(false)
+      }
+    }
+    loadPortal()
   }, [])
 
-  useEffect(function() {
+  useEffect(() => {
     if (endRef.current) endRef.current.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  function handleSignOut() {
-    supabase.auth.signOut().then(function() { navigate('/portal', { replace: true }) })
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    navigate('/portal', { replace: true })
   }
 
-  function handlePay(inv) {
+  async function handlePay(inv) {
     setPaying(inv.id)
-    supabase.functions
-      .invoke('create-checkout', { body: { invoice_id: inv.id, return_path: '/portal/dashboard' } })
-      .then(function(res) {
-        if (res.error) throw res.error
-        var url = res.data && res.data.url
-        if (!url) throw new Error((res.data && res.data.error) || 'No se pudo iniciar el pago')
-        window.location.href = url
-      })
-      .catch(function(e) { window.alert('No se pudo iniciar el pago: ' + (e.message || e)) })
-      .finally(function() { setPaying(null) })
+    try {
+      const res = await supabase.functions
+        .invoke('create-checkout', { body: { invoice_id: inv.id, return_path: '/portal/dashboard' } })
+      if (res.error) throw res.error
+      const url = res.data && res.data.url
+      if (!url) throw new Error((res.data && res.data.error) || 'No se pudo iniciar el pago')
+      window.location.href = url
+    } catch (e) {
+      window.alert('No se pudo iniciar el pago: ' + (e.message || e))
+    } finally {
+      setPaying(null)
+    }
   }
 
-  function handleSendMessage() {
-    var text = msgInput.trim()
+  async function handleSendMessage() {
+    const text = msgInput.trim()
     if (!text || sending || !data) return
     setSending(true)
-    supabase.from('portal_messages').insert({
-      client_id:     data.client.id,
-      owner_id:      data.ownerId,
-      portal_user_id: data.portalUser.id,
-      sender_type:   'client',
-      content:       text,
-      read:          false,
-    }).select().single()
-      .then(function(res) {
-        if (res.error) throw res.error
-        setMessages(function(prev) { return prev.concat([res.data]) })
-        setMsgInput('')
-      })
-      .catch(function(e) { console.error(e) })
-      .finally(function() { setSending(false) })
+    try {
+      const res = await supabase.from('portal_messages').insert({
+        client_id:     data.client.id,
+        owner_id:      data.ownerId,
+        portal_user_id: data.portalUser.id,
+        sender_type:   'client',
+        content:       text,
+        read:          false,
+      }).select().single()
+      if (res.error) throw res.error
+      setMessages((prev) => prev.concat([res.data]))
+      setMsgInput('')
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setSending(false)
+    }
   }
 
-  function handleApprovalAction(approvalId, status, feedback) {
-    supabase.from('portal_approvals')
-      .update({ status: status, feedback: feedback || null, updated_at: new Date().toISOString() })
-      .eq('id', approvalId)
-      .select().single()
-      .then(function(res) {
-        if (res.error) throw res.error
-        setData(function(prev) {
-          return Object.assign({}, prev, {
-            approvals: prev.approvals.map(function(a) {
-              return a.id === approvalId ? Object.assign({}, a, { status: status, feedback: feedback }) : a
-            }),
-          })
-        })
-      })
-      .catch(function(e) { console.error(e) })
+  async function handleApprovalAction(approvalId, status, feedback) {
+    try {
+      const res = await supabase.from('portal_approvals')
+        .update({ status, feedback: feedback || null, updated_at: new Date().toISOString() })
+        .eq('id', approvalId)
+        .select().single()
+      if (res.error) throw res.error
+      setData((prev) => ({
+        ...prev,
+        approvals: prev.approvals.map((a) =>
+          a.id === approvalId ? { ...a, status, feedback } : a,
+        ),
+      }))
+    } catch (e) {
+      console.error(e)
+    }
   }
 
-  // ── NUEVO: variables de marca, aplicadas solo dentro de esta pantalla ──
-  var brandColor = branding.brand_color || '#e63946'
-  var brandVars = {
+  // Variables de marca, aplicadas solo dentro de esta pantalla
+  const brandColor = branding.brand_color || '#e63946'
+  const brandVars = {
     '--brand': brandColor,
     '--gradient-brand': 'linear-gradient(135deg, ' + brandColor + ', ' + darken(brandColor, 30) + ')',
   }
@@ -204,18 +211,18 @@ export default function PortalDashboard() {
     )
   }
 
-  var client    = data && data.client
-  var projects  = data && data.projects  || []
-  var files     = data && data.files     || []
-  var approvals = data && data.approvals || []
-  var invoices = data && data.invoices || []
+  const client    = data && data.client
+  const projects  = (data && data.projects)  || []
+  const files     = (data && data.files)     || []
+  const approvals = (data && data.approvals) || []
+  const invoices  = (data && data.invoices)  || []
 
-  var TABS = [
+  const TABS = [
     { id: 'projects',  label: 'Proyectos',    icon: FolderKanban, count: projects.length },
-    { id: 'invoices',  label: 'Facturas',     icon: Receipt,      count: invoices.filter(function(i) { return i.status === 'sent' }).length },
-    { id: 'messages',  label: 'Mensajes',     icon: MessageSquare, count: messages.filter(function(m) { return m.sender_type === 'owner' && !m.read }).length },
+    { id: 'invoices',  label: 'Facturas',     icon: Receipt,      count: invoices.filter((i) => i.status === 'sent').length },
+    { id: 'messages',  label: 'Mensajes',     icon: MessageSquare, count: messages.filter((m) => m.sender_type === 'owner' && !m.read).length },
     { id: 'files',     label: 'Archivos',     icon: FileText,     count: files.length },
-    { id: 'approvals', label: 'Aprobaciones', icon: Check,        count: approvals.filter(function(a) { return a.status === 'pending' }).length },
+    { id: 'approvals', label: 'Aprobaciones', icon: Check,        count: approvals.filter((a) => a.status === 'pending').length },
   ]
 
   return (
@@ -251,8 +258,8 @@ export default function PortalDashboard() {
         </p>
         <div style={{ display: 'flex', gap: '0', overflowX: 'auto' }}>
           {TABS.map(function(t) {
-            var Icon   = t.icon
-            var active = tab === t.id
+            const Icon   = t.icon
+            const active = tab === t.id
             return (
               <button key={t.id} type="button"
                 onClick={function() { setTab(t.id) }}
@@ -288,7 +295,7 @@ export default function PortalDashboard() {
               </div>
             ) : (
               projects.map(function(p) {
-                var sc = STATUS_CFG[p.status] || STATUS_CFG.pending
+                const sc = STATUS_CFG[p.status] || STATUS_CFG.pending
                 return (
                   <motion.div key={p.id} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
                     style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px' }}
@@ -329,7 +336,7 @@ export default function PortalDashboard() {
               </div>
             ) : (
               invoices.map(function(inv) {
-                var paid = inv.status === 'paid'
+                const paid = inv.status === 'paid'
                 return (
                   <div key={inv.id} style={{ background: 'var(--bg-1)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                     <div style={{ minWidth: 0 }}>
@@ -368,7 +375,7 @@ export default function PortalDashboard() {
                 </div>
               ) : (
                 messages.map(function(msg) {
-                  var isClient = msg.sender_type === 'client'
+                  const isClient = msg.sender_type === 'client'
                   return (
                     <div key={msg.id} style={{ display: 'flex', justifyContent: isClient ? 'flex-end' : 'flex-start' }}>
                       <div style={{
@@ -448,8 +455,8 @@ export default function PortalDashboard() {
               </div>
             ) : (
               approvals.map(function(a) {
-                var ac = APPROVAL_CFG[a.status] || APPROVAL_CFG.pending
-                var isPending = a.status === 'pending'
+                const ac = APPROVAL_CFG[a.status] || APPROVAL_CFG.pending
+                const isPending = a.status === 'pending'
                 return (
                   <motion.div key={a.id} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
                     style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px' }}

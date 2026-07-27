@@ -5,38 +5,40 @@ import { supabase } from '@/lib/supabase'
 import { Mail, ArrowRight, Check } from 'lucide-react'
 
 export default function PortalLogin() {
-  var [email,   setEmail]   = useState('')
-  var [loading, setLoading] = useState(false)
-  var [sent,    setSent]    = useState(false)
-  var [error,   setError]   = useState('')
-  var navigate = useNavigate()
+  const [email,   setEmail]   = useState('')
+  const [loading, setLoading] = useState(false)
+  const [sent,    setSent]    = useState(false)
+  const [error,   setError]   = useState('')
+  const navigate = useNavigate()
 
   // Si ya hay sesión activa, redirigir al dashboard del portal
-  useEffect(function() {
-    supabase.auth.getSession().then(function(res) {
+  useEffect(() => {
+    supabase.auth.getSession().then((res) => {
       if (res.data && res.data.session) {
         navigate('/portal/dashboard', { replace: true })
       }
     })
   }, [])
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     if (!email.trim()) return
     setLoading(true)
     setError('')
-    supabase.auth.signInWithOtp({
-      email: email.trim().toLowerCase(),
-      options: {
-        emailRedirectTo: window.location.origin + '/portal/dashboard',
-      },
-    })
-      .then(function(res) {
-        if (res.error) throw res.error
-        setSent(true)
+    try {
+      const res = await supabase.auth.signInWithOtp({
+        email: email.trim().toLowerCase(),
+        options: {
+          emailRedirectTo: window.location.origin + '/portal/dashboard',
+        },
       })
-      .catch(function(e) { setError(e.message) })
-      .finally(function() { setLoading(false) })
+      if (res.error) throw res.error
+      setSent(true)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

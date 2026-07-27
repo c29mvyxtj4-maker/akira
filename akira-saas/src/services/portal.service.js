@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase'
 
 async function uid() {
-  var res = await supabase.auth.getUser()
+  const res = await supabase.auth.getUser()
   if (!res.data || !res.data.user) throw new Error('No autenticado')
   return res.data.user.id
 }
@@ -11,8 +11,8 @@ async function uid() {
 ═══════════════════════════════════════════════════════════ */
 
 export async function getPortalUsers(clientId) {
-  var ownerId = await uid()
-  var res = await supabase
+  const ownerId = await uid()
+  const res = await supabase
     .from('portal_users')
     .select('*, portal_permissions(*)')
     .eq('client_id', clientId)
@@ -23,8 +23,8 @@ export async function getPortalUsers(clientId) {
 }
 
 export async function createPortalUser(clientId, email, name) {
-  var ownerId = await uid()
-  var res = await supabase.from('portal_users').insert({
+  const ownerId = await uid()
+  const res = await supabase.from('portal_users').insert({
     client_id: clientId,
     owner_id:  ownerId,
     email:     email.toLowerCase().trim(),
@@ -34,34 +34,32 @@ export async function createPortalUser(clientId, email, name) {
   if (res.error) throw res.error
 
   // Crear permisos por defecto
-  var defaultPerms = ['projects', 'messages', 'files'].map(function(r) {
-    return {
-      portal_user_id: res.data.id,
-      resource:       r,
-      can_view:       true,
-      can_comment:    r === 'messages',
-      can_approve:    false,
-    }
-  })
+  const defaultPerms = ['projects', 'messages', 'files'].map((r) => ({
+    portal_user_id: res.data.id,
+    resource:       r,
+    can_view:       true,
+    can_comment:    r === 'messages',
+    can_approve:    false,
+  }))
   await supabase.from('portal_permissions').insert(defaultPerms)
 
   return res.data
 }
 
 export async function updatePortalUser(id, updates) {
-  var res = await supabase.from('portal_users').update(updates).eq('id', id).select().single()
+  const res = await supabase.from('portal_users').update(updates).eq('id', id).select().single()
   if (res.error) throw res.error
   return res.data
 }
 
 export async function deletePortalUser(id) {
-  var res = await supabase.from('portal_users').delete().eq('id', id)
+  const res = await supabase.from('portal_users').delete().eq('id', id)
   if (res.error) throw res.error
   return true
 }
 
 export async function updatePortalPermission(portalUserId, resource, updates) {
-  var res = await supabase
+  const res = await supabase
     .from('portal_permissions')
     .update(updates)
     .eq('portal_user_id', portalUserId)
@@ -73,7 +71,7 @@ export async function updatePortalPermission(portalUserId, resource, updates) {
 }
 
 export async function sendPortalInvite(email, clientName, portalUrl) {
-  var res = await supabase.auth.signInWithOtp({
+  const res = await supabase.auth.signInWithOtp({
     email:   email.toLowerCase().trim(),
     options: {
       emailRedirectTo: portalUrl + '/dashboard',
@@ -95,8 +93,8 @@ export async function sendPortalInvite(email, clientName, portalUrl) {
 ═══════════════════════════════════════════════════════════ */
 
 export async function getPortalMessages(clientId) {
-  var ownerId = await uid()
-  var res = await supabase
+  const ownerId = await uid()
+  const res = await supabase
     .from('portal_messages')
     .select('*')
     .eq('client_id', clientId)
@@ -107,8 +105,8 @@ export async function getPortalMessages(clientId) {
 }
 
 export async function sendOwnerMessage(clientId, content) {
-  var ownerId = await uid()
-  var res = await supabase.from('portal_messages').insert({
+  const ownerId = await uid()
+  const res = await supabase.from('portal_messages').insert({
     client_id:   clientId,
     owner_id:    ownerId,
     sender_type: 'owner',
@@ -120,8 +118,8 @@ export async function sendOwnerMessage(clientId, content) {
 }
 
 export async function markMessagesAsRead(clientId) {
-  var ownerId = await uid()
-  var res = await supabase
+  const ownerId = await uid()
+  const res = await supabase
     .from('portal_messages')
     .update({ read: true })
     .eq('client_id', clientId)
@@ -132,8 +130,8 @@ export async function markMessagesAsRead(clientId) {
 }
 
 export async function getUnreadCount(clientId) {
-  var ownerId = await uid()
-  var res = await supabase
+  const ownerId = await uid()
+  const res = await supabase
     .from('portal_messages')
     .select('id', { count: 'exact' })
     .eq('client_id', clientId)
@@ -149,8 +147,8 @@ export async function getUnreadCount(clientId) {
 ═══════════════════════════════════════════════════════════ */
 
 export async function getPortalFiles(clientId) {
-  var ownerId = await uid()
-  var res = await supabase
+  const ownerId = await uid()
+  const res = await supabase
     .from('portal_files')
     .select('*')
     .eq('client_id', clientId)
@@ -161,20 +159,20 @@ export async function getPortalFiles(clientId) {
 }
 
 export async function uploadPortalFile(file, clientId, description) {
-  var ownerId = await uid()
-  var ext      = file.name.split('.').pop()
-  var filename = 'portal/' + ownerId + '/' + clientId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) + '.' + ext
+  const ownerId  = await uid()
+  const ext      = file.name.split('.').pop()
+  const filename = 'portal/' + ownerId + '/' + clientId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) + '.' + ext
 
-  var uploadRes = await supabase.storage.from('knowledge').upload(filename, file, {
+  const uploadRes = await supabase.storage.from('knowledge').upload(filename, file, {
     cacheControl: '3600',
     upsert: false,
   })
   if (uploadRes.error) throw uploadRes.error
 
-  var urlRes = await supabase.storage.from('knowledge').createSignedUrl(filename, 60 * 60 * 24 * 365)
+  const urlRes = await supabase.storage.from('knowledge').createSignedUrl(filename, 60 * 60 * 24 * 365)
   if (urlRes.error) throw urlRes.error
 
-  var res = await supabase.from('portal_files').insert({
+  const res = await supabase.from('portal_files').insert({
     client_id:   clientId,
     owner_id:    ownerId,
     name:        file.name,
@@ -192,7 +190,7 @@ export async function deletePortalFile(id, filePath) {
   if (filePath) {
     await supabase.storage.from('knowledge').remove([filePath])
   }
-  var res = await supabase.from('portal_files').delete().eq('id', id)
+  const res = await supabase.from('portal_files').delete().eq('id', id)
   if (res.error) throw res.error
   return true
 }
@@ -202,8 +200,8 @@ export async function deletePortalFile(id, filePath) {
 ═══════════════════════════════════════════════════════════ */
 
 export async function getPortalApprovals(clientId) {
-  var ownerId = await uid()
-  var res = await supabase
+  const ownerId = await uid()
+  const res = await supabase
     .from('portal_approvals')
     .select('*, projects(name)')
     .eq('client_id', clientId)
@@ -214,8 +212,8 @@ export async function getPortalApprovals(clientId) {
 }
 
 export async function createPortalApproval(clientId, data) {
-  var ownerId = await uid()
-  var res = await supabase.from('portal_approvals').insert({
+  const ownerId = await uid()
+  const res = await supabase.from('portal_approvals').insert({
     client_id:   clientId,
     owner_id:    ownerId,
     project_id:  data.project_id || null,
@@ -229,13 +227,13 @@ export async function createPortalApproval(clientId, data) {
 }
 
 export async function updatePortalApproval(id, updates) {
-  var res = await supabase.from('portal_approvals').update(updates).eq('id', id).select().single()
+  const res = await supabase.from('portal_approvals').update(updates).eq('id', id).select().single()
   if (res.error) throw res.error
   return res.data
 }
 
 export async function deletePortalApproval(id) {
-  var res = await supabase.from('portal_approvals').delete().eq('id', id)
+  const res = await supabase.from('portal_approvals').delete().eq('id', id)
   if (res.error) throw res.error
   return true
 }
@@ -245,7 +243,7 @@ export async function deletePortalApproval(id) {
 ═══════════════════════════════════════════════════════════ */
 
 export async function getPortalClientData(clientId, ownerId) {
-  var results = await Promise.allSettled([
+  const results = await Promise.allSettled([
     supabase.from('clients').select('id,name,company,status,niche').eq('id', clientId).eq('owner_id', ownerId).single(),
     supabase.from('projects').select('id,name,status,stage,progress,due_date,description').eq('client_id', clientId).eq('owner_id', ownerId).eq('archived', false),
     supabase.from('portal_messages').select('*').eq('client_id', clientId).eq('owner_id', ownerId).order('created_at', { ascending: true }),
@@ -255,9 +253,9 @@ export async function getPortalClientData(clientId, ownerId) {
     supabase.from('invoices').select('id,invoice_number,total,status,issue_date,due_date').eq('client_id', clientId).in('status', ['sent', 'paid']).order('issue_date', { ascending: false }),
   ])
 
-  function safe(r) { return r.status === 'fulfilled' && !r.value.error ? r.value.data : null }
+  const safe = (r) => (r.status === 'fulfilled' && !r.value.error ? r.value.data : null)
 
-return {
+  return {
     client:    safe(results[0]),
     projects:  safe(results[1]) || [],
     messages:  safe(results[2]) || [],
@@ -268,7 +266,7 @@ return {
 }
 
 export async function getPortalBranding(ownerId) {
-  var res = await supabase.rpc('get_portal_branding', { owner_id_param: ownerId })
+  const res = await supabase.rpc('get_portal_branding', { owner_id_param: ownerId })
   if (res.error || !res.data || res.data.length === 0) {
     return { company_name: null, logo_url: null, brand_color: '#e63946' }
   }

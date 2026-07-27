@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Search, ChevronLeft, ChevronRight,
@@ -7,7 +7,8 @@ import {
 import { useKnowledge }   from '@/hooks/useKnowledge'
 import FolderTree         from '@/components/knowledge/FolderTree'
 import DocList            from '@/components/knowledge/DocList'
-import TipTapEditor       from '@/components/knowledge/TipTapEditor'
+// TipTap pesa ~500KB: se carga solo al abrir un documento, no con la página.
+const TipTapEditor = lazy(() => import('@/components/knowledge/TipTapEditor'))
 import { useSearchParams } from 'react-router-dom'
 import { KNOWLEDGE_TEMPLATES } from '@/data/knowledgeTemplates'
 
@@ -495,6 +496,7 @@ export default function Knowledge() {
                   <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '16px 0 0' }} />
                 </div>
                 <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <Suspense fallback={<div style={{ padding: '24px', color: 'rgba(255,255,255,0.35)', fontSize: '14px' }}>Cargando editor…</div>}>
                   <TipTapEditor
                     doc={hook.activeDoc}
                     onChange={hook.handleContentChange}
@@ -503,6 +505,7 @@ export default function Knowledge() {
                     onDeleteAttachment={hook.handleDeleteAttachment}
                     showAttachments={hook.showAttachments}
                   />
+                  </Suspense>
                 </div>
               </div>
             ) : (

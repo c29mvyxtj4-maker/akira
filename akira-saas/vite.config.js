@@ -19,4 +19,11 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     sourcemap: true,
   },
+  // Este proyecto usa rolldown-vite (oxc), no esbuild. En producción marca
+  // console.log/info/debug como "pure" para que se eliminen por dead-code
+  // (mantiene console.error/warn para que Sentry siga capturando errores).
+  oxc: {
+    drop: process.env.NODE_ENV === 'production' ? ['debugger'] : [],
+    pure: process.env.NODE_ENV === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
+  },
 })

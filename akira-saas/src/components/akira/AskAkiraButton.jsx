@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, X, Send, Loader2 } from 'lucide-react'
 import { sendMessageStream } from '@/services/brain.service'
+import DOMPurify from 'dompurify'
 
 function renderSimpleMarkdown(text) {
   if (!text) return ''
@@ -133,7 +134,7 @@ export default function AskAkiraButton({ contextLabel, contextText }) {
                     {isUser ? (
                       <div style={{ background: 'rgba(230,57,70,0.12)', border: '1px solid rgba(230,57,70,0.2)', borderRadius: '10px', padding: '8px 11px', fontSize: '12px', color: '#f1f5f9' }}>{m.content}</div>
                     ) : (
-                      <div style={{ fontSize: '12px', color: '#e2e8f0', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: renderSimpleMarkdown(m.content) }} />
+                      <div style={{ fontSize: '12px', color: '#e2e8f0', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderSimpleMarkdown(m.content)) }} />
                     )}
                   </div>
                 )
@@ -142,7 +143,7 @@ export default function AskAkiraButton({ contextLabel, contextText }) {
               {streaming && (
                 <div style={{ alignSelf: 'flex-start', maxWidth: '90%' }}>
                   {streamText ? (
-                    <div style={{ fontSize: '12px', color: '#e2e8f0', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: renderSimpleMarkdown(streamText) }} />
+                    <div style={{ fontSize: '12px', color: '#e2e8f0', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderSimpleMarkdown(streamText)) }} />
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-4)', fontSize: '12px' }}>
                       <Loader2 style={{ width: '13px', height: '13px', animation: 'spin 1s linear infinite' }} /> Pensando...

@@ -9,6 +9,7 @@
 // ============================================================================
 import Stripe from 'https://esm.sh/stripe@14?target=deno'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { rateLimit } from '../_shared/rateLimit.ts'
 
 // Orígenes permitidos para CORS. Configurable con el secret ALLOWED_ORIGINS.
 const ALLOWED_ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ??
@@ -31,19 +32,6 @@ function json(body: unknown, status: number, cors: Record<string, string>) {
   })
 }
 
-// Rate-limit en memoria muy simple: máx. 10 peticiones / 60 s por usuario.
-// (Suficiente para frenar abuso; no persiste entre instancias.)
-const RATE_LIMIT = 10
-const WINDOW_MS = 60_000
-const hits = new Map<string, number[]>()
-function rateLimited(key: string): boolean {
-  const now = Date.now()
-  const arr = (hits.get(key) ?? []).filter((t) => now - t < WINDOW_MS)
-  arr.push(now)
-  hits.set(key, arr)
-  return arr.length > RATE_LIMIT
-}
-
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get('origin')
   const cors = corsHeaders(origin)
@@ -63,7 +51,13 @@ Deno.serve(async (req: Request) => {
   const { data: userData } = await supabase.auth.getUser()
   const userId = userData?.user?.id
   if (!userId) return json({ error: 'no autenticado' }, 401, cors)
-  if (rateLimited(userId)) return json({ error: 'demasiadas peticiones, espera un momento' }, 429, cors)
+  const rl = rateLimit(`checkout:${userId}`, 10, 60_000)
+  if (rl.limited) {
+    return new Response(
+      JSON.stringify({ error: 'demasiadas peticiones, espera un momento' }),
+      { status: 429, headers: { ...cors, 'Content-Type': 'application/json', 'Retry-After': String(rl.retryAfterSec) } },
+    )
+  }
 
   const { invoice_id, return_path } = await req.json().catch(() => ({}))
   if (!invoice_id) return json({ error: 'falta invoice_id' }, 400, cors)

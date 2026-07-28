@@ -14,15 +14,25 @@ import clsx from 'clsx'
 var DAYS   = ['LUN','MAR','MIE','JUE','VIE','SAB','DOM']
 var MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
-var EVENT_COLORS = {
-  meeting:     { bg: 'rgba(230,57,70,0.15)',  border: 'rgba(230,57,70,0.4)',  text: '#e63946',  dot: '#e63946' },
-  deadline:    { bg: 'rgba(180,30,40,0.15)',  border: 'rgba(180,30,40,0.4)',  text: '#cc2936',  dot: '#cc2936' },
-  delivery:    { bg: 'rgba(255,100,100,0.12)', border: 'rgba(255,100,100,0.3)', text: '#ff6464', dot: '#ff6464' },
-  billing:     { bg: 'rgba(200,50,60,0.12)',  border: 'rgba(200,50,60,0.3)',  text: '#e05060',  dot: '#e05060' },
-  other:       { bg: 'rgba(230,57,70,0.08)',  border: 'rgba(230,57,70,0.2)',  text: '#e63946',  dot: '#e63946' },
-  project_due: { bg: 'rgba(180,30,40,0.12)',  border: 'rgba(180,30,40,0.3)',  text: '#cc2936',  dot: '#cc2936' },
-  sub_billing: { bg: 'rgba(200,50,60,0.1)',   border: 'rgba(200,50,60,0.25)', text: '#e05060',  dot: '#e05060' },
+// Categorías de evento (una sola fuente): etiqueta + color distintivo para
+// poder categorizar los eventos por color en todas las vistas.
+var CATEGORIES = {
+  meeting:  { label: 'Reunión',      color: '#e63946' },
+  call:     { label: 'Llamada',      color: '#3b82f6' },
+  deadline: { label: 'Deadline',     color: '#f59e0b' },
+  delivery: { label: 'Entrega',      color: '#22c55e' },
+  personal: { label: 'Personal',     color: '#a855f7' },
+  reminder: { label: 'Recordatorio', color: '#ec4899' },
+  other:    { label: 'Otro',         color: '#64748b' },
 }
+function catStyle(color) {
+  return { color: color, bg: color + '22', border: color + '55', text: color, dot: color }
+}
+// Estilos derivados por categoría; los tipos desconocidos caen en 'other'.
+var EVENT_COLORS = Object.keys(CATEGORIES).reduce(function(acc, k) {
+  acc[k] = catStyle(CATEGORIES[k].color)
+  return acc
+}, {})
 
 var STATUS_CFG = {
   pending:   { icon: Circle,      color: 'rgba(255,255,255,0.4)', label: 'Pendiente' },
@@ -139,7 +149,7 @@ function EventChip({ event, onClick }) {
 }
 
 /* ── Bloque de evento en la vista semanal ─────────────────── */
-function WeekEventBlock({ event, startMin, endMin, col, cols, onClick }) {
+function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
 
   var top    = ((startMin - WEEK_HOUR_START * 60) / 60) * ROW_HEIGHT
@@ -152,14 +162,25 @@ function WeekEventBlock({ event, startMin, endMin, col, cols, onClick }) {
   var leftCalc  = 'calc(2px + (100% - 4px) * ' + col + ' / ' + cols + ')'
   var compact = height < 34
 
+  function onDragStart(e) {
+    // Guardamos el id y en qué minuto del evento agarró el usuario, para que
+    // al soltar el bloque quede donde apunta el cursor (no saltando al borde).
+    var rect = e.currentTarget.getBoundingClientRect()
+    var grabMin = ((e.clientY - rect.top) / ROW_HEIGHT) * 60
+    e.dataTransfer.setData('text/plain', JSON.stringify({ id: event.id, grabMin: Math.round(grabMin) }))
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
   return (
     <button type="button" onClick={function(e) { e.stopPropagation(); onClick(event) }}
-      title={event.title + ' · ' + fmtTime(event.start_time) + (event.end_time ? '–' + fmtTime(event.end_time) : '')}
+      draggable={canDrag}
+      onDragStart={canDrag ? onDragStart : undefined}
+      title={(canDrag ? 'Arrastra para mover · ' : '') + event.title + ' · ' + fmtTime(event.start_time) + (event.end_time ? '–' + fmtTime(event.end_time) : '')}
       style={{
         position: 'absolute', left: leftCalc, width: widthCalc, top: top + 'px', height: height + 'px',
         background: cfg.bg, border: '1px solid ' + cfg.border, borderLeft: '3px solid ' + cfg.dot,
         borderRadius: '5px', padding: compact ? '1px 5px' : '3px 6px',
-        textAlign: 'left', cursor: 'pointer', overflow: 'hidden', zIndex: 2,
+        textAlign: 'left', cursor: canDrag ? 'grab' : 'pointer', overflow: 'hidden', zIndex: 2,
         transition: 'filter 0.1s',
       }}
       onMouseEnter={function(e) { e.currentTarget.style.filter = 'brightness(1.25)'; e.currentTarget.style.zIndex = '5' }}
@@ -371,7 +392,18 @@ function AgendaPanel({ events, onEventClick, isMobile, onBack }) {
 }
 
 /* ── Vista semanal ─────────────────────────────────────────── */
-function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
+function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent }) {
+  function handleDrop(e, dateStr) {
+    e.preventDefault()
+    var raw = e.dataTransfer.getData('text/plain')
+    if (!raw) return
+    var data
+    try { data = JSON.parse(raw) } catch (_) { return }
+    var rect = e.currentTarget.getBoundingClientRect()
+    var minutes = ((e.clientY - rect.top) / ROW_HEIGHT) * 60 - (data.grabMin || 0)
+    minutes = Math.round(minutes / 15) * 15 + WEEK_HOUR_START * 60
+    if (onMoveEvent) onMoveEvent(data.id, dateStr, minutes)
+  }
   var hours = []
   for (var h = WEEK_HOUR_START; h <= WEEK_HOUR_END; h++) hours.push(h)
 
@@ -463,6 +495,8 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
             return (
               <div key={i}
                 onClick={function() { onSlotClick(dateStr) }}
+                onDragOver={function(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move' }}
+                onDrop={function(e) { handleDrop(e, dateStr) }}
                 style={{ position: 'relative', borderLeft: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer' }}
               >
                 {hours.map(function(h, hi) {
@@ -474,9 +508,11 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
                   </div>
                 )}
                 {laid.map(function(item) {
+                  var canDrag = !(item.event.is_auto || (typeof item.event.id === 'string' && item.event.id.indexOf('auto') === 0))
                   return (
                     <WeekEventBlock key={item.event.id} event={item.event}
                       startMin={item.start} endMin={item.end} col={item.col} cols={item.cols}
+                      canDrag={canDrag}
                       onClick={onEventClick} />
                   )
                 })}
@@ -508,7 +544,6 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
   }
 
   var INP = { background: 'var(--bg-3)', border: '1px solid var(--border)', color: 'var(--text-1)', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', fontFamily: 'inherit', outline: 'none', width: '100%', boxSizing: 'border-box' }
-  var TYPES = ['meeting','deadline','delivery','billing','other']
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -518,16 +553,30 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
         <input value={form.title} onChange={set('title')} placeholder="Nombre del evento" style={INP} autoFocus />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-        <div>
-          <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Fecha *</label>
-          <input type="date" value={form.event_date} onChange={set('event_date')} style={INP} />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Tipo</label>
-          <select value={form.event_type} onChange={set('event_type')} style={Object.assign({}, INP, { cursor: 'pointer' })}>
-            {TYPES.map(function(t) { return <option key={t} value={t}>{t}</option> })}
-          </select>
+      <div>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Fecha *</label>
+        <input type="date" value={form.event_date} onChange={set('event_date')} style={INP} />
+      </div>
+
+      <div>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Categoría</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          {Object.keys(CATEGORIES).map(function(key) {
+            var c = CATEGORIES[key]
+            var active = form.event_type === key
+            return (
+              <button key={key} type="button"
+                onClick={function() { setForm(function(f) { return Object.assign({}, f, { event_type: key }) }) }}
+                aria-pressed={active}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', borderRadius: '8px',
+                  border: '1px solid ' + (active ? c.color : 'var(--border)'),
+                  background: active ? c.color + '22' : 'transparent',
+                  color: active ? c.color : 'var(--text-3)', cursor: 'pointer', fontSize: '12px', fontWeight: 600, transition: 'all 0.12s' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: c.color, flexShrink: 0 }} />
+                {c.label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -577,11 +626,96 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
 /* ═══════════════════════════════════════════════════════════
    PAGINA PRINCIPAL
 ═══════════════════════════════════════════════════════════ */
+/* ── Vista de día (al entrar en un día desde el mes) ───────── */
+function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate }) {
+  var hours = []
+  for (var h = WEEK_HOUR_START; h <= WEEK_HOUR_END; h++) hours.push(h)
+
+  var dayEvents = events.filter(function(e) { return e.event_date === dateStr })
+  var timed  = dayEvents.filter(function(e) { return e.start_time })
+  var allday = dayEvents.filter(function(e) { return !e.start_time })
+  var laid = layoutDayEvents(timed)
+
+  var scrollRef = useRef(null)
+  useEffect(function() { if (scrollRef.current) scrollRef.current.scrollTop = WEEK_SCROLL_TO_HOUR * ROW_HEIGHT }, [])
+
+  var now = new Date()
+  var isToday = toDateStr(now) === dateStr
+  var nowTop = ((now.getHours() * 60 + now.getMinutes()) - WEEK_HOUR_START * 60) / 60 * ROW_HEIGHT
+  var label = new Date(dateStr + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
+
+  function handleDrop(e) {
+    e.preventDefault()
+    var raw = e.dataTransfer.getData('text/plain'); if (!raw) return
+    var data; try { data = JSON.parse(raw) } catch (_) { return }
+    var rect = e.currentTarget.getBoundingClientRect()
+    var minutes = ((e.clientY - rect.top) / ROW_HEIGHT) * 60 - (data.grabMin || 0)
+    minutes = Math.round(minutes / 15) * 15 + WEEK_HOUR_START * 60
+    if (onMoveEvent) onMoveEvent(data.id, dateStr, minutes)
+  }
+
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '10px 14px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+        <button type="button" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: 'var(--text-3)', fontSize: '13px', cursor: 'pointer' }}>
+          <ChevronLeft style={{ width: '15px', height: '15px' }} /> Mes
+        </button>
+        <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)', textTransform: 'capitalize' }}>{label}</span>
+        <button type="button" onClick={onCreate} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 12px', borderRadius: '8px', border: 'none', background: 'var(--gradient-brand)', color: '#fff', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
+          <Plus style={{ width: '13px', height: '13px' }} /> Nuevo
+        </button>
+      </div>
+
+      {allday.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px 14px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+          {allday.map(function(e) {
+            var cfg = EVENT_COLORS[e.event_type] || EVENT_COLORS.other
+            return (
+              <button key={e.id} type="button" onClick={function() { onEventClick(e) }}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', background: cfg.bg, border: '1px solid ' + cfg.border, color: cfg.text, fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: cfg.dot }} /> {e.title}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      <div ref={scrollRef} style={{ flex: 1, overflow: 'auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr', position: 'relative' }}>
+          <div>
+            {hours.map(function(h) {
+              return <div key={h} style={{ height: ROW_HEIGHT + 'px', textAlign: 'right', paddingRight: '6px', fontSize: '10px', color: 'var(--text-5)', position: 'relative', top: '-6px' }}>{String(h).padStart(2, '0')}:00</div>
+            })}
+          </div>
+          <div onClick={onCreate}
+            onDragOver={function(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move' }}
+            onDrop={handleDrop}
+            style={{ position: 'relative', borderLeft: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer' }}>
+            {hours.map(function(h, hi) {
+              return <div key={h} style={{ height: ROW_HEIGHT + 'px', borderTop: hi === 0 ? 'none' : '1px solid rgba(255,255,255,0.03)' }} />
+            })}
+            {isToday && nowTop >= 0 && (
+              <div style={{ position: 'absolute', left: 0, right: 0, top: nowTop + 'px', borderTop: '2px solid #e63946', zIndex: 4, pointerEvents: 'none' }}>
+                <div style={{ position: 'absolute', left: '-3px', top: '-4px', width: '7px', height: '7px', borderRadius: '50%', background: '#e63946', boxShadow: '0 0 6px rgba(230,57,70,0.7)' }} />
+              </div>
+            )}
+            {laid.map(function(item) {
+              var canDrag = !(item.event.is_auto || (typeof item.event.id === 'string' && item.event.id.indexOf('auto') === 0))
+              return <WeekEventBlock key={item.event.id} event={item.event} startMin={item.start} endMin={item.end} col={item.col} cols={item.cols} canDrag={canDrag} onClick={onEventClick} />
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Calendar() {
   var hook = useCalendar()
   var [selectedEvent, setSelectedEvent] = useState(null)
   var [viewMode, setViewMode] = useState('month')
   var [weekStart, setWeekStart] = useState(function() { return getMonday(new Date()) })
+  var [dayView, setDayView] = useState(null) // fecha (YYYY-MM-DD) al entrar en un día desde el mes
 
   // Navegación móvil: 'calendar' | 'agenda' | 'detail'
   var [mobileStep, setMobileStep] = useState('calendar')
@@ -611,12 +745,41 @@ export default function Calendar() {
   function handleDayClick(day) {
     var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0')
     setSelectedEvent(null)
-    hook.openModal && hook.openModal(dateStr)
+    setDayView(dateStr) // entrar en el día para ver sus eventos
+  }
+
+  function isAutoEvent(event) {
+    return event.is_auto || event._readonly || (typeof event.id === 'string' && event.id.indexOf('auto') === 0)
   }
 
   function handleEventClick(event) {
-    setSelectedEvent(event)
-    if (isMobile) setMobileStep('detail')
+    // Click en un evento manual = editar directamente. Los automáticos
+    // (deadlines de proyecto, cobros) no son editables: se muestran en detalle.
+    if (isAutoEvent(event)) {
+      setSelectedEvent(event)
+      if (isMobile) setMobileStep('detail')
+    } else {
+      hook.openEditModal(event)
+    }
+  }
+
+  // Mover un evento (arrastrando en la vista de semana/día) a otro día/hora,
+  // conservando su duración. Sin tocar la fecha a mano.
+  function moveEvent(eventId, newDateStr, newStartMin) {
+    var ev = (hook.events || []).find(function(e) { return e.id === eventId })
+    if (!ev || isAutoEvent(ev)) return
+    var s0 = timeToMinutes(ev.start_time)
+    var e0 = timeToMinutes(ev.end_time)
+    var dur = (s0 != null && e0 != null && e0 > s0) ? (e0 - s0) : 30
+    var ns = Math.max(0, Math.min(24 * 60 - dur, newStartMin))
+    var ne = ns + dur
+    function hhmm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0') }
+    hook.handleUpdate(eventId, {
+      title: ev.title, event_type: ev.event_type, status: ev.status,
+      event_date: newDateStr, start_time: hhmm(ns), end_time: hhmm(ne),
+      description: ev.description, location: ev.location,
+      client_id: ev.client_id, project_id: ev.project_id,
+    })
   }
 
   function handleEditClick(event) {
@@ -673,7 +836,7 @@ export default function Calendar() {
 
             {/* Navegacion */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, flexWrap: 'wrap' }}>
-              <button type="button" onClick={viewMode === 'week' ? prevWeek : hook.prevMonth}
+              <button type="button" onClick={function() { setDayView(null); viewMode === 'week' ? prevWeek() : hook.prevMonth() }}
                 style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
               ><ChevronLeft style={{ width: '15px', height: '15px' }} /></button>
 
@@ -681,11 +844,11 @@ export default function Calendar() {
                 {viewMode === 'week' ? weekLabel : MONTHS[month] + ' ' + year}
               </h2>
 
-              <button type="button" onClick={viewMode === 'week' ? nextWeek : hook.nextMonth}
+              <button type="button" onClick={function() { setDayView(null); viewMode === 'week' ? nextWeek() : hook.nextMonth() }}
                 style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
               ><ChevronRight style={{ width: '15px', height: '15px' }} /></button>
 
-              <button type="button" onClick={function() { viewMode === 'week' ? goToTodayWeek() : hook.goToToday() }}
+              <button type="button" onClick={function() { setDayView(null); viewMode === 'week' ? goToTodayWeek() : hook.goToToday() }}
                 style={{ padding: '4px 12px', borderRadius: '8px', background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.25)', color: '#e63946', fontSize: '11px', fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
               >Hoy</button>
 
@@ -693,7 +856,7 @@ export default function Calendar() {
                 {[{ id: 'month', label: 'Mes' }, { id: 'week', label: 'Semana' }].map(function(v) {
                   var active = viewMode === v.id
                   return (
-                    <button key={v.id} type="button" onClick={function() { setViewMode(v.id) }}
+                    <button key={v.id} type="button" onClick={function() { setDayView(null); setViewMode(v.id) }}
                       style={{ padding: '4px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', border: 'none', background: active ? 'var(--gradient-brand)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.5)', transition: 'all 0.15s' }}
                     >{v.label}</button>
                   )
@@ -707,6 +870,16 @@ export default function Calendar() {
                 events={hook.events || []}
                 onEventClick={handleEventClick}
                 onSlotClick={function(dateStr) { setSelectedEvent(null); hook.openModal && hook.openModal(dateStr) }}
+                onMoveEvent={moveEvent}
+              />
+            ) : dayView ? (
+              <DayView
+                dateStr={dayView}
+                events={hook.events || []}
+                onBack={function() { setDayView(null) }}
+                onEventClick={handleEventClick}
+                onMoveEvent={moveEvent}
+                onCreate={function() { hook.openModal && hook.openModal(dayView) }}
               />
             ) : (
               <>

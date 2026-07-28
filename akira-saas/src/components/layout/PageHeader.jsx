@@ -6,7 +6,7 @@ export default function PageHeader({ title, description, actions }) {
         {description && <p className="page-desc">{description}</p>}
       </div>
       {actions && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+        <div className="page-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           {actions}
         </div>
       )}

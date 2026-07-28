@@ -426,7 +426,7 @@ export default function Finance() {
 
           {/* KPI Cards */}
           {kpisLoading ? (
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
               {[0,1,2,3].map(function(i) { return <div key={i} className="surface-card p-4 h-24 skeleton" /> })}
             </div>
           ) : kpis && (

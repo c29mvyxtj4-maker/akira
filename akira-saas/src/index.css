@@ -869,4 +869,21 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  /* Cabecera de página: título arriba, acciones apiladas debajo a lo ancho,
+     para que los botones no se amontonen ni desborden en móvil. */
+  .page-header {
+    padding: var(--space-3) var(--space-4) !important;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .page-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .page-title { font-size: var(--text-md); }
+
+  /* Las tablas anchas hacen scroll dentro de su tarjeta, no rompen la página. */
+  .surface-card { max-width: 100%; }
+  table { min-width: max-content; }
 }

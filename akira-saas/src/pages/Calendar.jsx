@@ -131,6 +131,28 @@ function layoutDayEvents(timedEvents) {
   return out
 }
 
+// Imagen de arrastre transparente: oculta el "fantasma" por defecto del
+// navegador para que solo se vea nuestro bloque-guía en el destino.
+var _dragImg = null
+function transparentDragImage() {
+  if (typeof Image === 'undefined') return null
+  if (!_dragImg) {
+    _dragImg = new Image()
+    _dragImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+  }
+  return _dragImg
+}
+function hhmmLabel(m) {
+  return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0')
+}
+// Minuto (desde medianoche) ajustado a 15' según la Y del cursor dentro de una
+// columna de día, descontando dónde agarró el usuario el evento.
+function dropMinutesFrom(clientY, rectTop, grabMin, dur) {
+  var minutes = ((clientY - rectTop) / ROW_HEIGHT) * 60 - grabMin
+  minutes = Math.round(minutes / 15) * 15
+  return Math.max(0, Math.min(24 * 60 - dur, minutes)) + WEEK_HOUR_START * 60
+}
+
 /* ── Chip de evento en el calendario (vista mes) ──────────── */
 function EventChip({ event, onClick }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
@@ -149,7 +171,27 @@ function EventChip({ event, onClick }) {
 }
 
 /* ── Bloque de evento en la vista semanal ─────────────────── */
-function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick }) {
+/* Bloque-guía que se pinta en el destino mientras arrastras: contorno de
+   marca + la hora a la que caerá el evento (como en apps de calendario). */
+function DropGhost({ startMin, dur, label }) {
+  var top = ((startMin - WEEK_HOUR_START * 60) / 60) * ROW_HEIGHT
+  var height = Math.max((dur / 60) * ROW_HEIGHT, 20)
+  return (
+    <div style={{
+      position: 'absolute', left: '2px', right: '2px', top: top + 'px', height: height + 'px',
+      border: '2px solid var(--brand)', background: 'var(--brand-dim)', borderRadius: '6px',
+      zIndex: 6, pointerEvents: 'none', padding: '2px 6px', overflow: 'hidden',
+      boxShadow: '0 4px 14px rgba(230,57,70,0.35)',
+    }}>
+      <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--brand)', display: 'block', lineHeight: 1.2 }}>{hhmmLabel(startMin)}</span>
+      {height > 30 && (
+        <span style={{ fontSize: '9px', fontWeight: 600, color: 'var(--brand)', opacity: 0.85, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+      )}
+    </div>
+  )
+}
+
+function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, onDragBegin, onDragEndBlock }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
 
   var top    = ((startMin - WEEK_HOUR_START * 60) / 60) * ROW_HEIGHT
@@ -163,18 +205,27 @@ function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick }
   var compact = height < 34
 
   function onDragStart(e) {
-    // Guardamos el id y en qué minuto del evento agarró el usuario, para que
-    // al soltar el bloque quede donde apunta el cursor (no saltando al borde).
+    // Ocultamos el fantasma nativo del navegador (el "fondo blanco") y avisamos
+    // al padre para que dibuje el bloque-guía en el destino.
+    var img = transparentDragImage()
+    if (img) { try { e.dataTransfer.setDragImage(img, 0, 0) } catch (_) { /* noop */ } }
     var rect = e.currentTarget.getBoundingClientRect()
     var grabMin = ((e.clientY - rect.top) / ROW_HEIGHT) * 60
-    e.dataTransfer.setData('text/plain', JSON.stringify({ id: event.id, grabMin: Math.round(grabMin) }))
+    e.dataTransfer.setData('text/plain', event.id)
     e.dataTransfer.effectAllowed = 'move'
+    e.currentTarget.style.opacity = '0.3'
+    if (onDragBegin) onDragBegin({ id: event.id, grabMin: grabMin, dur: endMin - startMin, label: event.title })
+  }
+  function onDragEnd(e) {
+    e.currentTarget.style.opacity = ''
+    if (onDragEndBlock) onDragEndBlock()
   }
 
   return (
     <button type="button" onClick={function(e) { e.stopPropagation(); onClick(event) }}
       draggable={canDrag}
       onDragStart={canDrag ? onDragStart : undefined}
+      onDragEnd={canDrag ? onDragEnd : undefined}
       title={(canDrag ? 'Arrastra para mover · ' : '') + event.title + ' · ' + fmtTime(event.start_time) + (event.end_time ? '–' + fmtTime(event.end_time) : '')}
       style={{
         position: 'absolute', left: leftCalc, width: widthCalc, top: top + 'px', height: height + 'px',
@@ -393,16 +444,28 @@ function AgendaPanel({ events, onEventClick, isMobile, onBack }) {
 
 /* ── Vista semanal ─────────────────────────────────────────── */
 function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent }) {
+  var dragRef = useRef(null)
+  var [dropHint, setDropHint] = useState(null)
+  function onDragBegin(info) { dragRef.current = info }
+  function onDragEndBlock() { dragRef.current = null; setDropHint(null) }
+  function onColDragOver(e, dayIndex) {
+    var info = dragRef.current
+    if (!info) return
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    var rect = e.currentTarget.getBoundingClientRect()
+    var startMin = dropMinutesFrom(e.clientY, rect.top, info.grabMin, info.dur)
+    setDropHint({ dayIndex: dayIndex, startMin: startMin, dur: info.dur, label: info.label })
+  }
   function handleDrop(e, dateStr) {
     e.preventDefault()
-    var raw = e.dataTransfer.getData('text/plain')
-    if (!raw) return
-    var data
-    try { data = JSON.parse(raw) } catch (_) { return }
+    var info = dragRef.current
+    if (!info) return
     var rect = e.currentTarget.getBoundingClientRect()
-    var minutes = ((e.clientY - rect.top) / ROW_HEIGHT) * 60 - (data.grabMin || 0)
-    minutes = Math.round(minutes / 15) * 15 + WEEK_HOUR_START * 60
-    if (onMoveEvent) onMoveEvent(data.id, dateStr, minutes)
+    var startMin = dropMinutesFrom(e.clientY, rect.top, info.grabMin, info.dur)
+    dragRef.current = null
+    setDropHint(null)
+    if (onMoveEvent) onMoveEvent(info.id, dateStr, startMin)
   }
   var hours = []
   for (var h = WEEK_HOUR_START; h <= WEEK_HOUR_END; h++) hours.push(h)
@@ -495,7 +558,7 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent })
             return (
               <div key={i}
                 onClick={function() { onSlotClick(dateStr) }}
-                onDragOver={function(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move' }}
+                onDragOver={function(e) { onColDragOver(e, i) }}
                 onDrop={function(e) { handleDrop(e, dateStr) }}
                 style={{ position: 'relative', borderLeft: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer' }}
               >
@@ -507,12 +570,16 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent })
                     <div style={{ position: 'absolute', left: '-3px', top: '-4px', width: '7px', height: '7px', borderRadius: '50%', background: '#e63946', boxShadow: '0 0 6px rgba(230,57,70,0.7)' }} />
                   </div>
                 )}
+                {dropHint && dropHint.dayIndex === i && (
+                  <DropGhost startMin={dropHint.startMin} dur={dropHint.dur} label={dropHint.label} />
+                )}
                 {laid.map(function(item) {
                   var canDrag = !(item.event.is_auto || (typeof item.event.id === 'string' && item.event.id.indexOf('auto') === 0))
                   return (
                     <WeekEventBlock key={item.event.id} event={item.event}
                       startMin={item.start} endMin={item.end} col={item.col} cols={item.cols}
                       canDrag={canDrag}
+                      onDragBegin={onDragBegin} onDragEndBlock={onDragEndBlock}
                       onClick={onEventClick} />
                   )
                 })}
@@ -644,14 +711,27 @@ function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate 
   var nowTop = ((now.getHours() * 60 + now.getMinutes()) - WEEK_HOUR_START * 60) / 60 * ROW_HEIGHT
   var label = new Date(dateStr + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
 
+  var dragRef = useRef(null)
+  var [dropHint, setDropHint] = useState(null)
+  function onDragBegin(info) { dragRef.current = info }
+  function onDragEndBlock() { dragRef.current = null; setDropHint(null) }
+  function onColDragOver(e) {
+    var info = dragRef.current
+    if (!info) return
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    var rect = e.currentTarget.getBoundingClientRect()
+    setDropHint({ startMin: dropMinutesFrom(e.clientY, rect.top, info.grabMin, info.dur), dur: info.dur, label: info.label })
+  }
   function handleDrop(e) {
     e.preventDefault()
-    var raw = e.dataTransfer.getData('text/plain'); if (!raw) return
-    var data; try { data = JSON.parse(raw) } catch (_) { return }
+    var info = dragRef.current
+    if (!info) return
     var rect = e.currentTarget.getBoundingClientRect()
-    var minutes = ((e.clientY - rect.top) / ROW_HEIGHT) * 60 - (data.grabMin || 0)
-    minutes = Math.round(minutes / 15) * 15 + WEEK_HOUR_START * 60
-    if (onMoveEvent) onMoveEvent(data.id, dateStr, minutes)
+    var startMin = dropMinutesFrom(e.clientY, rect.top, info.grabMin, info.dur)
+    dragRef.current = null
+    setDropHint(null)
+    if (onMoveEvent) onMoveEvent(info.id, dateStr, startMin)
   }
 
   return (
@@ -688,7 +768,7 @@ function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate 
             })}
           </div>
           <div onClick={onCreate}
-            onDragOver={function(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move' }}
+            onDragOver={onColDragOver}
             onDrop={handleDrop}
             style={{ position: 'relative', borderLeft: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer' }}>
             {hours.map(function(h, hi) {
@@ -699,9 +779,12 @@ function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate 
                 <div style={{ position: 'absolute', left: '-3px', top: '-4px', width: '7px', height: '7px', borderRadius: '50%', background: '#e63946', boxShadow: '0 0 6px rgba(230,57,70,0.7)' }} />
               </div>
             )}
+            {dropHint && (
+              <DropGhost startMin={dropHint.startMin} dur={dropHint.dur} label={dropHint.label} />
+            )}
             {laid.map(function(item) {
               var canDrag = !(item.event.is_auto || (typeof item.event.id === 'string' && item.event.id.indexOf('auto') === 0))
-              return <WeekEventBlock key={item.event.id} event={item.event} startMin={item.start} endMin={item.end} col={item.col} cols={item.cols} canDrag={canDrag} onClick={onEventClick} />
+              return <WeekEventBlock key={item.event.id} event={item.event} startMin={item.start} endMin={item.end} col={item.col} cols={item.cols} canDrag={canDrag} onDragBegin={onDragBegin} onDragEndBlock={onDragEndBlock} onClick={onEventClick} />
             })}
           </div>
         </div>

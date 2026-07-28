@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronLeft, ChevronRight, Plus, X,
@@ -30,9 +30,10 @@ var STATUS_CFG = {
   cancelled: { icon: X,           color: 'rgba(255,255,255,0.25)', label: 'Cancelado' },
 }
 
-var WEEK_HOUR_START = 7
-var WEEK_HOUR_END   = 22
-var ROW_HEIGHT       = 52
+var WEEK_HOUR_START = 0      // vista de semana: todas las horas del día
+var WEEK_HOUR_END   = 23
+var ROW_HEIGHT       = 48
+var WEEK_SCROLL_TO_HOUR = 7  // al abrir, desplaza hasta la mañana
 
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate()
@@ -75,6 +76,51 @@ function timeToMinutes(t) {
   return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10)
 }
 
+/* Reparte eventos solapados en columnas lado a lado (estilo Notion/Google):
+   agrupa los que se pisan en un "clúster" y a cada uno le asigna una columna;
+   todos los de un clúster comparten el mismo nº de columnas para repartir el
+   ancho por igual. Devuelve [{ event, start, end, col, cols }]. */
+function layoutDayEvents(timedEvents) {
+  var items = timedEvents.map(function(e) {
+    var s = timeToMinutes(e.start_time)
+    if (s == null) return null
+    var en = timeToMinutes(e.end_time)
+    if (en == null || en <= s) en = s + 30
+    return { event: e, start: s, end: en, col: 0 }
+  }).filter(Boolean).sort(function(a, b) {
+    return a.start - b.start || a.end - b.end
+  })
+
+  var out = []
+  var cluster = []       // items del clúster actual
+  var colEnds = []       // fin del último evento de cada columna
+  var clusterEnd = -1
+
+  function flush() {
+    var cols = colEnds.length || 1
+    cluster.forEach(function(it) {
+      out.push({ event: it.event, start: it.start, end: it.end, col: it.col, cols: cols })
+    })
+    cluster = []; colEnds = []; clusterEnd = -1
+  }
+
+  items.forEach(function(it) {
+    // si no se solapa con nada del clúster abierto, cerramos el clúster
+    if (cluster.length && it.start >= clusterEnd) flush()
+    var placed = -1
+    for (var c = 0; c < colEnds.length; c++) {
+      if (colEnds[c] <= it.start) { placed = c; break }
+    }
+    if (placed === -1) { placed = colEnds.length; colEnds.push(it.end) }
+    else { colEnds[placed] = it.end }
+    it.col = placed
+    cluster.push(it)
+    clusterEnd = Math.max(clusterEnd, it.end)
+  })
+  flush()
+  return out
+}
+
 /* ── Chip de evento en el calendario (vista mes) ──────────── */
 function EventChip({ event, onClick }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
@@ -93,30 +139,36 @@ function EventChip({ event, onClick }) {
 }
 
 /* ── Bloque de evento en la vista semanal ─────────────────── */
-function WeekEventBlock({ event, onClick }) {
+function WeekEventBlock({ event, startMin, endMin, col, cols, onClick }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
-  var startMin = timeToMinutes(event.start_time) || (WEEK_HOUR_START * 60)
-  var endMin   = timeToMinutes(event.end_time)   || (startMin + 30)
-  if (endMin <= startMin) endMin = startMin + 30
 
   var top    = ((startMin - WEEK_HOUR_START * 60) / 60) * ROW_HEIGHT
-  var height = Math.max(((endMin - startMin) / 60) * ROW_HEIGHT, 22)
+  var height = Math.max(((endMin - startMin) / 60) * ROW_HEIGHT, 20)
+
+  // Reparto horizontal cuando hay solapes (estilo Notion): cada columna ocupa
+  // 1/cols del ancho, con un pequeño hueco entre eventos contiguos.
+  var gap = 3
+  var widthCalc = 'calc((100% - 4px) / ' + cols + ' - ' + gap + 'px)'
+  var leftCalc  = 'calc(2px + (100% - 4px) * ' + col + ' / ' + cols + ')'
+  var compact = height < 34
 
   return (
     <button type="button" onClick={function(e) { e.stopPropagation(); onClick(event) }}
+      title={event.title + ' · ' + fmtTime(event.start_time) + (event.end_time ? '–' + fmtTime(event.end_time) : '')}
       style={{
-        position: 'absolute', left: '2px', right: '2px', top: top + 'px', height: height + 'px',
-        background: cfg.bg, border: '1px solid ' + cfg.border, borderRadius: '5px',
-        padding: '3px 6px', textAlign: 'left', cursor: 'pointer', overflow: 'hidden', zIndex: 2,
+        position: 'absolute', left: leftCalc, width: widthCalc, top: top + 'px', height: height + 'px',
+        background: cfg.bg, border: '1px solid ' + cfg.border, borderLeft: '3px solid ' + cfg.dot,
+        borderRadius: '5px', padding: compact ? '1px 5px' : '3px 6px',
+        textAlign: 'left', cursor: 'pointer', overflow: 'hidden', zIndex: 2,
         transition: 'filter 0.1s',
       }}
-      onMouseEnter={function(e) { e.currentTarget.style.filter = 'brightness(1.25)' }}
-      onMouseLeave={function(e) { e.currentTarget.style.filter = 'none' }}
+      onMouseEnter={function(e) { e.currentTarget.style.filter = 'brightness(1.25)'; e.currentTarget.style.zIndex = '5' }}
+      onMouseLeave={function(e) { e.currentTarget.style.filter = 'none'; e.currentTarget.style.zIndex = '2' }}
     >
-      <span style={{ fontSize: '10px', fontWeight: 700, color: cfg.text, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: '10px', fontWeight: 700, color: cfg.text, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.25 }}>
         {event.title}
       </span>
-      {height > 32 && (
+      {!compact && (
         <span style={{ fontSize: '9px', color: cfg.text, opacity: 0.8, display: 'block' }}>
           {fmtTime(event.start_time)}{event.end_time ? '–' + fmtTime(event.end_time) : ''}
         </span>
@@ -335,6 +387,16 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
     return events.filter(function(e) { return e.event_date === dateStr })
   }
 
+  // Al montar, desplaza la cuadrícula hasta la mañana (no arrancar en 00:00).
+  var scrollRef = useRef(null)
+  useEffect(function() {
+    if (scrollRef.current) scrollRef.current.scrollTop = WEEK_SCROLL_TO_HOUR * ROW_HEIGHT
+  }, [])
+
+  // Línea de "ahora" para el día de hoy.
+  var now = new Date()
+  var nowTop = ((now.getHours() * 60 + now.getMinutes()) - WEEK_HOUR_START * 60) / 60 * ROW_HEIGHT
+
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
@@ -380,7 +442,7 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
         </div>
       )}
 
-      <div style={{ flex: 1, overflow: 'auto' }}>
+      <div ref={scrollRef} style={{ flex: 1, overflow: 'auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '40px repeat(7, minmax(64px, 1fr))', position: 'relative', minWidth: '520px' }}>
 
           <div>
@@ -395,7 +457,9 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
 
           {days.map(function(d, i) {
             var dateStr = toDateStr(d)
+            var isToday = dateStr === todayStr
             var timedEvents = eventsForDay(dateStr).filter(function(e) { return e.start_time })
+            var laid = layoutDayEvents(timedEvents)
             return (
               <div key={i}
                 onClick={function() { onSlotClick(dateStr) }}
@@ -404,8 +468,17 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
                 {hours.map(function(h, hi) {
                   return <div key={h} style={{ height: ROW_HEIGHT + 'px', borderTop: hi === 0 ? 'none' : '1px solid rgba(255,255,255,0.03)' }} />
                 })}
-                {timedEvents.map(function(e) {
-                  return <WeekEventBlock key={e.id} event={e} onClick={onEventClick} />
+                {isToday && nowTop >= 0 && (
+                  <div style={{ position: 'absolute', left: 0, right: 0, top: nowTop + 'px', borderTop: '2px solid #e63946', zIndex: 4, pointerEvents: 'none' }}>
+                    <div style={{ position: 'absolute', left: '-3px', top: '-4px', width: '7px', height: '7px', borderRadius: '50%', background: '#e63946', boxShadow: '0 0 6px rgba(230,57,70,0.7)' }} />
+                  </div>
+                )}
+                {laid.map(function(item) {
+                  return (
+                    <WeekEventBlock key={item.event.id} event={item.event}
+                      startMin={item.start} endMin={item.end} col={item.col} cols={item.cols}
+                      onClick={onEventClick} />
+                  )
                 })}
               </div>
             )

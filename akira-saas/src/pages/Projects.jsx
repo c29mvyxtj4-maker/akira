@@ -6,6 +6,7 @@ import {
   Calendar, DollarSign, TrendingUp, Flag,
 } from 'lucide-react'
 import { useProjects } from '@/hooks/useProjects'
+import { DUR, EASE, SPRING } from '@/config/motion'
 import { PROJECT_STATUS_MAP, PROJECT_STAGE_MAP, PROJECT_PRIORITY_MAP } from '@/services/projects.service'
 import { getProjectTemplates } from '@/services/templates.service'
 import {
@@ -55,7 +56,7 @@ function ProjectKpis({ projects }) {
         { l: 'Tareas',      v: done + '/' + total, c: '#e63946' },
       ].map(function(x, i) {
         return (
-          <motion.div key={x.l} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="surface-card p-2.5">
+          <motion.div key={x.l} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: DUR.slow, ease: EASE.out }} className="surface-card p-2.5">
             <p className="text-sm font-black leading-none" style={{ color: x.c }}>{x.v}</p>
             <p className="text-2xs text-text-4 mt-0.5">{x.l}</p>
           </motion.div>
@@ -74,7 +75,7 @@ function StageBar({ stage }) {
         var c = PROJECT_STAGE_MAP[s]
         return (
           <div key={s} className="h-0.5 flex-1 rounded-full"
-            style={{ background: c ? c.color : '#374151', opacity: i <= idx ? 1 : 0.2 }}
+            style={{ background: c ? c.color : 'var(--bg-5)', opacity: i <= idx ? 1 : 0.2 }}
           />
         )
       })}
@@ -92,9 +93,12 @@ function ProjectCard({ project, isSelected, onClick }) {
     <motion.button
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: DUR.slow, ease: EASE.out }}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
       onClick={onClick}
       className={clsx(
-        'w-full text-left px-3 py-3 rounded-lg border transition-all duration-150',
+        'w-full text-left px-3 py-3 rounded-lg border transition-colors duration-150',
         isSelected ? 'bg-brand-500/10 border-brand-500/30' : 'bg-transparent border-transparent hover:bg-surface-3 hover:border-border'
       )}
     >
@@ -835,8 +839,8 @@ export default function Projects() {
   var [showFilters, setShowFilters] = useState(false)
   var [viewMode, setViewMode] = useState('list')
   var SI = {
-    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-    color: '#f1f5f9', borderRadius: '8px', fontSize: '12px', padding: '6px 10px',
+    background: 'var(--bg-3)', border: '1px solid var(--border)',
+    color: 'var(--text-1)', borderRadius: 'var(--radius-md)', fontSize: '12px', padding: '6px 10px',
     outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box', cursor: 'pointer',
   }
 
@@ -893,7 +897,7 @@ export default function Projects() {
 
             <AnimatePresence>
               {showFilters && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: DUR.slow, ease: EASE.out }} className="overflow-hidden">
                   <div className="space-y-2 pt-1">
                     <select value={hook.status}   onChange={function(e) { hook.setStatus(e.target.value) }}   style={SI}><option value="all">Todos los estados</option>{Object.entries(PROJECT_STATUS_MAP).map(function(e) { return <option key={e[0]} value={e[0]}>{e[1].label}</option> })}</select>
                     <select value={hook.stage}    onChange={function(e) { hook.setStage(e.target.value) }}    style={SI}><option value="all">Todas las etapas</option>{Object.entries(PROJECT_STAGE_MAP).map(function(e) { return <option key={e[0]} value={e[0]}>{e[1].label}</option> })}</select>
@@ -966,9 +970,16 @@ export default function Projects() {
 
       <AnimatePresence>
         {hook.toastMsg && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-            style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, padding: '10px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, color: '#fff', background: hook.toastMsg.type === 'error' ? 'rgba(239,68,68,0.9)' : 'rgba(34,197,94,0.9)' }}
-          >{hook.toastMsg.msg}</motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1, transition: SPRING.default }}
+            exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: DUR.fast, ease: EASE.in } }}
+            role="status"
+            style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, padding: '10px 16px', borderRadius: 'var(--radius-lg)', fontSize: '13px', fontWeight: 600, color: 'var(--text-1)', background: 'var(--bg-2)', border: '1px solid ' + (hook.toastMsg.type === 'error' ? 'var(--brand-border)' : 'rgba(34,197,94,0.3)'), boxShadow: 'var(--shadow-modal)', display: 'flex', alignItems: 'center', gap: '10px', backdropFilter: 'blur(12px)' }}
+          >
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0, background: hook.toastMsg.type === 'error' ? 'var(--brand)' : '#22c55e', boxShadow: '0 0 6px ' + (hook.toastMsg.type === 'error' ? 'var(--brand)' : '#22c55e') }} />
+            {hook.toastMsg.msg}
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

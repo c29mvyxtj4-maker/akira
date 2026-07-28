@@ -10,6 +10,14 @@
  * Requiere la CLI de Vercel instalada y con sesión iniciada (`vercel login`).
  */
 import { execSync } from 'node:child_process'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+// El proyecto de Vercel está enlazado en la RAÍZ del repo con Root Directory
+// = "akira-saas". Hay que ejecutar `vercel` desde la raíz; si se corre desde
+// akira-saas/ (como hace npm), Vercel duplica la ruta (akira-saas/akira-saas).
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const REPO_ROOT = path.resolve(__dirname, '../..')
 
 // Alias de producción que deben apuntar siempre al último despliegue.
 const PROD_ALIASES = [
@@ -19,7 +27,7 @@ const PROD_ALIASES = [
 ]
 
 function run(cmd) {
-  return execSync(cmd, { encoding: 'utf8', stdio: ['inherit', 'pipe', 'pipe'] })
+  return execSync(cmd, { encoding: 'utf8', stdio: ['inherit', 'pipe', 'pipe'], cwd: REPO_ROOT })
 }
 
 try {

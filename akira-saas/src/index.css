@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,50 +8,51 @@
    TOKENS CSS — DARK MODE (default)
 ════════════════════════════════════════════════════════════ */
 :root {
-  /* Warm-monochrome minimalist canvas + surfaces */
-  --bg-base:      #f7f6f3;   /* warm bone app canvas */
-  --bg-1:         #fbfbfa;   /* sidebar / rails */
-  --bg-2:         #ffffff;   /* cards, modals, popovers */
-  --bg-3:         #f9f9f8;   /* subtle raised surface */
-  --bg-4:         #f2f2f0;   /* hover fill */
-  --bg-5:         #ebebe8;   /* pressed / strong fill */
+  /* Tactical Telemetry — deactivated-CRT substrate (never pure black) */
+  --bg-base:      #0a0a0a;
+  --bg-1:         #0e0e0e;   /* sidebar / rails */
+  --bg-2:         #121212;   /* cards, panels, modals */
+  --bg-3:         #161616;   /* raised surface */
+  --bg-4:         #1c1c1c;   /* hover fill */
+  --bg-5:         #242424;   /* pressed / strong fill */
 
-  /* Red kept only as a scarce, muted semantic accent */
-  --brand:        #9f2f2d;
-  --brand-hover:  #7f2422;
-  --brand-dim:    #fdebec;                 /* pale-red pastel background */
-  --brand-border: rgba(159,47,45,0.22);
+  /* Aviation / hazard red — the ONLY accent */
+  --brand:        #e61919;
+  --brand-hover:  #ff2a2a;
+  --brand-dim:    rgba(230,25,25,0.12);
+  --brand-border: rgba(230,25,25,0.5);
 
-  --text-1: #1a1a18;   /* charcoal — never pure black */
-  --text-2: #2f3437;
-  --text-3: #6b6b64;
-  --text-4: #8a8a82;   /* muted gray */
-  --text-5: #b3b3ab;
+  --text-1: #eaeaea;   /* white phosphor */
+  --text-2: #c4c4c4;
+  --text-3: #8a8a8a;
+  --text-4: #5c5c5c;
+  --text-5: #3a3a3a;
 
-  --border:       #eaeaea;
-  --border-brand: rgba(159,47,45,0.22);
+  --border:       rgba(255,255,255,0.14);   /* visible razor-thin compartment lines */
+  --border-brand: rgba(230,25,25,0.5);
 
-  /* Shadows practically non-existent (opacity < 0.05) */
-  --shadow-card:  0 1px 2px rgba(0,0,0,0.03);
-  --shadow-modal: 0 12px 40px rgba(0,0,0,0.08), 0 0 0 1px #eaeaea;
+  /* No soft shadows — hard 1px frames only */
+  --shadow-card:  none;
+  --shadow-modal: 0 0 0 1px rgba(255,255,255,0.14);
   --shadow-brand: none;
 
-  /* Gradients flattened to solids per minimalist protocol */
-  --gradient-bg:      #f7f6f3;
-  --gradient-brand:   #111111;             /* primary CTA — solid charcoal */
-  --gradient-card:    #ffffff;
-  --gradient-sidebar: #fbfbfa;
+  /* Flat fills — brutalism rejects gradients */
+  --gradient-bg:      #0a0a0a;
+  --gradient-brand:   #e61919;
+  --gradient-card:    #121212;
+  --gradient-sidebar: #0e0e0e;
   --gradient-glow:    none;
 
-  /* Editorial type stack */
-  --font-sans:  'Helvetica Neue', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-serif: 'Newsreader', 'Playfair Display', Georgia, serif;
-  --font-mono:  'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  /* Heavy grotesque for macro headers, monospace for telemetry/UI */
+  --font-sans:  'Archivo', 'Helvetica Neue', system-ui, sans-serif;
+  --font-serif: 'Archivo', sans-serif;
+  --font-mono:  'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
 
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  /* 90° corners only — brutalism rejects border-radius */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
 
   /* Escala tipografica — 6 pasos, sin excepciones ── NUEVO */
   --text-xs:   11px;
@@ -120,7 +121,7 @@
 html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   background: var(--bg-base);
   color: var(--text-1);
   min-height: 100vh;
@@ -132,8 +133,8 @@ body {
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.14); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand); }
 
 .light ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
 .light ::-webkit-scrollbar-thumb:hover { background: rgba(230,57,70,0.3); }

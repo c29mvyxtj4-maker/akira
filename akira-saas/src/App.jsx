@@ -35,6 +35,7 @@ const Offers        = lazy(() => import('@/pages/Offers'))
 const Documents     = lazy(() => import('@/pages/Documents'))
 const TimeTracking  = lazy(() => import('@/pages/TimeTracking'))
 const AIOperatives  = lazy(() => import('@/pages/AIOperatives'))
+const Inicio        = lazy(() => import('@/pages/Inicio')) // PRUEBA: home experimental
 
 function ComingSoon({ name }) {
   return (
@@ -123,6 +124,9 @@ export default function App() {
           <Route path="offers/*"        element={<Offers />} />
           <Route path="documents/*"     element={<Documents />} />
         </Route>
+
+        {/* PRUEBA — home experimental con topbar de pastillas (ruta propia) */}
+        <Route path="/inicio" element={<PrivateRoute><Inicio /></PrivateRoute>} />
 
         {/* Portal de clientes — rutas públicas */}
         <Route path="/portal"           element={<PortalLogin />} />

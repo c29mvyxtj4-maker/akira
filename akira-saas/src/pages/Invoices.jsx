@@ -430,11 +430,26 @@ export default function Invoices() {
   }
 
   function handleStatusChange(id, status) {
+    var prev = invoices.find(function(i) { return i.id === id })
+    var wasDraft = prev && prev.status === 'draft'
     updateInvoiceStatus(id, status)
       .then(function(updated) {
-        setInvoices(function(prev) { return prev.map(function(i) { return i.id === updated.id ? updated : i }) })
+        setInvoices(function(list) { return list.map(function(i) { return i.id === updated.id ? updated : i }) })
+        // Al pasar de borrador a enviada, mandar la factura al cliente por email.
+        if (wasDraft && status === 'sent') sendInvoiceEmail(id)
       })
       .catch(function(e) { showToast(e.message, 'error') })
+  }
+
+  function sendInvoiceEmail(id) {
+    showToast('Enviando factura al cliente…')
+    supabase.functions.invoke('send-invoice', { body: { invoice_id: id } })
+      .then(function(res) {
+        var err = (res.error && res.error.message) || (res.data && res.data.error)
+        if (err) throw new Error(err)
+        showToast('Factura enviada al cliente por email')
+      })
+      .catch(function(e) { showToast('No se pudo enviar el email: ' + (e.message || e), 'error') })
   }
 
   function handleArchive(id) {

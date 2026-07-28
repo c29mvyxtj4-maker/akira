@@ -66,8 +66,6 @@ export default function Login() {
       <div style={{ position: 'absolute', inset: 0, background: 'var(--gradient-glow)', pointerEvents: 'none' }} />
 
       {/* Decoracion */}
-      <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(230,57,70,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(230,57,70,0.04) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -77,13 +75,13 @@ export default function Login() {
       >
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <img src="/icons/icon.svg" alt="AKIRA" style={{ width: '52px', height: '52px', borderRadius: '14px', display: 'block', margin: '0 auto 14px', boxShadow: '0 0 32px rgba(230,57,70,0.4)' }} />
+          <img src="/icons/icon.svg" alt="AKIRA" style={{ width: '52px', height: '52px', display: 'block', margin: '0 auto 14px' }} />
           <h1 style={{ fontSize: '26px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em', marginBottom: '6px' }}>AKIRA OS</h1>
           <p style={{ fontSize: '13px', color: 'var(--text-4)' }}>Business Operating System</p>
         </div>
 
         {/* Card */}
-        <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '20px', padding: '28px', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
+        <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', padding: '28px' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '4px' }}>
             {isSignup ? 'Crea tu cuenta' : 'Bienvenido'}
           </h2>
@@ -172,7 +170,7 @@ export default function Login() {
                 color: loading ? 'var(--text-4)' : '#fff',
                 fontSize: '13px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                boxShadow: loading ? 'none' : '0 4px 16px rgba(230,57,70,0.35)',
+                boxShadow: 'none',
                 transition: 'all 0.15s', marginTop: '4px',
               }}
             >

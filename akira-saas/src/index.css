@@ -118,6 +118,9 @@
 ════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Industrial brutalism: 90° corners everywhere — reject all border-radius */
+*, *::before, *::after { border-radius: 0 !important; }
+
 html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 body {

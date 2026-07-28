@@ -5,7 +5,7 @@ import { Bell, RefreshCw, Menu, X, Search } from 'lucide-react'
 import { useNotifications } from '@/hooks/useNotifications'
 import NotificationsPanel from './NotificationsPanel'
 
-export default function Topbar({ collapsed, mobileOpen, onMobileToggle, onSearchClick }) {
+export default function Topbar({ collapsed, mobileOpen, onMobileToggle, onSearchClick, autoHide, hidden, onMouseLeave }) {
   var { lastSync, refresh, loading, kpis } = useApp()
   var { profile } = useAuth()
   var [refreshing, setRefreshing] = useState(false)
@@ -22,7 +22,10 @@ export default function Topbar({ collapsed, mobileOpen, onMobileToggle, onSearch
   }
 
   return (
-    <div className="topbar">
+    <div
+      className={'topbar' + (autoHide ? ' topbar--auto' : '') + (autoHide && hidden ? ' topbar--hidden' : '')}
+      onMouseLeave={autoHide ? onMouseLeave : undefined}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', minWidth: 0, overflow: 'hidden' }}>
 
         <button

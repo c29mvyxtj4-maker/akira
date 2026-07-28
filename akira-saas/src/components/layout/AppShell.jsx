@@ -7,6 +7,7 @@ import CommandPalette from './CommandPalette'
 import InstallBanner from '@/components/pwa/InstallBanner'
 import { PageSpinner } from '@/components/ui/Spinner'
 import { useApp } from '@/context/AppContext'
+import { DUR, EASE } from '@/config/motion'
 
 export default function AppShell() {
   var { toasts, removeToast } = useApp()
@@ -15,6 +16,19 @@ export default function AppShell() {
   var [collapsed, setCollapsed]   = useState(false)
   var [mobileOpen, setMobileOpen] = useState(false)
   var [searchOpen, setSearchOpen] = useState(false) // NUEVO
+
+  // Topbar auto-ocultable: solo en desktop con puntero fino. En móvil la
+  // topbar es fija (contiene el botón de menú, y no hay hover).
+  var [autoHideTopbar, setAutoHideTopbar] = useState(false)
+  var [topbarHidden, setTopbarHidden]     = useState(true)
+
+  useEffect(function() {
+    var mq = window.matchMedia('(min-width: 769px) and (pointer: fine)')
+    function apply() { setAutoHideTopbar(mq.matches) }
+    apply()
+    mq.addEventListener('change', apply)
+    return function() { mq.removeEventListener('change', apply) }
+  }, [])
 
   useEffect(function() {
     document.documentElement.className = ''
@@ -42,12 +56,24 @@ export default function AppShell() {
       {/* Glow ambiental */}
       <div className="bg-glow" />
 
+      {/* Zona sensible en el borde superior que revela la topbar (solo desktop) */}
+      {autoHideTopbar && (
+        <div
+          className="topbar-peek"
+          onMouseEnter={function() { setTopbarHidden(false) }}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Topbar */}
       <Topbar
         collapsed={collapsed}
         mobileOpen={mobileOpen}
         onMobileToggle={function() { setMobileOpen(function(v) { return !v }) }}
         onSearchClick={function() { setSearchOpen(true) }}
+        autoHide={autoHideTopbar}
+        hidden={topbarHidden}
+        onMouseLeave={function() { setTopbarHidden(true) }}
       />
 
       {/* Body */}
@@ -74,7 +100,7 @@ export default function AppShell() {
             key={location.pathname.split('/')[1] || 'home'}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
+            transition={{ duration: DUR.page, ease: EASE.out }}
             style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}
           >
             <Suspense fallback={<PageSpinner />}>

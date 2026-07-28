@@ -72,6 +72,15 @@
   --space-6: 32px;
   --space-7: 48px;
 
+  /* Motion — mismos tokens que src/config/motion.js (mantener en sincronía) */
+  --dur-fast:    140ms;
+  --dur-base:    200ms;
+  --dur-slow:    280ms;
+  --dur-page:    320ms;
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
   --safe-top:    env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left:   env(safe-area-inset-left, 0px);
@@ -426,6 +435,69 @@ body {
 
 .light .topbar {
   background: rgba(248,248,251,0.85);
+}
+
+/* Topbar auto-ocultable (solo desktop con puntero fino): overlay que se
+   esconde por defecto y se revela al acercar el cursor al borde superior
+   o al enfocar con teclado (focus-within). En móvil no se aplica. */
+.topbar--auto {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.topbar--auto.topbar--hidden {
+  transform: translateY(-100%);
+}
+.topbar--auto:focus-within {
+  transform: translateY(0);
+}
+
+/* Zona sensible + tirador en el borde superior que revela la topbar */
+.topbar-peek {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  z-index: 29;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.topbar-peek::after {
+  content: '';
+  margin-top: 3px;
+  width: 44px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--text-5);
+  opacity: 0.5;
+  transform: scaleX(0.86);
+  transition: opacity 0.15s, background 0.15s, transform 0.15s;
+}
+.topbar-peek:hover::after {
+  opacity: 1;
+  transform: scaleX(1.18);
+  background: var(--brand);
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar--auto { transition: none; }
+}
+
+/* Loader de arranque: pulso suave escalonado (sustituye al bounce).
+   Anima solo transform+opacity (compositado en GPU). */
+@keyframes akira-loader {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.7); }
+  40%           { opacity: 1;    transform: scale(1); }
+}
+.akira-loader-dot {
+  animation: akira-loader 1.2s var(--ease-in-out) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .akira-loader-dot { animation: none; opacity: 0.6; }
 }
 
 /* ════════════════════════════════════════════════════════════

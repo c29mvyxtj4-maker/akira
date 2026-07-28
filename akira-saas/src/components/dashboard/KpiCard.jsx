@@ -5,8 +5,9 @@ export default function KpiCard({ title, value, subtitle, icon: Icon, iconColor,
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: delay || 0, duration: 0.25 }}
+      animate={{ opacity: 1, y: 0, transition: { delay: delay || 0, duration: 0.25, ease: 'easeOut' } }}
+      whileHover={{ scale: 1.035 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 22 }}
       style={{
         background: 'var(--bg-2)',
         border: '1px solid var(--border)',

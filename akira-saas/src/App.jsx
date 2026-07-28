@@ -56,12 +56,12 @@ function AppLoadingScreen() {
       <div className="flex flex-col items-center gap-4">
         <img src="/icons/icon.svg" alt="AKIRA" className="w-10 h-10 rounded-xl" />
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce"
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 akira-loader-dot"
                style={{ animationDelay: '0ms' }} />
-          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce"
-               style={{ animationDelay: '150ms' }} />
-          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce"
-               style={{ animationDelay: '300ms' }} />
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 akira-loader-dot"
+               style={{ animationDelay: '160ms' }} />
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 akira-loader-dot"
+               style={{ animationDelay: '320ms' }} />
         </div>
         <span className="text-text-4 text-sm">Iniciando AKIRA…</span>
       </div>

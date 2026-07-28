@@ -75,13 +75,13 @@ export default function Login() {
       >
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <img src="/icons/icon.svg" alt="AKIRA" style={{ width: '52px', height: '52px', display: 'block', margin: '0 auto 14px' }} />
+          <img src="/icons/icon.svg" alt="AKIRA" style={{ width: '52px', height: '52px', borderRadius: 'var(--radius-lg)', display: 'block', margin: '0 auto 14px' }} />
           <h1 style={{ fontSize: '26px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em', marginBottom: '6px' }}>AKIRA OS</h1>
           <p style={{ fontSize: '13px', color: 'var(--text-4)' }}>Business Operating System</p>
         </div>
 
         {/* Card */}
-        <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', padding: '28px' }}>
+        <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '28px', boxShadow: 'var(--shadow-modal)' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '4px' }}>
             {isSignup ? 'Crea tu cuenta' : 'Bienvenido'}
           </h2>

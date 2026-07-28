@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,51 +8,50 @@
    TOKENS CSS — DARK MODE (default)
 ════════════════════════════════════════════════════════════ */
 :root {
-  /* Tactical Telemetry — deactivated-CRT substrate (never pure black) */
-  --bg-base:      #0a0a0a;
-  --bg-1:         #0e0e0e;   /* sidebar / rails */
-  --bg-2:         #121212;   /* cards, panels, modals */
-  --bg-3:         #161616;   /* raised surface */
-  --bg-4:         #1c1c1c;   /* hover fill */
-  --bg-5:         #242424;   /* pressed / strong fill */
+  /* Apple dark — elevated iOS/macOS grays over true black */
+  --bg-base:      #000000;
+  --bg-1:         #0a0a0a;   /* sidebar / rails */
+  --bg-2:         #1c1c1e;   /* cards, sheets, popovers */
+  --bg-3:         #2c2c2e;   /* raised surface */
+  --bg-4:         #3a3a3c;   /* hover fill */
+  --bg-5:         #48484a;   /* pressed / strong fill */
 
-  /* Aviation / hazard red — the ONLY accent */
-  --brand:        #e61919;
-  --brand-hover:  #ff2a2a;
-  --brand-dim:    rgba(230,25,25,0.12);
-  --brand-border: rgba(230,25,25,0.5);
+  /* Refined system-red accent (iOS red, dark) — keeps AKIRA identity */
+  --brand:        #ff453a;
+  --brand-hover:  #ff6961;
+  --brand-dim:    rgba(255,69,58,0.15);
+  --brand-border: rgba(255,69,58,0.5);
 
-  --text-1: #eaeaea;   /* white phosphor */
-  --text-2: #c4c4c4;
-  --text-3: #8a8a8a;
-  --text-4: #5c5c5c;
-  --text-5: #3a3a3a;
+  --text-1: #f5f5f7;   /* primary label */
+  --text-2: #d1d1d6;
+  --text-3: #98989d;   /* secondary label */
+  --text-4: #6c6c70;
+  --text-5: #48484a;
 
-  --border:       rgba(255,255,255,0.14);   /* visible razor-thin compartment lines */
-  --border-brand: rgba(230,25,25,0.5);
+  --border:       rgba(255,255,255,0.10);
+  --border-brand: rgba(255,69,58,0.5);
 
-  /* No soft shadows — hard 1px frames only */
-  --shadow-card:  none;
-  --shadow-modal: 0 0 0 1px rgba(255,255,255,0.14);
-  --shadow-brand: none;
+  /* Soft, layered depth */
+  --shadow-card:  0 1px 3px rgba(0,0,0,0.4);
+  --shadow-modal: 0 20px 60px rgba(0,0,0,0.6);
+  --shadow-brand: 0 4px 16px rgba(255,69,58,0.25);
 
-  /* Flat fills — brutalism rejects gradients */
-  --gradient-bg:      #0a0a0a;
-  --gradient-brand:   #e61919;
-  --gradient-card:    #121212;
-  --gradient-sidebar: #0e0e0e;
-  --gradient-glow:    none;
+  --gradient-bg:      #000000;
+  --gradient-brand:   linear-gradient(135deg, #ff453a, #d70015);
+  --gradient-card:    #1c1c1e;
+  --gradient-sidebar: #0a0a0a;
+  --gradient-glow:    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(255,69,58,0.08) 0%, transparent 100%);
 
-  /* Heavy grotesque for macro headers, monospace for telemetry/UI */
-  --font-sans:  'Archivo', 'Helvetica Neue', system-ui, sans-serif;
-  --font-serif: 'Archivo', sans-serif;
-  --font-mono:  'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  /* System font (SF Pro on Apple), SF Mono for data */
+  --font-sans:  system-ui, -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
+  --font-serif: 'New York', Georgia, serif;
+  --font-mono:  'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
 
-  /* 90° corners only — brutalism rejects border-radius */
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
+  /* Generous Apple rounding */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 
   /* Escala tipografica — 6 pasos, sin excepciones ── NUEVO */
   --text-xs:   11px;
@@ -118,26 +117,10 @@
 ════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Industrial brutalism: 90° corners everywhere — reject all border-radius */
-*, *::before, *::after { border-radius: 0 !important; }
-
-/* Mechanical noise + CRT scanlines — fixed overlay, never intercepts input */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 0.05;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(0,0,0,0.5) 0px, rgba(0,0,0,0.5) 1px, transparent 1px, transparent 3px),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
 html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 body {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   background: var(--bg-base);
   color: var(--text-1);
   min-height: 100vh;
@@ -149,8 +132,8 @@ body {
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: var(--brand); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
 .light ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
 .light ::-webkit-scrollbar-thumb:hover { background: rgba(230,57,70,0.3); }

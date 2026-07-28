@@ -51,8 +51,8 @@ function AttentionCard({ color, icon: Icon, title, subtitle, actionLabel, onActi
         <Icon style={{ width: '16px', height: '16px', color: color }} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</p>
-        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '1px' }}>{subtitle}</p>
+        <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title}</p>
+        <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '1px' }}>{subtitle}</p>
       </div>
       {actionLabel && (
         <button type="button" onClick={onAction}
@@ -114,7 +114,7 @@ function AttentionSection({ notifs, urgentTasks, company, navigate }) {
 
   return (
     <div style={{ marginBottom: '24px' }}>
-      <h2 style={{ fontSize: '13px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <h2 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-3)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         Esto necesita tu atención hoy
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -145,7 +145,7 @@ function OpportunitiesSection({ clients, projects, navigate }) {
 
   return (
     <div style={{ marginBottom: '24px' }}>
-      <h2 style={{ fontSize: '13px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <h2 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-3)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         Oportunidades
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -183,6 +183,9 @@ export default function Dashboard() {
     if (prevMonth > 0) revenueTrend = Math.round(((lastMonth - prevMonth) / prevMonth) * 100)
   }
 
+  // Iconos KPI: un único rojo de marca (coherente con la línea de acento
+  // "siempre roja" de KpiCard). El sparkline recibe hex porque va a un
+  // atributo SVG (stroke), donde var() no resuelve.
   var KPI_CARDS = [
     {
       title:     'MRR',
@@ -191,9 +194,6 @@ export default function Dashboard() {
         ? (revenueTrend >= 0 ? '+' : '') + revenueTrend + '% este mes vs el anterior'
         : 'Ingresos recurrentes mensuales',
       icon:      TrendingUp,
-      iconColor: '#e63946',
-      iconBg:    'rgba(230,57,70,0.1)',
-      accent:    'brand',
       sparklineData: kpis && kpis.revenueSparkline,
       sparklineColor: '#e63946',
       delay: 0,
@@ -203,9 +203,6 @@ export default function Dashboard() {
       value:     loading ? '...' : (kpis ? kpis.activeClients : 0),
       subtitle:  (kpis ? kpis.leads : 0) + ' leads · ' + (kpis ? kpis.atRisk : 0) + ' en riesgo',
       icon:      Users,
-      iconColor: '#cc2936',
-      iconBg:    'rgba(204,41,54,0.1)',
-      accent:    'brand',
       delay: 0.05,
     },
     {
@@ -213,9 +210,6 @@ export default function Dashboard() {
       value:     loading ? '...' : (kpis ? kpis.activeProjects : 0),
       subtitle:  'Proyectos en curso o pendientes',
       icon:      FolderKanban,
-      iconColor: '#ff6464',
-      iconBg:    'rgba(255,100,100,0.1)',
-      accent:    'brand',
       delay: 0.1,
     },
     {
@@ -223,9 +217,6 @@ export default function Dashboard() {
       value:     loading ? '...' : fmtCur(kpis && kpis.monthIncome),
       subtitle:  'Gastos: ' + fmtCur(kpis && kpis.monthExpense),
       icon:      TrendingUp,
-      iconColor: '#e63946',
-      iconBg:    'rgba(230,57,70,0.1)',
-      accent:    'brand',
       delay: 0.15,
     },
   ]
@@ -238,10 +229,10 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         style={{ marginBottom: '20px' }}
       >
-        <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.03em', marginBottom: '4px' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em', marginBottom: '4px' }}>
           {GREETING}, {name} 👋
         </h1>
-        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
+        <p style={{ fontSize: '13px', color: 'var(--text-4)' }}>
           {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </motion.div>
@@ -253,7 +244,7 @@ export default function Dashboard() {
       {data && <OpportunitiesSection clients={data.clients} projects={data.projects} navigate={navigate} />}
 
       {/* CAPA 2 — como va tu negocio */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
+      <div className="dash-kpi-grid" style={{ marginBottom: '24px' }}>
         {loading ? (
           // Show skeleton loading state for KPI cards
           [1, 2, 3, 4].map(function(i) {
@@ -270,9 +261,6 @@ export default function Dashboard() {
                 value={card.value}
                 subtitle={card.subtitle}
                 icon={card.icon}
-                iconColor={card.iconColor}
-                iconBg={card.iconBg}
-                accent={card.accent}
                 sparklineData={card.sparklineData}
                 sparklineColor={card.sparklineColor}
                 delay={card.delay}
@@ -283,8 +271,8 @@ export default function Dashboard() {
       </div>
 
       {/* Charts, previsión y acciones rapidas */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '16px', marginBottom: '24px' }}>
-        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '18px', overflow: 'hidden' }}>
+      <div className="dash-main-grid" style={{ marginBottom: '24px' }}>
+        <div className="dash-panel">
           <RevenueChart
             revenueSparkline={kpis && kpis.revenueSparkline}
             clientsByStatus={kpis && kpis.clientsByStatus}
@@ -297,9 +285,9 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '18px', overflow: 'hidden' }}
+            className="dash-panel"
           >
-            <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', marginBottom: '14px' }}>Acciones rápidas</h3>
+            <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '14px' }}>Acciones rápidas</h3>
             <QuickActions />
           </motion.div>
         </div>
@@ -310,19 +298,20 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '18px', marginBottom: '24px' }}
+        className="dash-panel"
+        style={{ marginBottom: '24px' }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-          <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>Próximas entregas</h3>
+          <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-1)' }}>Próximas entregas</h3>
           <button type="button" onClick={function() { navigate('/projects') }}
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#e63946', fontSize: '11px', fontWeight: 600 }}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--brand)', fontSize: '11px', fontWeight: 600 }}
           >Ver todos <ArrowRight style={{ width: '12px', height: '12px' }} /></button>
         </div>
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {[1,2,3].map(function(i) {
               return (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px 12px', borderRadius: '8px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' }}>
                   <SkeletonText width="60%" height="14px" />
                   <SkeletonText width="40%" height="12px" />
                 </div>
@@ -330,7 +319,7 @@ export default function Dashboard() {
             })}
           </div>
         ) : !kpis || !kpis.upcomingProjects || kpis.upcomingProjects.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '24px 0', color: 'rgba(255,255,255,0.25)', fontSize: '13px' }}>
+          <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-5)', fontSize: '13px' }}>
             Sin entregas próximas
           </div>
         ) : (
@@ -338,23 +327,27 @@ export default function Dashboard() {
             {kpis.upcomingProjects.slice(0, 5).map(function(p) {
               var daysLeft = Math.ceil((new Date(p.due_date) - new Date()) / (1000 * 60 * 60 * 24))
               var isUrgent = daysLeft <= 3
+              var openProject = function() { navigate('/projects') }
               return (
                 <div key={p.id}
-                  onClick={function() { navigate('/projects') }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '8px', background: isUrgent ? 'rgba(230,57,70,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid ' + (isUrgent ? 'rgba(230,57,70,0.2)' : 'rgba(255,255,255,0.05)'), cursor: 'pointer', transition: 'all 0.1s' }}
-                  onMouseEnter={function(e) { e.currentTarget.style.borderColor = 'rgba(230,57,70,0.3)' }}
-                  onMouseLeave={function(e) { e.currentTarget.style.borderColor = isUrgent ? 'rgba(230,57,70,0.2)' : 'rgba(255,255,255,0.05)' }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={'Ver proyecto ' + p.name}
+                  onClick={openProject}
+                  onKeyDown={function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProject() } }}
+                  className="dash-row"
+                  style={isUrgent ? { background: 'var(--brand-dim)', borderColor: 'var(--brand-border)' } : undefined}
                 >
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: isUrgent ? '#e63946' : '#cc2936', boxShadow: isUrgent ? '0 0 6px rgba(230,57,70,0.6)' : 'none', flexShrink: 0 }} />
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: isUrgent ? 'var(--brand)' : 'var(--text-4)', boxShadow: isUrgent ? '0 0 6px rgba(230,57,70,0.6)' : 'none', flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '12px', fontWeight: 600, color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</p>
-                    <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '1px' }}>{p.client_name || ''}</p>
+                    <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</p>
+                    <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '1px' }}>{p.client_name || ''}</p>
                   </div>
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <p style={{ fontSize: '11px', fontWeight: 700, color: isUrgent ? '#e63946' : 'rgba(255,255,255,0.5)' }}>
+                    <p style={{ fontSize: '11px', fontWeight: 700, color: isUrgent ? 'var(--brand)' : 'var(--text-3)' }}>
                       {daysLeft <= 0 ? 'Vencido' : daysLeft === 1 ? 'Mañana' : daysLeft + 'd'}
                     </p>
-                    <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', marginTop: '1px' }}>{fmtDate(p.due_date)}</p>
+                    <p style={{ fontSize: '10px', color: 'var(--text-5)', marginTop: '1px' }}>{fmtDate(p.due_date)}</p>
                   </div>
                 </div>
               )
@@ -368,13 +361,11 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '18px' }}
+        className="dash-panel"
       >
-        <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', marginBottom: '14px' }}>Actividad reciente</h3>
+        <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '14px' }}>Actividad reciente</h3>
         <ActivityFeed />
       </motion.div>
     </div>
-
-    
   )
 }

@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/context/AuthContext'
+import { ROUTES } from '@/config/constants'
 import { Eye, EyeOff, ArrowRight, AlertTriangle, CheckCircle } from 'lucide-react'
 
 export default function Login() {
@@ -92,8 +93,9 @@ export default function Login() {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {isSignup && (
               <div>
-                <label className="label-base">Nombre</label>
+                <label className="label-base" htmlFor="login-name">Nombre</label>
                 <input
+                  id="login-name"
                   type="text"
                   value={fullName}
                   onChange={function(e) { setFullName(e.target.value); setError('') }}
@@ -106,22 +108,32 @@ export default function Login() {
             )}
 
             <div>
-              <label className="label-base">Email</label>
+              <label className="label-base" htmlFor="login-email">Email</label>
               <input
+                id="login-email"
                 type="email"
                 value={email}
                 onChange={function(e) { setEmail(e.target.value); setError('') }}
                 placeholder="tu@email.com"
                 className="input-base"
                 autoComplete="email"
+                inputMode="email"
                 style={{ marginTop: '5px' }}
               />
             </div>
 
             <div>
-              <label className="label-base">Contraseña</label>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                <label className="label-base" htmlFor="login-password">Contraseña</label>
+                {!isSignup && (
+                  <Link to={ROUTES.RESET} style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-4)', textDecoration: 'none' }}>
+                    ¿Olvidaste tu contraseña?
+                  </Link>
+                )}
+              </div>
               <div style={{ position: 'relative', marginTop: '5px' }}>
                 <input
+                  id="login-password"
                   type={showPwd ? 'text' : 'password'}
                   value={password}
                   onChange={function(e) { setPassword(e.target.value); setError('') }}
@@ -131,6 +143,8 @@ export default function Login() {
                   style={{ paddingRight: '40px' }}
                 />
                 <button type="button" onClick={function() { setShowPwd(function(v) { return !v }) }}
+                  aria-label={showPwd ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  aria-pressed={showPwd}
                   style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-4)', display: 'flex', alignItems: 'center' }}
                 >
                   {showPwd ? <EyeOff style={{ width: '15px', height: '15px' }} /> : <Eye style={{ width: '15px', height: '15px' }} />}
@@ -140,9 +154,10 @@ export default function Login() {
 
             {error && (
               <motion.div
+                role="alert"
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(230,57,70,0.08)', border: '1px solid rgba(230,57,70,0.2)', borderRadius: '8px', fontSize: '12px', color: 'var(--brand)' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'var(--brand-dim)', border: '1px solid var(--brand-border)', borderRadius: '8px', fontSize: '12px', color: 'var(--brand-hover)' }}
               >
                 <AlertTriangle style={{ width: '13px', height: '13px', flexShrink: 0 }} />
                 {error}
@@ -151,6 +166,7 @@ export default function Login() {
 
             {notice && (
               <motion.div
+                role="status"
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: '8px', fontSize: '12px', color: '#22c55e' }}
@@ -163,6 +179,7 @@ export default function Login() {
             <motion.button
               type="submit"
               disabled={loading}
+              aria-busy={loading}
               whileTap={{ scale: 0.98 }}
               style={{
                 width: '100%', padding: '10px', borderRadius: '10px', border: 'none',

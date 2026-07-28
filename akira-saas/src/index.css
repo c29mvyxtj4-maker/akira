@@ -16,11 +16,13 @@
   --bg-4:         #3a3a3c;   /* hover fill */
   --bg-5:         #48484a;   /* pressed / strong fill */
 
-  /* Refined system-red accent (iOS red, dark) — keeps AKIRA identity */
-  --brand:        #ff453a;
-  --brand-hover:  #ff6961;
-  --brand-dim:    rgba(255,69,58,0.15);
-  --brand-border: rgba(255,69,58,0.5);
+  /* AKIRA brand red — single source of truth. Matches tailwind brand-500
+     (#e63946) and the ~47 screens that already use it, so the whole app
+     renders one red instead of two. */
+  --brand:        #e63946;
+  --brand-hover:  #ff5a66;
+  --brand-dim:    rgba(230,57,70,0.15);
+  --brand-border: rgba(230,57,70,0.5);
 
   --text-1: #f5f5f7;   /* primary label */
   --text-2: #d1d1d6;
@@ -29,18 +31,18 @@
   --text-5: #48484a;
 
   --border:       rgba(255,255,255,0.10);
-  --border-brand: rgba(255,69,58,0.5);
+  --border-brand: rgba(230,57,70,0.5);
 
   /* Soft, layered depth */
   --shadow-card:  0 1px 3px rgba(0,0,0,0.4);
   --shadow-modal: 0 20px 60px rgba(0,0,0,0.6);
-  --shadow-brand: 0 4px 16px rgba(255,69,58,0.25);
+  --shadow-brand: 0 4px 16px rgba(230,57,70,0.25);
 
   --gradient-bg:      #000000;
-  --gradient-brand:   linear-gradient(135deg, #ff453a, #d70015);
+  --gradient-brand:   linear-gradient(135deg, #e63946, #cc2936);
   --gradient-card:    #1c1c1e;
   --gradient-sidebar: #0a0a0a;
-  --gradient-glow:    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(255,69,58,0.08) 0%, transparent 100%);
+  --gradient-glow:    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(230,57,70,0.08) 0%, transparent 100%);
 
   /* System font (SF Pro on Apple), SF Mono for data */
   --font-sans:  system-ui, -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
@@ -213,6 +215,52 @@ body {
   pointer-events: none;
   z-index: 0;
 }
+
+/* ── Dashboard: static container panel + responsive grids ── */
+.dash-panel {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  overflow: hidden;
+}
+.light .dash-panel { background: rgba(0,0,0,0.02); }
+
+.dash-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.dash-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+}
+/* KPIs 4 → 2 → 1, gráfico + panel lateral apilan en pantallas estrechas */
+@media (max-width: 1024px) {
+  .dash-kpi-grid  { grid-template-columns: repeat(2, 1fr); }
+  .dash-main-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .dash-kpi-grid  { grid-template-columns: 1fr; }
+}
+
+/* Fila clicable accesible (Próximas entregas) */
+.dash-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.12s;
+}
+.dash-row:hover,
+.dash-row:focus-visible { border-color: var(--brand-border); }
 
 /* ════════════════════════════════════════════════════════════
    LAYOUT

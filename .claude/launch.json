@@ -5,7 +5,7 @@
       "name": "akira-dev-server",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 5173,
+      "port": 3000,
       "cwd": "akira-saas"
     }
   ]

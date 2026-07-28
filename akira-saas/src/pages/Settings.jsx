@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  User, Building2, Lock, Database, Receipt, History,
-  Users2, Tag, Bell, AlertOctagon, Download, FileText, Plug, Workflow,
+  User, Lock, Database, Receipt, History,
+  Users2, Tag, Bell, AlertOctagon, Download, FileText, Workflow,
   ChevronRight, ChevronLeft,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
@@ -13,7 +13,6 @@ import BillingTab from '@/components/settings/BillingTab'
 import CategoriesTab from '@/components/settings/CategoriesTab'
 import TemplatesTab from '@/components/settings/TemplatesTab'
 import NotificationsTab from '@/components/settings/NotificationsTab'
-import IntegrationsTab from '@/components/settings/IntegrationsTab'
 import DataExportTab from '@/components/settings/DataExportTab'
 import AuditTab from '@/components/settings/AuditTab'
 import TeamTab from '@/components/settings/TeamTab'
@@ -43,13 +42,11 @@ export default function Settings() {
   }
 
   var TABS = [
-    { id: 'profile',       label: 'Perfil',          icon: User },
-    { id: 'workspace',     label: 'Workspace',       icon: Building2 },
+    { id: 'profile',       label: 'Perfil y espacio', icon: User },
     { id: 'billing',       label: 'Facturacion',     icon: Receipt },
     { id: 'categories',    label: 'Categorias',      icon: Tag },
     { id: 'templates',     label: 'Plantillas',      icon: FileText },
     { id: 'notifications', label: 'Notificaciones',  icon: Bell },
-    { id: 'integrations',  label: 'Integraciones',   icon: Plug },
     { id: 'data',          label: 'Exportar datos',  icon: Download },
     { id: 'audit',         label: 'Auditoria',       icon: History },
     { id: 'team',          label: 'Equipo',          icon: Users2 },
@@ -123,10 +120,6 @@ export default function Settings() {
                 {activeTab === 'profile' && (
                   <motion.div key="profile" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
                     <ProfileTab user={user} />
-                  </motion.div>
-                )}
-                {activeTab === 'workspace' && (
-                  <motion.div key="workspace" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
                     <WorkspaceTab />
                   </motion.div>
                 )}
@@ -148,11 +141,6 @@ export default function Settings() {
                 {activeTab === 'notifications' && (
                   <motion.div key="notifications" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
                     <NotificationsTab />
-                  </motion.div>
-                )}
-                {activeTab === 'integrations' && (
-                  <motion.div key="integrations" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
-                    <IntegrationsTab />
                   </motion.div>
                 )}
                 {activeTab === 'data' && (

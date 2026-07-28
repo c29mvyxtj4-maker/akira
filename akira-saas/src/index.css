@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,41 +8,50 @@
    TOKENS CSS — DARK MODE (default)
 ════════════════════════════════════════════════════════════ */
 :root {
-  --bg-base:      #060608;
-  --bg-1:         #0a0a0d;
-  --bg-2:         #0f0f14;
-  --bg-3:         #141419;
-  --bg-4:         #1a1a21;
-  --bg-5:         #202028;
+  /* Warm-monochrome minimalist canvas + surfaces */
+  --bg-base:      #f7f6f3;   /* warm bone app canvas */
+  --bg-1:         #fbfbfa;   /* sidebar / rails */
+  --bg-2:         #ffffff;   /* cards, modals, popovers */
+  --bg-3:         #f9f9f8;   /* subtle raised surface */
+  --bg-4:         #f2f2f0;   /* hover fill */
+  --bg-5:         #ebebe8;   /* pressed / strong fill */
 
-  --brand:        #e63946;
-  --brand-hover:  #cc2936;
-  --brand-dim:    rgba(230,57,70,0.12);
-  --brand-border: rgba(230,57,70,0.3);
+  /* Red kept only as a scarce, muted semantic accent */
+  --brand:        #9f2f2d;
+  --brand-hover:  #7f2422;
+  --brand-dim:    #fdebec;                 /* pale-red pastel background */
+  --brand-border: rgba(159,47,45,0.22);
 
-  --text-1: #ffffff;
-  --text-2: #e0e0e8;
-  --text-3: #a0a0b0;
-  --text-4: #606070;
-  --text-5: #404050;
+  --text-1: #1a1a18;   /* charcoal — never pure black */
+  --text-2: #2f3437;
+  --text-3: #6b6b64;
+  --text-4: #8a8a82;   /* muted gray */
+  --text-5: #b3b3ab;
 
-  --border:       rgba(255,255,255,0.07);
-  --border-brand: rgba(230,57,70,0.3);
+  --border:       #eaeaea;
+  --border-brand: rgba(159,47,45,0.22);
 
-  --shadow-card:  0 1px 3px rgba(0,0,0,0.5);
-  --shadow-modal: 0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06);
-  --shadow-brand: 0 0 24px rgba(230,57,70,0.25);
+  /* Shadows practically non-existent (opacity < 0.05) */
+  --shadow-card:  0 1px 2px rgba(0,0,0,0.03);
+  --shadow-modal: 0 12px 40px rgba(0,0,0,0.08), 0 0 0 1px #eaeaea;
+  --shadow-brand: none;
 
-  --gradient-bg:      linear-gradient(135deg, #060608 0%, #0a0306 40%, #060608 100%);
-  --gradient-brand:   linear-gradient(135deg, #e63946, #cc2936);
-  --gradient-card:    linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-  --gradient-sidebar: linear-gradient(180deg, #0a0a0d 0%, #080809 100%);
-  --gradient-glow:    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(230,57,70,0.1) 0%, transparent 100%);
+  /* Gradients flattened to solids per minimalist protocol */
+  --gradient-bg:      #f7f6f3;
+  --gradient-brand:   #111111;             /* primary CTA — solid charcoal */
+  --gradient-card:    #ffffff;
+  --gradient-sidebar: #fbfbfa;
+  --gradient-glow:    none;
 
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* Editorial type stack */
+  --font-sans:  'Helvetica Neue', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Newsreader', 'Playfair Display', Georgia, serif;
+  --font-mono:  'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 
   /* Escala tipografica — 6 pasos, sin excepciones ── NUEVO */
   --text-xs:   11px;
@@ -111,7 +120,7 @@
 html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
   background: var(--bg-base);
   color: var(--text-1);
   min-height: 100vh;
@@ -123,8 +132,8 @@ body {
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(230,57,70,0.4); }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.14); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
 
 .light ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
 .light ::-webkit-scrollbar-thumb:hover { background: rgba(230,57,70,0.3); }

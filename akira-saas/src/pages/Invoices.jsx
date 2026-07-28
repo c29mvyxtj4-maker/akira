@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Trash2, FileText, Archive, ChevronLeft,
-  Building2, Wrench, Download,
+  Building2, Wrench, Download, CreditCard, Eye, EyeOff,
 } from 'lucide-react'
 import { exportToCsv } from '@/utils/exportCsv'
 import {
@@ -350,6 +350,7 @@ export default function Invoices() {
   var [editing,    setEditing]    = useState(null)
   var [formLoading, setFormLoading] = useState(false)
   var [previewing, setPreviewing] = useState(null)
+  var [chargingId, setChargingId] = useState(null)
   var [toastMsg,   setToastMsg]   = useState(null)
 
   function showToast(msg, type) {
@@ -452,6 +453,25 @@ export default function Invoices() {
       .catch(function(e) { showToast('No se pudo enviar el email: ' + (e.message || e), 'error') })
   }
 
+  async function handleCharge(inv) {
+    if (chargingId) return
+    setChargingId(inv.id)
+    showToast('Generando enlace de cobro…')
+    try {
+      var res = await supabase.functions.invoke('create-checkout', { body: { invoice_id: inv.id } })
+      if (res.error) throw res.error
+      var url = res.data && res.data.url
+      if (!url) throw new Error((res.data && res.data.error) || 'No se recibió el enlace de pago')
+      try { await navigator.clipboard.writeText(url) } catch (_) { /* sin permiso de portapapeles */ }
+      window.open(url, '_blank')
+      showToast('Enlace de cobro listo (copiado al portapapeles)')
+    } catch (e) {
+      showToast('No se pudo generar el cobro: ' + (e.message || e), 'error')
+    } finally {
+      setChargingId(null)
+    }
+  }
+
   function handleArchive(id) {
     if (!window.confirm('Archivar esta factura?')) return
     archiveInvoice(id)
@@ -542,8 +562,21 @@ export default function Invoices() {
                           style={{ background: 'none', border: 'none', color: '#e63946', fontWeight: 700, fontSize: '13px', cursor: 'pointer', padding: 0 }}
                         >{inv.invoice_number}</button>
                       </td>
-                      <td style={{ padding: '12px 14px', fontSize: '13px', color: '#e2e8f0' }}>
-                        {inv.clients ? (inv.clients.company || inv.clients.name) : '--'}
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ fontSize: '13px', color: 'var(--text-2)' }}>
+                          {inv.clients ? (inv.clients.company || inv.clients.name) : '--'}
+                        </div>
+                        {inv.clients && (
+                          (inv.status === 'sent' || inv.status === 'paid') ? (
+                            <div title="El cliente ve esta factura en su portal" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px', fontSize: '10px', fontWeight: 600, color: '#22c55e' }}>
+                              <Eye style={{ width: '11px', height: '11px' }} /> Visible en portal
+                            </div>
+                          ) : (
+                            <div title="En borrador: solo tú la ves. Pásala a Enviada para que el cliente la reciba y la vea en el portal." style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px', fontSize: '10px', fontWeight: 600, color: 'var(--text-5)' }}>
+                              <EyeOff style={{ width: '11px', height: '11px' }} /> Solo tú (borrador)
+                            </div>
+                          )
+                        )}
                       </td>
                       <td style={{ padding: '12px 14px', fontSize: '12px', color: '#94a3b8' }}>{fmtDate(inv.issue_date)}</td>
                       <td style={{ padding: '12px 14px', fontSize: '14px', fontWeight: 700, color: '#f1f5f9' }}>{fmtCur(inv.total)}</td>
@@ -556,6 +589,15 @@ export default function Invoices() {
                       </td>
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '4px' }}>
+                          {inv.status !== 'paid' && inv.status !== 'void' && (
+                            <button type="button" onClick={function() { handleCharge(inv) }} disabled={chargingId === inv.id}
+                              title="Generar enlace de cobro"
+                              style={{ display: 'flex', alignItems: 'center', gap: '5px', height: '28px', padding: '0 10px', borderRadius: '6px', border: '1px solid rgba(34,197,94,0.35)', background: 'rgba(34,197,94,0.12)', color: '#22c55e', fontSize: '12px', fontWeight: 700, cursor: chargingId === inv.id ? 'not-allowed' : 'pointer', opacity: chargingId === inv.id ? 0.6 : 1, whiteSpace: 'nowrap' }}
+                            >
+                              <CreditCard style={{ width: '13px', height: '13px' }} />
+                              {chargingId === inv.id ? 'Generando…' : 'Cobrar'}
+                            </button>
+                          )}
                           <button type="button" onClick={function() { openEdit(inv) }}
                             style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', color: '#94a3b8' }}
                           >✎</button>

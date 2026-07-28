@@ -8,5 +8,14 @@
       "source": "/((?!assets/|manifest.webmanifest|sw.js|icons/|favicon.ico|robots.txt).*)",
       "destination": "/index.html"
     }
+  ],
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" }
+      ]
+    }
   ]
 }

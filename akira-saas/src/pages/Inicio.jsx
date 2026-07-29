@@ -12,6 +12,7 @@ import { ROUTES } from '@/config/constants'
 import { DUR, EASE, SPRING } from '@/config/motion'
 import CommandPalette from '@/components/layout/CommandPalette'
 import AskAkiraButton from '@/components/akira/AskAkiraButton'
+import { getUnreadMentionCount } from '@/services/mentions.service'
 
 /*
  * PRUEBA — Home experimental estilo Notion (topbar de pastillas + accesos),
@@ -32,6 +33,11 @@ export default function Inicio() {
 
   var [cmdOpen, setCmdOpen] = useState(false)
   var [aiOpen, setAiOpen]   = useState(false)
+  var [unread, setUnread]   = useState(0)
+
+  useEffect(function () {
+    getUnreadMentionCount().then(setUnread).catch(function () {})
+  }, [])
 
   // La brújula abre el command palette (igual que Ctrl/Cmd+K).
   useEffect(function() {
@@ -92,10 +98,14 @@ export default function Inicio() {
           </button>
           {PILLS.map(function(p) {
             var Icon = p.icon
+            var showBadge = p.label === 'Bandeja' && unread > 0
             return (
               <button key={p.label} type="button" onClick={function() { navigate(p.to) }} title={p.label} aria-label={p.label}
-                style={{ width: '40px', height: '38px', borderRadius: '999px', flexShrink: 0, background: 'var(--bg-3)', border: '1px solid var(--border)', color: 'var(--text-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                style={{ position: 'relative', width: '40px', height: '38px', borderRadius: '999px', flexShrink: 0, background: 'var(--bg-3)', border: '1px solid var(--border)', color: 'var(--text-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon style={{ width: '16px', height: '16px' }} />
+                {showBadge && (
+                  <span style={{ position: 'absolute', top: '4px', right: '5px', minWidth: '15px', height: '15px', padding: '0 4px', borderRadius: '999px', background: 'var(--brand)', color: '#fff', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 0 2px var(--bg-base)' }}>{unread > 9 ? '9+' : unread}</span>
+                )}
               </button>
             )
           })}

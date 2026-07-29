@@ -8,6 +8,7 @@ import {
 import { useProjects } from '@/hooks/useProjects'
 import { useOrg } from '@/context/OrgContext'
 import { getProjectMembers, addProjectMember, removeProjectMember, getOrgTeam } from '@/services/projectMembers.service'
+import { createMention } from '@/services/mentions.service'
 import { DUR, EASE, SPRING } from '@/config/motion'
 import { PROJECT_STATUS_MAP, PROJECT_STAGE_MAP, PROJECT_PRIORITY_MAP } from '@/services/projects.service'
 import { getProjectTemplates } from '@/services/templates.service'
@@ -229,7 +230,7 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, o
                   <p style={{ padding: '6px 10px', fontSize: '11px', color: '#64748b' }}>Añade miembros en la pestaña Equipo</p>
                 ) : members.map(function(m) {
                   return (
-                    <button key={m.id} type="button" onClick={function() { onAssigneeChange(project.id, t.id, m.user_id); setShowAssign(null) }}
+                    <button key={m.id} type="button" onClick={function() { onAssigneeChange(project.id, t.id, m.user_id); createMention({ target_user: m.user_id, org_id: project.org_id, type: 'task_assigned', source_type: 'task', project_id: project.id, text: 'Te han asignado la tarea "' + t.text + '" en ' + (project.name || 'un proyecto') }).catch(function() {}); setShowAssign(null) }}
                       style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '6px 10px', borderRadius: '6px', border: 'none', background: 'none', cursor: 'pointer', color: '#cbd5e1', fontSize: '12px' }}>
                       <span style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'var(--gradient-brand)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, flexShrink: 0 }}>{initialOf(m)}</span>
                       {(m.profile && m.profile.full_name) || 'Sin nombre'}
@@ -539,7 +540,10 @@ function TeamPanel({ project }) {
 
   function handleAdd(userId) {
     setBusy(true)
-    addProjectMember(project.id, userId).then(load).catch(function (e) { window.alert('No se pudo añadir: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+    addProjectMember(project.id, userId).then(function () {
+      createMention({ target_user: userId, org_id: project.org_id, type: 'project_added', source_type: 'project', source_id: project.id, project_id: project.id, text: 'Te han añadido al proyecto "' + (project.name || '') + '"' }).catch(function () {})
+      return load()
+    }).catch(function (e) { window.alert('No se pudo añadir: ' + (e.message || e)) }).finally(function () { setBusy(false) })
   }
   function handleRemove(id) {
     setBusy(true)

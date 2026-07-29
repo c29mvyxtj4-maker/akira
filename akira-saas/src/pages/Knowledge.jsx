@@ -266,12 +266,18 @@ export default function Knowledge() {
   }, [])
 
   // Abrir directamente un documento si venimos de la busqueda global — NUEVO
-  var [searchParams] = useSearchParams()
+  var [searchParams, setSearchParams] = useSearchParams()
   useEffect(function() {
     var openId = searchParams.get('open')
     if (openId) {
       hook.openDocument(openId)
       setMobileStep('editor')
+    }
+    // Crear una página nueva directamente al llegar con ?new=1 (desde /inicio).
+    if (searchParams.get('new')) {
+      hook.handleCreateDoc()
+      setMobileStep('editor')
+      setSearchParams({}, { replace: true })
     }
   }, [searchParams])
 

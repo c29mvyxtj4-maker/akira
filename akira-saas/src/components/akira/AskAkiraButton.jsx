@@ -24,8 +24,15 @@ function renderSimpleMarkdown(text) {
  * contextText:  bloque de texto con los datos reales de lo que se esta viendo,
  *               que se le añade a la pregunta para que Akira responda con contexto real
  */
-export default function AskAkiraButton({ contextLabel, contextText }) {
-  var [open, setOpen] = useState(false)
+export default function AskAkiraButton({ contextLabel, contextText, controlledOpen, onOpenChange, hideFab }) {
+  var [internalOpen, setInternalOpen] = useState(false)
+  var isControlled = typeof controlledOpen === 'boolean'
+  var open = isControlled ? controlledOpen : internalOpen
+  function setOpen(v) {
+    var next = typeof v === 'function' ? v(open) : v
+    if (isControlled) { if (onOpenChange) onOpenChange(next) }
+    else setInternalOpen(next)
+  }
   var [input, setInput] = useState('')
   var [messages, setMessages] = useState([]) // conversacion efimera, solo en esta pantalla
   var [streaming, setStreaming] = useState(false)
@@ -69,7 +76,7 @@ export default function AskAkiraButton({ contextLabel, contextText }) {
   return (
     <>
       {/* Boton flotante */}
-      {!open && (
+      {!open && !hideFab && (
         <motion.button
           type="button"
           onClick={function() { setOpen(true) }}

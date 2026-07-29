@@ -6,6 +6,8 @@ import {
   Calendar, DollarSign, TrendingUp, Flag,
 } from 'lucide-react'
 import { useProjects } from '@/hooks/useProjects'
+import { useOrg } from '@/context/OrgContext'
+import { getProjectMembers, addProjectMember, removeProjectMember, getOrgTeam } from '@/services/projectMembers.service'
 import { DUR, EASE, SPRING } from '@/config/motion'
 import { PROJECT_STATUS_MAP, PROJECT_STAGE_MAP, PROJECT_PRIORITY_MAP } from '@/services/projects.service'
 import { getProjectTemplates } from '@/services/templates.service'
@@ -465,6 +467,89 @@ function ProgressBar({ progress, onUpdate, projectId }) {
   )
 }
 
+/* ── Fase 1: equipo del proyecto (vincular personas) ─────── */
+function TeamPanel({ project }) {
+  var { org } = useOrg()
+  var [members, setMembers] = useState([])
+  var [team, setTeam] = useState([])
+  var [loading, setLoading] = useState(true)
+  var [busy, setBusy] = useState(false)
+
+  function load() {
+    setLoading(true)
+    Promise.all([
+      getProjectMembers(project.id),
+      org ? getOrgTeam(org.id) : Promise.resolve([]),
+    ]).then(function (r) { setMembers(r[0]); setTeam(r[1]) })
+      .catch(function () {})
+      .finally(function () { setLoading(false) })
+  }
+  useEffect(function () { load() }, [project.id, org && org.id])
+
+  var memberIds = {}
+  members.forEach(function (m) { memberIds[m.user_id] = true })
+  var addable = team.filter(function (t) { return !memberIds[t.user_id] })
+
+  function nameOf(p) { return (p && p.full_name) || 'Sin nombre' }
+  function initialOf(p) { return ((p && p.full_name) ? p.full_name[0] : '?').toUpperCase() }
+
+  function handleAdd(userId) {
+    setBusy(true)
+    addProjectMember(project.id, userId).then(load).catch(function (e) { window.alert('No se pudo añadir: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+  }
+  function handleRemove(id) {
+    setBusy(true)
+    removeProjectMember(id).then(load).catch(function (e) { window.alert('No se pudo quitar: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+  }
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-xs font-semibold text-text-4 uppercase tracking-wide mb-2">Miembros del proyecto</p>
+        {loading ? (
+          <p className="text-sm text-text-4">Cargando…</p>
+        ) : members.length === 0 ? (
+          <p className="text-sm text-text-4">Aún no hay nadie asignado a este proyecto. Añade a alguien de tu equipo abajo.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {members.map(function (m) {
+              return (
+                <div key={m.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-border bg-surface-2">
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--gradient-brand)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '13px', flexShrink: 0 }}>{initialOf(m.profile)}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-text-1 truncate">{nameOf(m.profile)}</p>
+                    <p className="text-2xs text-text-4">{m.role || 'member'}</p>
+                  </div>
+                  <button type="button" disabled={busy} onClick={function () { handleRemove(m.id) }} className="text-xs text-status-danger hover:underline">Quitar</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <p className="text-xs font-semibold text-text-4 uppercase tracking-wide mb-2">Añadir del equipo</p>
+        {loading ? null : addable.length === 0 ? (
+          <p className="text-sm text-text-4">No hay más gente en tu organización para añadir. Invita a más personas desde Ajustes.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {addable.map(function (t) {
+              return (
+                <div key={t.user_id} className="flex items-center gap-3 p-2.5 rounded-lg border border-border">
+                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--bg-4)', color: 'var(--text-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '12px', flexShrink: 0 }}>{initialOf(t.profile)}</div>
+                  <span className="text-sm text-text-1 flex-1 min-w-0 truncate">{nameOf(t.profile)}</span>
+                  <button type="button" disabled={busy} onClick={function () { handleAdd(t.user_id) }} className="btn-base bg-brand-500 hover:bg-brand-600 text-white text-xs h-8 px-3">Añadir</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateProgress, onBack }) {
   var [tab, setTab] = useState('overview')
 
@@ -498,6 +583,7 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
   var TABS = [
     { id: 'overview', label: 'Resumen' },
     { id: 'tasks',    label: 'Tareas (' + tasks.length + ')' },
+    { id: 'team',     label: 'Equipo' },
     { id: 'files',    label: 'Archivos' },
     { id: 'time',     label: 'Tiempo' },
     { id: 'dates',    label: 'Fechas' },
@@ -619,6 +705,10 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
             onDelete={onDeleteTask}
             onPriorityChange={onUpdateTaskPriority}
           />
+        </div>
+
+        <div style={{ display: tab === 'team' ? 'block' : 'none' }}>
+          {tab === 'team' && <TeamPanel project={project} />}
         </div>
 
         <div style={{ display: tab === 'files' ? 'block' : 'none' }}>

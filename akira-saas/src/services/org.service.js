@@ -42,13 +42,15 @@ export async function createOrg(name) {
   }).select().single()
   if (res.error) throw res.error
 
-  // Añadir al owner como miembro con rol owner
-  await supabase.from('org_members').insert({
+  // Añadir al owner como miembro con rol owner. Si esto falla, la org queda
+  // sin membresía y las RLS de equipo se rompen — así que lo surface-amos.
+  var mres = await supabase.from('org_members').insert({
     org_id:  res.data.id,
     user_id: ownerId,
     role:    'owner',
     joined_at: new Date().toISOString(),
   })
+  if (mres.error) throw mres.error
 
   return res.data
 }

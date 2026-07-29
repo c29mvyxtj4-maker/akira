@@ -147,12 +147,12 @@ function EventChip({ event, onClick }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
   return (
     <button type="button" onClick={function(e) { e.stopPropagation(); onClick(event) }}
-      style={{ display: 'flex', alignItems: 'center', gap: '4px', width: '100%', padding: '2px 5px', borderRadius: '4px', background: cfg.bg, border: '1px solid ' + cfg.border, cursor: 'pointer', marginBottom: '2px', textAlign: 'left', transition: 'all 0.1s' }}
+      title={event.title}
+      style={{ display: 'flex', alignItems: 'center', gap: '4px', width: '100%', minWidth: 0, maxWidth: '100%', overflow: 'hidden', padding: '2px 5px', borderRadius: '4px', background: cfg.bg, border: '1px solid ' + cfg.border, borderLeft: '2px solid ' + cfg.dot, cursor: 'pointer', marginBottom: '2px', textAlign: 'left', transition: 'all 0.1s' }}
       onMouseEnter={function(e) { e.currentTarget.style.filter = 'brightness(1.2)' }}
       onMouseLeave={function(e) { e.currentTarget.style.filter = 'none' }}
     >
-      <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: cfg.dot, flexShrink: 0 }} />
-      <span style={{ fontSize: '10px', fontWeight: 600, color: cfg.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+      <span style={{ fontSize: '10px', fontWeight: 600, color: cfg.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
         {event.start_time ? fmtTime(event.start_time) + ' ' : ''}{event.title}
       </span>
     </button>
@@ -1011,6 +1011,8 @@ export default function Calendar() {
                             transition: 'background 0.1s',
                             display: 'flex',
                             flexDirection: 'column',
+                            overflow: 'hidden',
+                            minWidth: 0,
                           }}
                           onMouseEnter={function(e) { if (!isToday) e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
                           onMouseLeave={function(e) { if (!isToday) e.currentTarget.style.background = 'transparent' }}
@@ -1029,25 +1031,12 @@ export default function Calendar() {
                             </span>
                           </div>
 
-                          <div style={{ flex: 1, overflow: 'hidden' }}>
-                            {isMobile ? (
-                              dayEvents.length > 0 && (
-                                <div style={{ display: 'flex', gap: '2px', flexWrap: 'wrap' }}>
-                                  {dayEvents.slice(0, 4).map(function(event) {
-                                    var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
-                                    return <div key={event.id} onClick={function(e) { e.stopPropagation(); handleEventClick(event) }} style={{ width: '5px', height: '5px', borderRadius: '50%', background: cfg.dot }} />
-                                  })}
-                                </div>
-                              )
-                            ) : (
-                              <>
-                                {dayEvents.slice(0, 3).map(function(event) {
-                                  return <EventChip key={event.id} event={event} onClick={handleEventClick} />
-                                })}
-                                {dayEvents.length > 3 && (
-                                  <span style={{ fontSize: '9px', color: '#e63946', fontWeight: 600, paddingLeft: '5px' }}>+{dayEvents.length - 3} mas</span>
-                                )}
-                              </>
+                          <div style={{ flex: 1, minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
+                            {dayEvents.slice(0, isMobile ? 2 : 3).map(function(event) {
+                              return <EventChip key={event.id} event={event} onClick={handleEventClick} />
+                            })}
+                            {dayEvents.length > (isMobile ? 2 : 3) && (
+                              <span style={{ display: 'block', fontSize: '9px', color: 'var(--brand)', fontWeight: 600, paddingLeft: '4px' }}>+{dayEvents.length - (isMobile ? 2 : 3)} más</span>
                             )}
                           </div>
                         </div>

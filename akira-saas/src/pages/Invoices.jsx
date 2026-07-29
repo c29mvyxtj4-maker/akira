@@ -547,8 +547,9 @@ export default function Invoices() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  {['Número', 'Cliente', 'Emisión', 'Total', 'Estado', ''].map(function(h) {
-                    return <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
+                  {['Número', 'Cliente', 'Emisión', 'Total', 'Estado', 'Acciones'].map(function(h, hi) {
+                    var isActions = hi === 5
+                    return <th key={h} style={{ padding: '10px 14px', textAlign: isActions ? 'right' : 'left', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap', position: isActions ? 'sticky' : undefined, right: isActions ? 0 : undefined, background: isActions ? 'var(--bg-2)' : undefined }}>{h}</th>
                   })}
                 </tr>
               </thead>
@@ -587,8 +588,8 @@ export default function Invoices() {
                           {Object.entries(INVOICE_STATUS).map(function(e) { return <option key={e[0]} value={e[0]}>{e[1].label}</option> })}
                         </select>
                       </td>
-                      <td style={{ padding: '12px 14px' }}>
-                        <div style={{ display: 'flex', gap: '4px' }}>
+                      <td style={{ padding: '12px 14px', position: 'sticky', right: 0, background: 'var(--bg-2)', boxShadow: '-10px 0 12px -8px rgba(0,0,0,0.55)' }}>
+                        <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
                           {inv.status !== 'paid' && inv.status !== 'void' && (
                             <button type="button" onClick={function() { handleCharge(inv) }} disabled={chargingId === inv.id}
                               title="Generar enlace de cobro"

@@ -173,7 +173,7 @@ export default function Inicio() {
         </div>
 
         <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-5)', marginTop: '28px' }}>
-          AKIRA · inicio
+          AKIRA · inicio · build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
         </p>
       </div>
 

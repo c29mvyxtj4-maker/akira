@@ -4,6 +4,11 @@ import path from 'path'
 
 export default defineConfig({
   base: '/',
+  // Sello de build visible en la UI para verificar de un vistazo si el cliente
+  // está en la versión fresca o cacheada.
+  define: {
+    __BUILD_ID__: JSON.stringify(new Date().toISOString().slice(0, 16).replace('T', ' ')),
+  },
   plugins: [react()],
   resolve: {
     alias: {

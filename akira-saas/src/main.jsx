@@ -10,6 +10,19 @@ import ErrorBoundary from './components/ErrorBoundary.jsx'
 import './lib/sentry'   // inicializa Sentry si hay VITE_SENTRY_DSN (no-op si no)
 import './index.css'
 
+// Anti-caché: un build antiguo con vite-plugin-pwa dejaba un service worker que
+// congelaba la app en versiones viejas (sobre todo en PWA de iOS). Ya no usamos
+// SW de caché, así que al arrancar desregistramos cualquier SW y borramos todas
+// las cachés — la app carga siempre de red.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations()
+    .then(function (rs) { rs.forEach(function (r) { r.unregister() }) })
+    .catch(function () {})
+}
+if (typeof caches !== 'undefined' && caches.keys) {
+  caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k) }) }).catch(function () {})
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <ErrorBoundary>
     <MotionConfig reducedMotion="user">

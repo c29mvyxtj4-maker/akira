@@ -131,17 +131,6 @@ function layoutDayEvents(timedEvents) {
   return out
 }
 
-// Imagen de arrastre transparente: oculta el "fantasma" por defecto del
-// navegador para que solo se vea nuestro bloque-guía en el destino.
-var _dragImg = null
-function transparentDragImage() {
-  if (typeof Image === 'undefined') return null
-  if (!_dragImg) {
-    _dragImg = new Image()
-    _dragImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
-  }
-  return _dragImg
-}
 function hhmmLabel(m) {
   return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0')
 }
@@ -191,7 +180,7 @@ function DropGhost({ startMin, dur, label }) {
   )
 }
 
-function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, onDragBegin, onDragEndBlock }) {
+function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, onDragPointerDown }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
 
   var top    = ((startMin - WEEK_HOUR_START * 60) / 60) * ROW_HEIGHT
@@ -204,35 +193,26 @@ function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, 
   var leftCalc  = 'calc(2px + (100% - 4px) * ' + col + ' / ' + cols + ')'
   var compact = height < 34
 
-  function onDragStart(e) {
-    // Ocultamos el fantasma nativo del navegador (el "fondo blanco") y avisamos
-    // al padre para que dibuje el bloque-guía en el destino.
-    var img = transparentDragImage()
-    if (img) { try { e.dataTransfer.setDragImage(img, 0, 0) } catch (_) { /* noop */ } }
+  // Arrastre con pointer events (funciona con ratón Y dedo, a diferencia de
+  // HTML5 drag). El padre distingue tap (editar) de arrastre (mover).
+  function onPointerDown(e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
     var rect = e.currentTarget.getBoundingClientRect()
     var grabMin = ((e.clientY - rect.top) / ROW_HEIGHT) * 60
-    e.dataTransfer.setData('text/plain', event.id)
-    e.dataTransfer.effectAllowed = 'move'
-    e.currentTarget.style.opacity = '0.3'
-    if (onDragBegin) onDragBegin({ id: event.id, grabMin: grabMin, dur: endMin - startMin, label: event.title })
-  }
-  function onDragEnd(e) {
-    e.currentTarget.style.opacity = ''
-    if (onDragEndBlock) onDragEndBlock()
+    onDragPointerDown(e, event, grabMin, endMin - startMin, e.currentTarget)
   }
 
   return (
-    <button type="button" onClick={function(e) { e.stopPropagation(); onClick(event) }}
-      draggable={canDrag}
-      onDragStart={canDrag ? onDragStart : undefined}
-      onDragEnd={canDrag ? onDragEnd : undefined}
+    <button type="button"
+      onClick={function(e) { e.stopPropagation(); if (!canDrag) onClick(event) }}
+      onPointerDown={canDrag ? onPointerDown : undefined}
       title={(canDrag ? 'Arrastra para mover · ' : '') + event.title + ' · ' + fmtTime(event.start_time) + (event.end_time ? '–' + fmtTime(event.end_time) : '')}
       style={{
         position: 'absolute', left: leftCalc, width: widthCalc, top: top + 'px', height: height + 'px',
         background: cfg.bg, border: '1px solid ' + cfg.border, borderLeft: '3px solid ' + cfg.dot,
         borderRadius: '5px', padding: compact ? '1px 5px' : '3px 6px',
         textAlign: 'left', cursor: canDrag ? 'grab' : 'pointer', overflow: 'hidden', zIndex: 2,
-        transition: 'filter 0.1s',
+        transition: 'filter 0.1s', touchAction: canDrag ? 'none' : undefined,
       }}
       onMouseEnter={function(e) { e.currentTarget.style.filter = 'brightness(1.25)'; e.currentTarget.style.zIndex = '5' }}
       onMouseLeave={function(e) { e.currentTarget.style.filter = 'none'; e.currentTarget.style.zIndex = '2' }}
@@ -444,28 +424,47 @@ function AgendaPanel({ events, onEventClick, isMobile, onBack }) {
 
 /* ── Vista semanal ─────────────────────────────────────────── */
 function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent }) {
-  var dragRef = useRef(null)
   var [dropHint, setDropHint] = useState(null)
-  function onDragBegin(info) { dragRef.current = info }
-  function onDragEndBlock() { dragRef.current = null; setDropHint(null) }
-  function onColDragOver(e, dayIndex) {
-    var info = dragRef.current
-    if (!info) return
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    var rect = e.currentTarget.getBoundingClientRect()
-    var startMin = dropMinutesFrom(e.clientY, rect.top, info.grabMin, info.dur)
-    setDropHint({ dayIndex: dayIndex, startMin: startMin, dur: info.dur, label: info.label })
-  }
-  function handleDrop(e, dateStr) {
-    e.preventDefault()
-    var info = dragRef.current
-    if (!info) return
-    var rect = e.currentTarget.getBoundingClientRect()
-    var startMin = dropMinutesFrom(e.clientY, rect.top, info.grabMin, info.dur)
-    dragRef.current = null
-    setDropHint(null)
-    if (onMoveEvent) onMoveEvent(info.id, dateStr, startMin)
+
+  // Arrastre táctil/ratón: sigue el dedo por las 7 columnas usando
+  // elementFromPoint, pinta el bloque-guía y, al soltar, mueve el evento.
+  function beginDrag(e, event, grabMin, dur, blockEl) {
+    e.stopPropagation()
+    var startX = e.clientX, startY = e.clientY
+    var moved = false
+    var target = { date: null, min: null }
+    function colFromPoint(x, y) {
+      var el = document.elementFromPoint(x, y)
+      var col = el && el.closest ? el.closest('[data-dayidx]') : null
+      if (!col) return null
+      return { el: col, idx: Number(col.getAttribute('data-dayidx')), date: col.getAttribute('data-date') }
+    }
+    function onMove(ev) {
+      if (!moved) {
+        if (Math.abs(ev.clientX - startX) < 6 && Math.abs(ev.clientY - startY) < 6) return
+        moved = true
+        if (blockEl) blockEl.style.opacity = '0.3'
+      }
+      ev.preventDefault()
+      var col = colFromPoint(ev.clientX, ev.clientY)
+      if (!col) return
+      var rect = col.el.getBoundingClientRect()
+      var startMin = dropMinutesFrom(ev.clientY, rect.top, grabMin, dur)
+      target.date = col.date; target.min = startMin
+      setDropHint({ dayIndex: col.idx, startMin: startMin, dur: dur, label: event.title })
+    }
+    function onUp() {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+      if (blockEl) blockEl.style.opacity = ''
+      setDropHint(null)
+      if (!moved) { onEventClick(event); return } // tap = editar
+      if (target.date != null && target.min != null && onMoveEvent) onMoveEvent(event.id, target.date, target.min)
+    }
+    window.addEventListener('pointermove', onMove, { passive: false })
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
   }
   var hours = []
   for (var h = WEEK_HOUR_START; h <= WEEK_HOUR_END; h++) hours.push(h)
@@ -557,9 +556,9 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent })
             var laid = layoutDayEvents(timedEvents)
             return (
               <div key={i}
+                data-dayidx={i}
+                data-date={dateStr}
                 onClick={function() { onSlotClick(dateStr) }}
-                onDragOver={function(e) { onColDragOver(e, i) }}
-                onDrop={function(e) { handleDrop(e, dateStr) }}
                 style={{ position: 'relative', borderLeft: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer' }}
               >
                 {hours.map(function(h, hi) {
@@ -579,7 +578,7 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent })
                     <WeekEventBlock key={item.event.id} event={item.event}
                       startMin={item.start} endMin={item.end} col={item.col} cols={item.cols}
                       canDrag={canDrag}
-                      onDragBegin={onDragBegin} onDragEndBlock={onDragEndBlock}
+                      onDragPointerDown={beginDrag}
                       onClick={onEventClick} />
                   )
                 })}
@@ -711,27 +710,38 @@ function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate 
   var nowTop = ((now.getHours() * 60 + now.getMinutes()) - WEEK_HOUR_START * 60) / 60 * ROW_HEIGHT
   var label = new Date(dateStr + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
 
-  var dragRef = useRef(null)
   var [dropHint, setDropHint] = useState(null)
-  function onDragBegin(info) { dragRef.current = info }
-  function onDragEndBlock() { dragRef.current = null; setDropHint(null) }
-  function onColDragOver(e) {
-    var info = dragRef.current
-    if (!info) return
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    var rect = e.currentTarget.getBoundingClientRect()
-    setDropHint({ startMin: dropMinutesFrom(e.clientY, rect.top, info.grabMin, info.dur), dur: info.dur, label: info.label })
-  }
-  function handleDrop(e) {
-    e.preventDefault()
-    var info = dragRef.current
-    if (!info) return
-    var rect = e.currentTarget.getBoundingClientRect()
-    var startMin = dropMinutesFrom(e.clientY, rect.top, info.grabMin, info.dur)
-    dragRef.current = null
-    setDropHint(null)
-    if (onMoveEvent) onMoveEvent(info.id, dateStr, startMin)
+  var colRef = useRef(null)
+  function beginDrag(e, event, grabMin, dur, blockEl) {
+    e.stopPropagation()
+    var startX = e.clientX, startY = e.clientY
+    var moved = false
+    var targetMin = null
+    function onMove(ev) {
+      if (!moved) {
+        if (Math.abs(ev.clientX - startX) < 6 && Math.abs(ev.clientY - startY) < 6) return
+        moved = true
+        if (blockEl) blockEl.style.opacity = '0.3'
+      }
+      ev.preventDefault()
+      if (!colRef.current) return
+      var rect = colRef.current.getBoundingClientRect()
+      var startMin = dropMinutesFrom(ev.clientY, rect.top, grabMin, dur)
+      targetMin = startMin
+      setDropHint({ startMin: startMin, dur: dur, label: event.title })
+    }
+    function onUp() {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+      if (blockEl) blockEl.style.opacity = ''
+      setDropHint(null)
+      if (!moved) { onEventClick(event); return }
+      if (targetMin != null && onMoveEvent) onMoveEvent(event.id, dateStr, targetMin)
+    }
+    window.addEventListener('pointermove', onMove, { passive: false })
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
   }
 
   return (
@@ -767,9 +777,7 @@ function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate 
               return <div key={h} style={{ height: ROW_HEIGHT + 'px', textAlign: 'right', paddingRight: '6px', fontSize: '10px', color: 'var(--text-5)', position: 'relative', top: '-6px' }}>{String(h).padStart(2, '0')}:00</div>
             })}
           </div>
-          <div onClick={onCreate}
-            onDragOver={onColDragOver}
-            onDrop={handleDrop}
+          <div ref={colRef} onClick={onCreate}
             style={{ position: 'relative', borderLeft: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer' }}>
             {hours.map(function(h, hi) {
               return <div key={h} style={{ height: ROW_HEIGHT + 'px', borderTop: hi === 0 ? 'none' : '1px solid rgba(255,255,255,0.03)' }} />
@@ -784,7 +792,7 @@ function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate 
             )}
             {laid.map(function(item) {
               var canDrag = !(item.event.is_auto || (typeof item.event.id === 'string' && item.event.id.indexOf('auto') === 0))
-              return <WeekEventBlock key={item.event.id} event={item.event} startMin={item.start} endMin={item.end} col={item.col} cols={item.cols} canDrag={canDrag} onDragBegin={onDragBegin} onDragEndBlock={onDragEndBlock} onClick={onEventClick} />
+              return <WeekEventBlock key={item.event.id} event={item.event} startMin={item.start} endMin={item.end} col={item.col} cols={item.cols} canDrag={canDrag} onDragPointerDown={beginDrag} onClick={onEventClick} />
             })}
           </div>
         </div>

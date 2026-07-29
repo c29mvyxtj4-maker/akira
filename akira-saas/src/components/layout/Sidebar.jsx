@@ -5,12 +5,13 @@ import {
   LayoutDashboard, Users, FolderKanban, Wrench,
   CreditCard, TrendingUp, Receipt, FileSignature, Calendar, BookOpen,
   Brain, Settings, ChevronLeft, ChevronRight, ChevronDown,
-  LogOut, Clock, Zap,
+  LogOut, Clock, Zap, Home,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useApp }  from '@/context/AppContext'
 
 var GROUPS = [
+  { id: 'inicio',   label: 'Inicio',          icon: Home,            to: '/inicio' },
   { id: 'home',     label: 'Centro de mando', icon: LayoutDashboard, to: '/' },
   { id: 'accounts', label: 'Cuentas',         icon: Users,           to: '/clients' },
   {

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import {
   Home, MessageSquare, Calendar as CalendarIcon, Inbox,
   Users, FolderKanban, Wallet, FileText, Clock, BookOpen, Settings,
-  ChevronRight, TrendingUp,
+  ChevronRight, TrendingUp, Search, Sparkles, PenSquare,
 } from 'lucide-react'
 import { useApp } from '@/context/AppContext'
 import { useAuth } from '@/context/AuthContext'
@@ -63,7 +63,7 @@ export default function Inicio() {
 
   return (
     <div style={{ height: '100dvh', overflowY: 'auto', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 14px)' }}>
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 16px calc(var(--safe-bottom) + 40px)' }}>
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 16px calc(var(--safe-bottom) + 100px)' }}>
 
         {/* Topbar de pastillas */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '20px' }}>
@@ -154,6 +154,22 @@ export default function Inicio() {
         <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-5)', marginTop: '28px' }}>
           AKIRA · prueba de inicio
         </p>
+      </div>
+
+      {/* Barra inferior flotante (estilo Notion): buscar · IA · crear */}
+      <div style={{ position: 'fixed', left: '50%', transform: 'translateX(-50%)', bottom: 'calc(var(--safe-bottom) + 14px)', width: 'min(92vw, 640px)', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', borderRadius: '999px', background: 'var(--bg-2)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-modal)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', zIndex: 50 }}>
+        <button type="button" onClick={function() { navigate(ROUTES.KNOWLEDGE) }} aria-label="Buscar"
+          style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--bg-3)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Search style={{ width: '18px', height: '18px' }} />
+        </button>
+        <button type="button" onClick={function() { navigate('/brain') }}
+          style={{ flex: 1, height: '44px', borderRadius: '999px', border: '1px solid var(--brand-border)', background: 'var(--brand-dim)', color: 'var(--brand)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '14px', fontWeight: 700 }}>
+          <Sparkles style={{ width: '17px', height: '17px' }} /> Preguntar a AKIRA
+        </button>
+        <button type="button" onClick={function() { navigate(ROUTES.PROJECTS) }} aria-label="Crear"
+          style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--bg-3)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <PenSquare style={{ width: '17px', height: '17px' }} />
+        </button>
       </div>
     </div>
   )

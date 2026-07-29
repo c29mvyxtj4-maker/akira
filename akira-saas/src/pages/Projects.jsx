@@ -122,10 +122,25 @@ function ProjectCard({ project, isSelected, onClick }) {
   )
 }
 
-function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange }) {
+function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, onAssigneeChange }) {
   var [showPrio, setShowPrio] = useState(null)
+  var [showAssign, setShowAssign] = useState(null)
+  var [members, setMembers] = useState([])
   var inputRef = useRef(null)
   var prioRef  = useRef('medium')
+
+  // Miembros del proyecto para poder asignarles tareas (Fase 1).
+  useEffect(function() {
+    if (!project || !project.id) return
+    getProjectMembers(project.id).then(setMembers).catch(function() {})
+  }, [project && project.id])
+
+  function memberFor(userId) {
+    if (!userId) return null
+    for (var i = 0; i < members.length; i++) { if (members[i].user_id === userId) return members[i] }
+    return null
+  }
+  function initialOf(m) { return ((m && m.profile && m.profile.full_name) ? m.profile.full_name[0] : '?').toUpperCase() }
 
   var tasks   = project && Array.isArray(project.tasks) ? project.tasks : []
   var pending = tasks.filter(function(t) { return !t.done })
@@ -196,6 +211,35 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange })
             </div>
           )}
         </div>
+
+        {onAssigneeChange && (
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <button type="button" title="Asignar responsable"
+              onClick={function() { setShowAssign(showAssign === t.id ? null : t.id) }}
+              style={{ width: '22px', height: '22px', borderRadius: '50%', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700,
+                border: memberFor(t.assignee) ? 'none' : '1px dashed var(--text-5)',
+                background: memberFor(t.assignee) ? 'var(--gradient-brand)' : 'transparent',
+                color: memberFor(t.assignee) ? '#fff' : 'var(--text-5)' }}
+            >{memberFor(t.assignee) ? initialOf(memberFor(t.assignee)) : '+'}</button>
+            {showAssign === t.id && (
+              <div style={{ position: 'absolute', right: 0, top: '26px', zIndex: 100, background: '#1e1e2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '4px', minWidth: '150px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+                <button type="button" onClick={function() { onAssigneeChange(project.id, t.id, ''); setShowAssign(null) }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '6px 10px', borderRadius: '6px', border: 'none', background: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: '12px' }}>Sin asignar</button>
+                {members.length === 0 ? (
+                  <p style={{ padding: '6px 10px', fontSize: '11px', color: '#64748b' }}>Añade miembros en la pestaña Equipo</p>
+                ) : members.map(function(m) {
+                  return (
+                    <button key={m.id} type="button" onClick={function() { onAssigneeChange(project.id, t.id, m.user_id); setShowAssign(null) }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '6px 10px', borderRadius: '6px', border: 'none', background: 'none', cursor: 'pointer', color: '#cbd5e1', fontSize: '12px' }}>
+                      <span style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'var(--gradient-brand)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, flexShrink: 0 }}>{initialOf(m)}</span>
+                      {(m.profile && m.profile.full_name) || 'Sin nombre'}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         <button type="button"
           onClick={function() { onDelete(project.id, t.id) }}
@@ -550,7 +594,7 @@ function TeamPanel({ project }) {
   )
 }
 
-function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateProgress, onBack }) {
+function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateTaskAssignee, onUpdateProgress, onBack }) {
   var [tab, setTab] = useState('overview')
 
   if (loading) return <div className="flex-1 flex items-center justify-center"><PageSpinner label="Cargando..." /></div>
@@ -704,6 +748,7 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
             onToggle={onToggleTask}
             onDelete={onDeleteTask}
             onPriorityChange={onUpdateTaskPriority}
+            onAssigneeChange={onUpdateTaskAssignee}
           />
         </div>
 
@@ -1047,6 +1092,7 @@ export default function Projects() {
             onToggleTask={hook.handleToggleTask}
             onDeleteTask={hook.handleDeleteTask}
             onUpdateTaskPriority={hook.handleUpdateTaskPriority}
+            onUpdateTaskAssignee={hook.handleUpdateTaskAssignee}
             onUpdateProgress={hook.handleUpdateProgress}
             onBack={function() { hook.setSelectedId(null) }}
           />

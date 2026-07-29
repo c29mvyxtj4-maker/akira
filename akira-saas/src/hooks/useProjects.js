@@ -226,6 +226,19 @@ export function useProjects() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
+  function handleUpdateTaskAssignee(projectId, taskId, userId) {
+    if (!projectId || !taskId) return
+    supabase.from('projects').select('tasks').eq('id', projectId).single()
+      .then(function(res) {
+        if (res.error) throw res.error
+        var next = safeTasks(res.data.tasks).map(function(t) {
+          return t.id === taskId ? Object.assign({}, t, { assignee: userId || '' }) : t
+        })
+        return saveTasksToDB(projectId, next)
+      })
+      .catch(function(e) { showToast(e.message, 'error') })
+  }
+
   function handleUpdateProgress(projectId, progress) {
     supabase.from('projects').update({ progress: progress }).eq('id', projectId)
       .then(function(res) {
@@ -279,6 +292,7 @@ export function useProjects() {
     handleSave: handleSave, handleArchive: handleArchive,
     handleAddTask: handleAddTask, handleToggleTask: handleToggleTask,
     handleDeleteTask: handleDeleteTask, handleUpdateTaskPriority: handleUpdateTaskPriority,
+    handleUpdateTaskAssignee: handleUpdateTaskAssignee,
     handleUpdateProgress: handleUpdateProgress,
     handleUpdateStage: handleUpdateStage, // ← NUEVO
     toastMsg: toastMsg,

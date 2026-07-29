@@ -223,7 +223,7 @@ export default function Login() {
         </div>
 
         <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-5)', marginTop: '20px' }}>
-          AKIRA Business OS · Beta
+          AKIRA Business OS · Beta · build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
         </p>
       </motion.div>
 

@@ -109,7 +109,12 @@ export default function App() {
             </PrivateRoute>
           }
         >
-          <Route index                  element={<Dashboard />} />
+          {/* Inicio es ahora la pantalla principal */}
+          <Route index                  element={<Navigate to="/inicio" replace />} />
+          <Route path="inicio"          element={<Inicio />} />
+          <Route path="mensajes"        element={<Mensajes />} />
+          <Route path="inbox"           element={<InboxPage />} />
+          <Route path="dashboard"       element={<Dashboard />} />
           <Route path="clients/*"       element={<Clients />} />
           <Route path="projects/*"      element={<Projects />} />
           <Route path="services/*"      element={<Services />} />
@@ -126,11 +131,6 @@ export default function App() {
           <Route path="offers/*"        element={<Offers />} />
           <Route path="documents/*"     element={<Documents />} />
         </Route>
-
-        {/* PRUEBA — home experimental con topbar de pastillas (ruta propia) */}
-        <Route path="/inicio"   element={<PrivateRoute><Inicio /></PrivateRoute>} />
-        <Route path="/mensajes" element={<PrivateRoute><Mensajes /></PrivateRoute>} />
-        <Route path="/inbox"    element={<PrivateRoute><InboxPage /></PrivateRoute>} />
 
         {/* Portal de clientes — rutas públicas */}
         <Route path="/portal"           element={<PortalLogin />} />

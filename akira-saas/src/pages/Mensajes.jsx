@@ -89,7 +89,7 @@ export default function Mensajes() {
   var TABS = [{ id: 'chat', label: 'Chat', icon: MessageSquare }, { id: 'announce', label: 'Anuncios', icon: Megaphone }]
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 14px)' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 14px)' }}>
       <div style={{ maxWidth: '720px', width: '100%', margin: '0 auto', padding: '0 16px', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
 
         <button type="button" onClick={function () { navigate('/inicio') }}

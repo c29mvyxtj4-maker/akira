@@ -2,21 +2,19 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  Home, MessageSquare, Calendar as CalendarIcon, Inbox,
+  Home, MessageSquare, Calendar as CalendarIcon, Inbox, LayoutDashboard,
   Users, FolderKanban, Wallet, FileText, Clock, BookOpen, Settings,
-  ChevronRight, TrendingUp, Search, Sparkles, PenSquare,
+  ChevronRight, TrendingUp,
 } from 'lucide-react'
 import { useApp } from '@/context/AppContext'
 import { useAuth } from '@/context/AuthContext'
 import { ROUTES } from '@/config/constants'
 import { DUR, EASE, SPRING } from '@/config/motion'
-import CommandPalette from '@/components/layout/CommandPalette'
-import AskAkiraButton from '@/components/akira/AskAkiraButton'
 import { getUnreadMentionCount } from '@/services/mentions.service'
 
 /*
- * PRUEBA — Home experimental estilo Notion (topbar de pastillas + accesos),
- * en tema oscuro AKIRA. Suplementa a la sidebar. Ruta independiente /inicio.
+ * Pantalla principal (hub). Sin sidebar: la navegación es esta pantalla + la
+ * barra inferior global. Layout ancho para escritorio, rejillas responsive.
  */
 
 function fmtCur(n) {
@@ -31,22 +29,8 @@ export default function Inicio() {
   var name = profile && profile.full_name ? profile.full_name.split(' ')[0] : 'usuario'
   var initial = profile && profile.full_name ? profile.full_name[0].toUpperCase() : 'M'
 
-  var [cmdOpen, setCmdOpen] = useState(false)
-  var [aiOpen, setAiOpen]   = useState(false)
-  var [unread, setUnread]   = useState(0)
-
-  useEffect(function () {
-    getUnreadMentionCount().then(setUnread).catch(function () {})
-  }, [])
-
-  // La brújula abre el command palette (igual que Ctrl/Cmd+K).
-  useEffect(function() {
-    function onKey(e) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setCmdOpen(function(v) { return !v }) }
-    }
-    window.addEventListener('keydown', onKey)
-    return function() { window.removeEventListener('keydown', onKey) }
-  }, [])
+  var [unread, setUnread] = useState(0)
+  useEffect(function () { getUnreadMentionCount().then(setUnread).catch(function () {}) }, [])
 
   var PILLS = [
     { icon: CalendarIcon,  label: 'Calendario', to: ROUTES.CALENDAR },
@@ -62,13 +46,16 @@ export default function Inicio() {
   ]
 
   var QUICK = [
+    { label: 'Centro de mando', sub: 'KPIs y atención hoy', icon: LayoutDashboard, to: '/dashboard' },
     { label: 'Clientes',   sub: 'Cuentas y portal',   icon: Users,        to: ROUTES.CLIENTS },
     { label: 'Proyectos',  sub: 'Kanban y entregas',  icon: FolderKanban, to: ROUTES.PROJECTS },
     { label: 'Finanzas',   sub: 'Ingresos y gastos',  icon: Wallet,       to: ROUTES.FINANCE },
+    { label: 'Facturas',   sub: 'Cobros y PDF',       icon: FileText,     to: ROUTES.INVOICES },
     { label: 'Calendario', sub: 'Agenda y eventos',   icon: CalendarIcon, to: ROUTES.CALENDAR },
   ]
 
   var SECTIONS = [
+    { label: 'Centro de mando',      icon: LayoutDashboard, to: '/dashboard' },
     { label: 'Clientes',             icon: Users,        to: ROUTES.CLIENTS },
     { label: 'Proyectos',            icon: FolderKanban, to: ROUTES.PROJECTS },
     { label: 'Finanzas',             icon: Wallet,       to: ROUTES.FINANCE },
@@ -79,23 +66,22 @@ export default function Inicio() {
     { label: 'Ajustes',              icon: Settings,     to: ROUTES.SETTINGS },
   ]
 
-  var sectionLabel = { fontSize: '11px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '24px 0 10px' }
+  var sectionLabel = { fontSize: '11px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '28px 0 12px' }
 
   return (
-    <div style={{ height: '100dvh', overflowY: 'auto', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 14px)' }}>
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 16px calc(var(--safe-bottom) + 100px)' }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 18px)' }}>
+      <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 24px 24px' }}>
 
-        {/* Topbar de pastillas */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '20px' }}>
+        {/* Barra de pastillas */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '22px' }}>
           <button type="button" onClick={function() { navigate(ROUTES.SETTINGS) }} aria-label="Editar perfil"
             style={{ width: '38px', height: '38px', borderRadius: '50%', flexShrink: 0, border: '1px solid var(--border)', background: 'var(--gradient-brand)', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-brand)' }}>
             {initial}
           </button>
-          <button type="button" onClick={function() { navigate('/inicio') }}
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '999px', background: 'var(--brand-dim)', border: '1px solid var(--brand-border)', color: 'var(--brand)', flexShrink: 0, cursor: 'pointer' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '999px', background: 'var(--brand-dim)', border: '1px solid var(--brand-border)', color: 'var(--brand)', flexShrink: 0 }}>
             <Home style={{ width: '16px', height: '16px' }} />
             <span style={{ fontSize: '13px', fontWeight: 700 }}>Inicio</span>
-          </button>
+          </div>
           {PILLS.map(function(p) {
             var Icon = p.icon
             var showBadge = p.label === 'Bandeja' && unread > 0
@@ -113,37 +99,37 @@ export default function Inicio() {
 
         {/* Saludo */}
         <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR.slow, ease: EASE.out }}
-          style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
+          style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
           Hola, {name}
         </motion.h1>
-        <p style={{ fontSize: '13px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
+        <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
 
-        {/* KPIs — con animación de escalado al pasar el ratón */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginTop: '18px' }}>
+        {/* KPIs */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3" style={{ marginTop: '20px' }}>
           {KPIS.map(function(k, i) {
             var Icon = k.icon
             return (
               <motion.div key={k.label}
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04, duration: DUR.slow, ease: EASE.out }}
-                whileHover={{ scale: 1.035 }} whileTap={{ scale: 0.98 }}
-                style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '14px', position: 'relative', overflow: 'hidden' }}>
+                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}
+                style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '16px', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'var(--brand)', opacity: 0.5 }} />
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                   <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{k.label}</span>
-                  <div style={{ width: '26px', height: '26px', borderRadius: 'var(--radius-md)', background: 'var(--brand-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon style={{ width: '13px', height: '13px', color: 'var(--brand)' }} />
+                  <div style={{ width: '28px', height: '28px', borderRadius: 'var(--radius-md)', background: 'var(--brand-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon style={{ width: '14px', height: '14px', color: 'var(--brand)' }} />
                   </div>
                 </div>
-                <span style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>{k.value}</span>
+                <span style={{ fontSize: '26px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>{k.value}</span>
               </motion.div>
             )
           })}
         </div>
 
-        {/* Accesos rápidos — escalado + tinción roja al pasar el ratón */}
+        {/* Accesos rápidos — rejilla (sin scroll horizontal: el escalado ya no recorta) */}
         <p style={sectionLabel}>Accesos rápidos</p>
-        <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', margin: '0 -16px', padding: '0 16px 4px' }}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {QUICK.map(function(q) {
             var Icon = q.icon
             return (
@@ -151,20 +137,20 @@ export default function Inicio() {
                 whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} transition={SPRING.snappy}
                 onMouseEnter={function(e) { e.currentTarget.style.borderColor = 'var(--brand-border)'; e.currentTarget.style.background = 'var(--brand-dim)' }}
                 onMouseLeave={function(e) { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--bg-2)' }}
-                style={{ flexShrink: 0, width: '150px', textAlign: 'left', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '14px', cursor: 'pointer', transition: 'background 0.15s, border-color 0.15s' }}>
-                <div style={{ width: '34px', height: '34px', borderRadius: 'var(--radius-md)', background: 'var(--brand-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
-                  <Icon style={{ width: '17px', height: '17px', color: 'var(--brand)' }} />
+                style={{ textAlign: 'left', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '16px', cursor: 'pointer', transition: 'background 0.15s, border-color 0.15s' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: 'var(--radius-md)', background: 'var(--brand-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                  <Icon style={{ width: '18px', height: '18px', color: 'var(--brand)' }} />
                 </div>
                 <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)' }}>{q.label}</p>
-                <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '1px' }}>{q.sub}</p>
+                <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '2px' }}>{q.sub}</p>
               </motion.button>
             )
           })}
         </div>
 
-        {/* Secciones (suplemento de la sidebar) */}
+        {/* Secciones — 2 columnas en escritorio */}
         <p style={sectionLabel}>Secciones</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
           {SECTIONS.map(function(s) {
             var Icon = s.icon
             return (
@@ -186,26 +172,6 @@ export default function Inicio() {
           AKIRA · inicio · build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
         </p>
       </div>
-
-      {/* Barra inferior flotante (siempre visible): buscar · IA · crear */}
-      <div style={{ position: 'fixed', left: '50%', transform: 'translateX(-50%)', bottom: 'calc(var(--safe-bottom) + 14px)', width: 'min(92vw, 640px)', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px', borderRadius: '999px', background: 'var(--bg-2)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-modal)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', zIndex: 50 }}>
-        <button type="button" onClick={function() { setCmdOpen(true) }} aria-label="Buscar (Ctrl+K)" title="Buscar (Ctrl+K)"
-          style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--bg-3)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Search style={{ width: '18px', height: '18px' }} />
-        </button>
-        <button type="button" onClick={function() { setAiOpen(true) }}
-          style={{ flex: 1, height: '44px', borderRadius: '999px', border: '1px solid var(--brand-border)', background: 'var(--brand-dim)', color: 'var(--brand)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '14px', fontWeight: 700 }}>
-          <Sparkles style={{ width: '17px', height: '17px' }} /> Preguntar a AKIRA
-        </button>
-        <button type="button" onClick={function() { navigate(ROUTES.KNOWLEDGE + '?new=1') }} aria-label="Nueva página de conocimiento" title="Crear página de conocimiento"
-          style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--bg-3)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <PenSquare style={{ width: '17px', height: '17px' }} />
-        </button>
-      </div>
-
-      <CommandPalette open={cmdOpen} onClose={function() { setCmdOpen(false) }} />
-      <AskAkiraButton controlledOpen={aiOpen} onOpenChange={setAiOpen} hideFab
-        contextLabel="Inicio" contextText="El usuario está en la pantalla de inicio de AKIRA (KPIs y accesos)." />
     </div>
   )
 }

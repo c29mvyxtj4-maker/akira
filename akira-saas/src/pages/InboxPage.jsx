@@ -36,7 +36,7 @@ export default function InboxPage() {
   var unread = items.filter(function (m) { return !m.read }).length
 
   return (
-    <div style={{ height: '100dvh', overflowY: 'auto', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 14px)' }}>
+    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 14px)' }}>
       <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 16px calc(var(--safe-bottom) + 40px)' }}>
         <button type="button" onClick={function () { navigate('/inicio') }}
           style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: 'var(--text-3)', fontSize: '13px', cursor: 'pointer', marginBottom: '20px' }}>

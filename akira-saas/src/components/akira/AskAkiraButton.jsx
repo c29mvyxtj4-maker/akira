@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, X, Send, Loader2 } from 'lucide-react'
-import { sendMessageStream } from '@/services/brain.service'
+import { sendMessageStream, createConversation, saveMessage } from '@/services/brain.service'
 import DOMPurify from 'dompurify'
 
 function renderSimpleMarkdown(text) {
@@ -38,35 +38,41 @@ export default function AskAkiraButton({ contextLabel, contextText, controlledOp
   var [streaming, setStreaming] = useState(false)
   var [streamText, setStreamText] = useState('')
   var endRef = useRef(null)
+  var convId = useRef(null) // conversación persistida en Brain (se crea al 1er mensaje)
 
   useEffect(function() {
     if (endRef.current) endRef.current.scrollIntoView({ behavior: 'smooth' })
   }, [messages, streamText])
 
-  function handleAsk() {
+  async function handleAsk() {
     var question = input.trim()
     if (!question || streaming) return
 
-    var userMsg = { role: 'user', content: question }
-    setMessages(function(prev) { return prev.concat([userMsg]) })
+    setMessages(function(prev) { return prev.concat([{ role: 'user', content: question }]) })
     setInput('')
     setStreaming(true)
     setStreamText('')
 
     var promptWithContext = 'Contexto de lo que estoy viendo ahora mismo:\n' + contextText + '\n\nMi pregunta: ' + question
 
-    sendMessageStream(null, promptWithContext, [], function(chunk, full) {
-      setStreamText(full)
-    })
-      .then(function(fullText) {
-        setMessages(function(prev) { return prev.concat([{ role: 'assistant', content: fullText }]) })
-        setStreamText('')
-      })
-      .catch(function(e) {
-        setMessages(function(prev) { return prev.concat([{ role: 'assistant', content: 'Error: ' + e.message }]) })
-        setStreamText('')
-      })
-      .finally(function() { setStreaming(false) })
+    // Persistir en Brain: crear la conversación al primer mensaje y guardar
+    // ambos turnos (mejor esfuerzo; si falla, el chat sigue funcionando).
+    if (!convId.current) {
+      try { var c = await createConversation(question.slice(0, 60)); convId.current = c.id } catch (_) { /* noop */ }
+    }
+    if (convId.current) saveMessage(convId.current, 'user', question).catch(function() {})
+
+    try {
+      var fullText = await sendMessageStream(null, promptWithContext, [], function(chunk, full) { setStreamText(full) })
+      setMessages(function(prev) { return prev.concat([{ role: 'assistant', content: fullText }]) })
+      setStreamText('')
+      if (convId.current) saveMessage(convId.current, 'assistant', fullText).catch(function() {})
+    } catch (e) {
+      setMessages(function(prev) { return prev.concat([{ role: 'assistant', content: 'Error: ' + e.message }]) })
+      setStreamText('')
+    } finally {
+      setStreaming(false)
+    }
   }
 
   function handleKeyDown(e) {

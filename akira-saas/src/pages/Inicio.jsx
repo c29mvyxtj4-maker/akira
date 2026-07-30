@@ -8,9 +8,12 @@ import {
 } from 'lucide-react'
 import { useApp } from '@/context/AppContext'
 import { useAuth } from '@/context/AuthContext'
+import { useOrg } from '@/context/OrgContext'
 import { ROUTES } from '@/config/constants'
 import { DUR, EASE, SPRING } from '@/config/motion'
 import { getUnreadMentionCount } from '@/services/mentions.service'
+import AccountMenu from '@/components/layout/AccountMenu'
+import SettingsPanel from '@/pages/Settings'
 
 /*
  * Pantalla principal (hub). Sin sidebar: la navegación es esta pantalla + la
@@ -25,12 +28,18 @@ function fmtCur(n) {
 export default function Inicio() {
   var navigate = useNavigate()
   var { kpis, loading } = useApp()
-  var { profile } = useAuth()
+  var { profile, user, signOut } = useAuth()
+  var { org, members } = useOrg()
   var name = profile && profile.full_name ? profile.full_name.split(' ')[0] : 'usuario'
   var initial = profile && profile.full_name ? profile.full_name[0].toUpperCase() : 'M'
 
   var [unread, setUnread] = useState(0)
+  var [menuOpen, setMenuOpen] = useState(false)
+  var [settingsOpen, setSettingsOpen] = useState(false)
+  var [settingsTab, setSettingsTab] = useState('profile')
   useEffect(function () { getUnreadMentionCount().then(setUnread).catch(function () {}) }, [])
+
+  function openSettings(t) { setMenuOpen(false); setSettingsTab(t || 'profile'); setSettingsOpen(true) }
 
   var PILLS = [
     { icon: CalendarIcon,  label: 'Calendario', to: ROUTES.CALENDAR },
@@ -74,10 +83,25 @@ export default function Inicio() {
 
         {/* Barra de pastillas */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '22px' }}>
-          <button type="button" onClick={function() { navigate(ROUTES.SETTINGS) }} aria-label="Editar perfil"
-            style={{ width: '38px', height: '38px', borderRadius: '50%', flexShrink: 0, border: '1px solid var(--border)', background: 'var(--gradient-brand)', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-brand)' }}>
-            {initial}
-          </button>
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <button type="button" onClick={function() { setMenuOpen(function(v) { return !v }) }} aria-label="Tu cuenta"
+              style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--gradient-brand)', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-brand)' }}>
+              {initial}
+            </button>
+            {menuOpen && (
+              <AccountMenu
+                orgName={org ? org.name : null}
+                plan={org && org.plan ? org.plan : 'gratuito'}
+                memberCount={members ? members.length : 1}
+                initial={initial}
+                email={user ? user.email : ''}
+                onSettings={function() { openSettings('profile') }}
+                onInvite={function() { openSettings('team') }}
+                onSignOut={function() { setMenuOpen(false); signOut() }}
+                onClose={function() { setMenuOpen(false) }}
+              />
+            )}
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '999px', background: 'var(--brand-dim)', border: '1px solid var(--brand-border)', color: 'var(--brand)', flexShrink: 0 }}>
             <Home style={{ width: '16px', height: '16px' }} />
             <span style={{ fontSize: '13px', fontWeight: 700 }}>Inicio</span>
@@ -172,6 +196,8 @@ export default function Inicio() {
           AKIRA · inicio · build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
         </p>
       </div>
+
+      {settingsOpen && <SettingsPanel onClose={function() { setSettingsOpen(false) }} initialTab={settingsTab} />}
     </div>
   )
 }

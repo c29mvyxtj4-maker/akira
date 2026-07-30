@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   User, Lock, Database, Receipt, History,
   Users2, Tag, Bell, AlertOctagon, Download, FileText, Workflow,
-  ChevronRight, ChevronLeft,
+  ChevronRight, ChevronLeft, X,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import PageHeader from '@/components/layout/PageHeader'
@@ -21,9 +21,10 @@ import SecurityTab from '@/components/settings/SecurityTab'
 import AccountTab from '@/components/settings/AccountTab'
 import AutomationsTab from '@/components/settings/AutomationsTab'
 
-export default function Settings() {
+export default function Settings({ onClose, initialTab }) {
   var { user, signOut } = useAuth()
-  var [activeTab, setActiveTab] = useState('profile')
+  var isModal = typeof onClose === 'function'
+  var [activeTab, setActiveTab] = useState(initialTab || 'profile')
 
   // Móvil: 'list' (ver las pestañas) | 'content' (ver el contenido de una pestaña) — NUEVO
   var [mobileStep, setMobileStep] = useState('list')
@@ -60,14 +61,8 @@ export default function Settings() {
   var showListPane    = !isMobile || mobileStep === 'list'
   var showContentPane = !isMobile || mobileStep === 'content'
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      <PageHeader
-        title="Configuracion"
-        description="Gestiona tu perfil, workspace y preferencias"
-      />
-
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+  var twoPane = (
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
 
         {/* Sidebar de tabs — en móvil, pantalla completa hasta que se elige una */}
         {showListPane && (
@@ -183,6 +178,37 @@ export default function Settings() {
           </div>
         )}
       </div>
+  )
+
+  if (isModal) {
+    return (
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96, y: 8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 26 }}
+          onClick={function(e) { e.stopPropagation() }}
+          style={{ width: 'min(96vw, 1000px)', height: 'min(88dvh, 760px)', display: 'flex', flexDirection: 'column', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-modal)', overflow: 'hidden' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+            <h2 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text-1)' }}>Configuración</h2>
+            <button type="button" onClick={onClose} aria-label="Cerrar" style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', background: 'var(--bg-3)', color: 'var(--text-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <X style={{ width: '16px', height: '16px' }} />
+            </button>
+          </div>
+          {twoPane}
+        </motion.div>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <PageHeader
+        title="Configuracion"
+        description="Gestiona tu perfil, workspace y preferencias"
+      />
+      {twoPane}
     </div>
   )
 }

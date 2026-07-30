@@ -90,24 +90,25 @@ export default function Mensajes() {
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 14px)' }}>
-      <div style={{ maxWidth: '720px', width: '100%', margin: '0 auto', padding: '0 16px', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+      <div style={{ maxWidth: '960px', width: '100%', margin: '0 auto', padding: '0 24px', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
 
-        <button type="button" onClick={function () { navigate('/inicio') }}
-          style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: 'var(--text-3)', fontSize: '13px', cursor: 'pointer', marginBottom: '14px' }}>
-          <ChevronLeft style={{ width: '16px', height: '16px' }} /> Inicio
-        </button>
-
-        <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-3)', borderRadius: '10px', padding: '4px', alignSelf: 'flex-start', marginBottom: '14px' }}>
-          {TABS.map(function (t) {
-            var Icon = t.icon
-            var active = tab === t.id
-            return (
-              <button key={t.id} type="button" onClick={function () { setTab(t.id) }}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '7px', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 700, background: active ? 'var(--gradient-brand)' : 'transparent', color: active ? '#fff' : 'var(--text-4)' }}>
-                <Icon style={{ width: '14px', height: '14px' }} /> {t.label}
-              </button>
-            )
-          })}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-3)', borderRadius: '10px', padding: '4px' }}>
+            {TABS.map(function (t) {
+              var Icon = t.icon
+              var active = tab === t.id
+              return (
+                <button key={t.id} type="button" onClick={function () { setTab(t.id) }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '7px', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 700, background: active ? 'var(--gradient-brand)' : 'transparent', color: active ? '#fff' : 'var(--text-4)' }}>
+                  <Icon style={{ width: '14px', height: '14px' }} /> {t.label}
+                </button>
+              )
+            })}
+          </div>
+          <button type="button" onClick={function () { navigate(-1) }} aria-label="Volver atrás" title="Volver atrás"
+            style={{ width: '38px', height: '38px', flexShrink: 0, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--bg-3)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ChevronLeft style={{ width: '18px', height: '18px' }} />
+          </button>
         </div>
 
         {!orgId ? (

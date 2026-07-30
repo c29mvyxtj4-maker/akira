@@ -37,23 +37,24 @@ export default function InboxPage() {
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 14px)' }}>
-      <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 16px calc(var(--safe-bottom) + 40px)' }}>
-        <button type="button" onClick={function () { navigate('/inicio') }}
-          style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: 'var(--text-3)', fontSize: '13px', cursor: 'pointer', marginBottom: '20px' }}>
-          <ChevronLeft style={{ width: '16px', height: '16px' }} /> Inicio
-        </button>
-
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px calc(var(--safe-bottom) + 24px)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '18px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Inbox style={{ width: '22px', height: '22px', color: 'var(--brand)' }} />
-            <h1 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.02em' }}>Bandeja</h1>
+            <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.02em' }}>Bandeja</h1>
             {unread > 0 && <span style={{ fontSize: '11px', fontWeight: 700, color: '#fff', background: 'var(--brand)', borderRadius: '999px', padding: '2px 8px' }}>{unread}</span>}
           </div>
-          {unread > 0 && (
-            <button type="button" onClick={markAll} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px 10px', color: 'var(--text-3)', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
-              <CheckCheck style={{ width: '14px', height: '14px' }} /> Marcar todo
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {unread > 0 && (
+              <button type="button" onClick={markAll} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: '1px solid var(--border)', borderRadius: '8px', padding: '7px 10px', color: 'var(--text-3)', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+                <CheckCheck style={{ width: '14px', height: '14px' }} /> Marcar todo
+              </button>
+            )}
+            <button type="button" onClick={function () { navigate(-1) }} aria-label="Volver atrás" title="Volver atrás"
+              style={{ width: '38px', height: '38px', flexShrink: 0, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--bg-3)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <ChevronLeft style={{ width: '18px', height: '18px' }} />
             </button>
-          )}
+          </div>
         </div>
 
         {loading ? (

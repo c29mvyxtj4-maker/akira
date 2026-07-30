@@ -19,7 +19,18 @@ function toLocalTime(iso) {
 
 function combineDateTime(dateStr, timeStr) {
   if (!dateStr) return null
-  return dateStr + 'T' + (timeStr || '00:00') + ':00'
+  // Construimos la fecha con los componentes de HORA LOCAL y devolvemos su ISO
+  // (UTC). Así, al guardarse en la columna timestamptz y volver a leerse con
+  // new Date(...).getHours(), recuperamos exactamente la hora que puso el
+  // usuario (antes se guardaba texto "naïve" -> Postgres lo tomaba como UTC y
+  // el evento se desplazaba según la zona horaria).
+  var dp = String(dateStr).split('-')
+  var tp = String(timeStr || '00:00').split(':')
+  var d = new Date(
+    Number(dp[0]), Number(dp[1]) - 1, Number(dp[2]),
+    Number(tp[0]) || 0, Number(tp[1]) || 0, 0, 0
+  )
+  return d.toISOString()
 }
 
 function dbStatusToUi(status) {

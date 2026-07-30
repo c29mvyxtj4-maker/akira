@@ -155,7 +155,7 @@ export default function Mensajes() {
               <p style={{ fontSize: '13px', color: 'var(--text-5)', textAlign: 'center', paddingTop: '24px' }}>No hay anuncios todavía.{isOwner ? '' : ' Aquí verás lo que publique tu responsable.'}</p>
             ) : anns.map(function (a) {
               return (
-                <div key={a.id} style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderLeft: '3px solid var(--brand)', borderRadius: 'var(--radius-md)', padding: '12px 14px' }}>
+                <div key={a.id} style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '12px 14px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
                     {a.title && <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)' }}>{a.title}</p>}
                     {isOwner && <button type="button" onClick={function () { removeAnn(a.id) }} aria-label="Eliminar" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-5)', flexShrink: 0 }}><Trash2 style={{ width: '14px', height: '14px' }} /></button>}

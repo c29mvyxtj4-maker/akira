@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Users, FolderKanban, Receipt, FileSignature, BookOpen, X, CornerDownLeft } from 'lucide-react'
 import { searchAll, getRecent, getDocPreview } from '@/services/search.service'
 
@@ -68,8 +68,6 @@ export default function CommandPalette({ open, onClose }) {
     if (e.key === 'Enter' && items[activeIndex]) { go(items[activeIndex]) }
   }
 
-  if (!open) return null
-
   function renderRow(r, i) {
     var Icon = TYPE_ICON[r.type] || Search
     var color = TYPE_COLOR[r.type] || 'var(--brand)'
@@ -124,16 +122,22 @@ export default function CommandPalette({ open, onClose }) {
   }
 
   return (
-    <div
-      style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '72px 16px 16px' }}
-      onClick={onClose}
-    >
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          key="cmd-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] } }}
+          exit={{ opacity: 0, transition: { duration: 0.12, ease: [0.4, 0, 1, 1] } }}
+          style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '72px 16px 16px' }}
+          onClick={onClose}
+        >
       <motion.div
-        initial={{ opacity: 0, y: -10, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.15 }}
+        initial={{ opacity: 0, scale: 0.9, y: -10 }}
+        animate={{ opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24, mass: 0.9 } }}
+        exit={{ opacity: 0, scale: 0.95, y: -6, transition: { duration: 0.13, ease: [0.4, 0, 1, 1] } }}
         onClick={function(e) { e.stopPropagation() }}
-        style={{ width: '100%', maxWidth: isWide ? '880px' : '560px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '14px', boxShadow: 'var(--shadow-modal)', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: 'calc(100dvh - 110px)' }}
+        style={{ width: '100%', maxWidth: isWide ? '880px' : '560px', transformOrigin: 'top center', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '14px', boxShadow: 'var(--shadow-modal)', overflow: 'hidden', display: 'flex', flexDirection: 'column', maxHeight: 'calc(100dvh - 110px)' }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', borderBottom: '1px solid var(--border)' }}>
           <Search style={{ width: '16px', height: '16px', color: 'var(--text-4)', flexShrink: 0 }} />
@@ -180,6 +184,8 @@ export default function CommandPalette({ open, onClose }) {
           <span>Esc Cerrar</span>
         </div>
       </motion.div>
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

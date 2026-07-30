@@ -29,17 +29,28 @@ export default function Inicio() {
   var navigate = useNavigate()
   var { kpis, loading } = useApp()
   var { profile, user, signOut } = useAuth()
-  var { org, members } = useOrg()
+  var { org, members, workspaces, switchWorkspace, createWorkspace } = useOrg()
   var name = profile && profile.full_name ? profile.full_name.split(' ')[0] : 'usuario'
   var initial = profile && profile.full_name ? profile.full_name[0].toUpperCase() : 'M'
 
   var [unread, setUnread] = useState(0)
   var [menuOpen, setMenuOpen] = useState(false)
+  var [menuAnchor, setMenuAnchor] = useState(null)
   var [settingsOpen, setSettingsOpen] = useState(false)
   var [settingsTab, setSettingsTab] = useState('profile')
   useEffect(function () { getUnreadMentionCount().then(setUnread).catch(function () {}) }, [])
 
   function openSettings(t) { setMenuOpen(false); setSettingsTab(t || 'profile'); setSettingsOpen(true) }
+  function openMenu(e) {
+    var r = e.currentTarget.getBoundingClientRect()
+    setMenuAnchor({ top: r.bottom + 6, left: r.left })
+    setMenuOpen(function (v) { return !v })
+  }
+  function handleCreateWorkspace() {
+    setMenuOpen(false)
+    var name = window.prompt('Nombre del nuevo espacio de trabajo')
+    if (name && name.trim()) createWorkspace(name.trim()).catch(function (e) { window.alert('No se pudo crear: ' + (e.message || e)) })
+  }
 
   var PILLS = [
     { icon: CalendarIcon,  label: 'Calendario', to: ROUTES.CALENDAR },
@@ -83,25 +94,28 @@ export default function Inicio() {
 
         {/* Barra de pastillas */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '22px' }}>
-          <div style={{ position: 'relative', flexShrink: 0 }}>
-            <button type="button" onClick={function() { setMenuOpen(function(v) { return !v }) }} aria-label="Tu cuenta"
-              style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--gradient-brand)', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-brand)' }}>
-              {initial}
-            </button>
-            {menuOpen && (
-              <AccountMenu
-                orgName={org ? org.name : null}
-                plan={org && org.plan ? org.plan : 'gratuito'}
-                memberCount={members ? members.length : 1}
-                initial={initial}
-                email={user ? user.email : ''}
-                onSettings={function() { openSettings('profile') }}
-                onInvite={function() { openSettings('team') }}
-                onSignOut={function() { setMenuOpen(false); signOut() }}
-                onClose={function() { setMenuOpen(false) }}
-              />
-            )}
-          </div>
+          <button type="button" onClick={openMenu} aria-label="Tu cuenta"
+            style={{ width: '38px', height: '38px', flexShrink: 0, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--gradient-brand)', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-brand)' }}>
+            {initial}
+          </button>
+          {menuOpen && (
+            <AccountMenu
+              anchor={menuAnchor}
+              orgName={org ? org.name : null}
+              plan={org && org.plan ? org.plan : 'gratuito'}
+              memberCount={members ? members.length : 1}
+              initial={initial}
+              email={user ? user.email : ''}
+              workspaces={workspaces || []}
+              activeOrgId={org ? org.id : null}
+              onSwitch={function(id) { setMenuOpen(false); switchWorkspace(id) }}
+              onCreateWorkspace={handleCreateWorkspace}
+              onSettings={function() { openSettings('profile') }}
+              onInvite={function() { openSettings('team') }}
+              onSignOut={function() { setMenuOpen(false); signOut() }}
+              onClose={function() { setMenuOpen(false) }}
+            />
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '999px', background: 'var(--brand-dim)', border: '1px solid var(--brand-border)', color: 'var(--brand)', flexShrink: 0 }}>
             <Home style={{ width: '16px', height: '16px' }} />
             <span style={{ fontSize: '13px', fontWeight: 700 }}>Inicio</span>

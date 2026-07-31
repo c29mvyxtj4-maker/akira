@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "akira-saas/src/index.css"
+        ],
+        "createdAt": "2026-07-31T13:51:26.455Z",
+        "reason": "Blockquote left-border in the TipTap editor (.kb-editor-content blockquote) is a standard typographic convention, not a card side-tab accent"
+      }
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -14,6 +14,9 @@ import { DUR, EASE, SPRING } from '@/config/motion'
 import { getUnreadMentionCount } from '@/services/mentions.service'
 import AccountMenu from '@/components/layout/AccountMenu'
 import SettingsPanel from '@/pages/Settings'
+
+// Fondo animado (three.js) — en diferido para no bloquear la carga inicial.
+var Silk = lazy(function () { return import('@/components/effects/Silk') })
 
 /*
  * Pantalla principal (hub). Sin sidebar: la navegación es esta pantalla + la
@@ -87,9 +90,19 @@ export default function Inicio() {
   ]
 
   var sectionLabel = { fontSize: '11px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '28px 0 12px' }
+  var silkOn = typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', background: 'var(--bg-base)', paddingTop: 'calc(var(--safe-top) + 18px)' }}>
+    <div style={{ height: '100%', position: 'relative', overflow: 'hidden', background: 'var(--bg-base)' }}>
+      {silkOn && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+          <Suspense fallback={null}>
+            <Silk speed={5} scale={1} color="#340d0d" noiseIntensity={1.5} rotation={0} />
+          </Suspense>
+        </div>
+      )}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.58) 100%)' }} />
+      <div style={{ position: 'relative', zIndex: 1, height: '100%', overflowY: 'auto', paddingTop: 'calc(var(--safe-top) + 18px)' }}>
       <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 24px 24px' }}>
 
         {/* Barra de pastillas */}
@@ -209,6 +222,7 @@ export default function Inicio() {
         <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-5)', marginTop: '28px' }}>
           AKIRA · inicio · build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
         </p>
+      </div>
       </div>
 
       {settingsOpen && <SettingsPanel onClose={function() { setSettingsOpen(false) }} initialTab={settingsTab} />}

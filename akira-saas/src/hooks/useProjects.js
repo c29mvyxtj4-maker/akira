@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
 export function useProjects() {
   var [projects,      setProjects]      = useState([])
@@ -45,6 +46,7 @@ export function useProjects() {
     setLoading(true)
     setError(null)
     var q = supabase.from('projects').select('*, clients(id, name, company)').eq('archived', false)
+    q = scopeToOrg(q) // aislar por workspace activo (defensivo)
     if (status   !== 'all') q = q.eq('status',    status)
     if (clientId !== 'all') q = q.eq('client_id', clientId)
     if (priority !== 'all') q = q.eq('priority',  priority)
@@ -121,6 +123,7 @@ export function useProjects() {
         delivery_date:   form.delivery_date   || null,
         notes:           form.notes           || null,
         owner_id:        ownerId,
+        org_id:          getActiveOrgId() || null, // etiquetar al workspace activo
         archived:        false,
       }
       if (!payload.name) throw new Error('El nombre es obligatorio')

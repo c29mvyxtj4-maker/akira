@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
 export var SUB_PERIODS = {
   weekly:    { label: 'Semanal',    months: 1 / 4.33 },
@@ -29,10 +30,10 @@ async function uid() {
 }
 
 export async function getSubscriptions(search, status, clientId) {
-  var q = supabase
+  var q = scopeToOrg(supabase
     .from('subscriptions')
     .select('*, clients(id, name, company), services(id, name)')
-    .eq('archived', false)
+    .eq('archived', false))
   if (status   && status   !== 'all') q = q.eq('status',    status)
   if (clientId && clientId !== 'all') q = q.eq('client_id', clientId)
   if (search && search.trim()) q = q.ilike('name', '%' + search.trim() + '%')
@@ -55,6 +56,7 @@ export async function createSubscription(form) {
     next_billing: form.next_billing || null,
     notes:       form.notes       || null,
     owner_id:    ownerId,
+    org_id:      getActiveOrgId() || null,
     archived:    false,
   }).select('*, clients(id, name, company), services(id, name)').single()
   if (res.error) throw res.error

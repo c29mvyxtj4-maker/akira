@@ -36,6 +36,9 @@ export function OrgProvider({ children }) {
         try { savedId = localStorage.getItem(LS_KEY) } catch (_) { /* noop */ }
         var active = list.find(function(o) { return o.id === savedId }) || list[0]
         setOrg(active)
+        // Persistir SIEMPRE el workspace activo, para que los servicios (que leen
+        // localStorage vía getActiveOrgId) puedan filtrar por él desde el arranque.
+        try { if (active) localStorage.setItem(LS_KEY, active.id) } catch (_) { /* noop */ }
         return loadMembers(active.id, user.id)
       })
       .catch(function(e) { console.error('[OrgContext]', e) })
@@ -45,17 +48,16 @@ export function OrgProvider({ children }) {
   function switchWorkspace(orgId) {
     var target = workspaces.find(function(o) { return o.id === orgId })
     if (!target || (org && org.id === orgId)) return
-    setOrg(target)
     try { localStorage.setItem(LS_KEY, orgId) } catch (_) { /* noop */ }
-    if (user) loadMembers(orgId, user.id).catch(function() {})
+    // Recargamos para que TODAS las lecturas (hooks/servicios) se rehagan con el
+    // nuevo workspace. Es infrecuente y evita re-cablear cada hook.
+    try { window.location.reload() } catch (_) { setOrg(target) }
   }
 
   function createWorkspace(name) {
     return createOrg(name || 'Nuevo espacio').then(function(newOrg) {
-      setWorkspaces(function(prev) { return prev.concat([newOrg]) })
-      setOrg(newOrg)
       try { localStorage.setItem(LS_KEY, newOrg.id) } catch (_) { /* noop */ }
-      if (user) loadMembers(newOrg.id, user.id).catch(function() {})
+      try { window.location.reload() } catch (_) { setWorkspaces(function(prev) { return prev.concat([newOrg]) }); setOrg(newOrg) }
       return newOrg
     })
   }

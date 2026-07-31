@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { getCompanySettings, updateCompanySettings } from '@/services/company.service'
+import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
 async function uid() {
   var res = await supabase.auth.getUser()
@@ -37,7 +38,7 @@ function calcTotals(items, taxRate, irpfRate) {
 }
 
 export async function getDocuments(documentType) {
-  var q = supabase.from('commercial_documents').select('*, clients(id, name, company)').eq('archived', false).order('issue_date', { ascending: false })
+  var q = scopeToOrg(supabase.from('commercial_documents').select('*, clients(id, name, company)').eq('archived', false)).order('issue_date', { ascending: false })
   if (documentType && documentType !== 'all') q = q.eq('document_type', documentType)
   var res = await q
   if (res.error) throw res.error
@@ -59,6 +60,7 @@ export async function createQuote(form) {
   var res = await supabase.from('commercial_documents').insert({
     owner_id: ownerId, client_id: form.client_id || null,
     document_type: 'quote', quote_number: quoteNumber, invoice_number: null,
+    org_id: getActiveOrgId() || null,
     issue_date: form.issue_date || new Date().toISOString().split('T')[0],
     valid_until: form.valid_until || null, due_date: null,
     items: form.items || [],
@@ -82,6 +84,7 @@ export async function createInvoiceDirect(form) {
   var res = await supabase.from('commercial_documents').insert({
     owner_id: ownerId, client_id: form.client_id || null,
     document_type: 'invoice', quote_number: null, invoice_number: invoiceNumber,
+    org_id: getActiveOrgId() || null,
     issue_date: form.issue_date || new Date().toISOString().split('T')[0],
     valid_until: null, due_date: form.due_date || null,
     items: form.items || [],

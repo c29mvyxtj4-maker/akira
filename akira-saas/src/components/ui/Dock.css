@@ -55,6 +55,9 @@
   border-color: var(--brand-border);
   color: var(--brand);
 }
+.dock-item.dock-item-active:hover {
+  box-shadow: 0 0 18px 1px rgba(230,57,70,0.4), inset 0 0 0 1px var(--brand-border);
+}
 
 .dock-icon {
   display: flex;

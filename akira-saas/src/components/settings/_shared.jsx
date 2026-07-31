@@ -48,7 +48,9 @@ export function Section({ title, description, children }) {
 export function SaveBtn({ loading, saved, onClick }) {
   return (
     <button type="button" onClick={onClick} disabled={loading}
-      style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 18px', borderRadius: '8px', border: 'none', background: saved ? '#22c55e' : 'var(--gradient-brand)', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, transition: 'all 0.2s' }}
+      onMouseEnter={function (e) { if (!loading && !saved) e.currentTarget.style.boxShadow = '0 4px 16px rgba(230,57,70,0.45), 0 0 22px 2px rgba(230,57,70,0.38)' }}
+      onMouseLeave={function (e) { e.currentTarget.style.boxShadow = saved ? 'none' : '0 2px 8px rgba(230,57,70,0.3)' }}
+      style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 18px', borderRadius: '8px', border: 'none', background: saved ? '#22c55e' : 'var(--gradient-brand)', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, boxShadow: saved ? 'none' : '0 2px 8px rgba(230,57,70,0.3)', transition: 'all 0.2s' }}
     >
       {saved
         ? <><Check style={{ width: '14px', height: '14px' }} /> Guardado</>

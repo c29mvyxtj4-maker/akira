@@ -554,9 +554,14 @@ body {
   border-color: transparent;
   box-shadow: 0 2px 8px rgba(230,57,70,0.3);
 }
+/* Brillo de marca en los bordes (inspirado en BorderGlow, pero solo CSS):
+   un halo suave que se intensifica al pasar el ratón. */
 .btn-primary:hover {
-  box-shadow: 0 4px 16px rgba(230,57,70,0.4);
   transform: translateY(-1px);
+  box-shadow:
+    0 4px 16px rgba(230,57,70,0.45),
+    0 0 0 1px var(--brand-border),
+    0 0 22px 2px rgba(230,57,70,0.38);
 }
 
 .btn-secondary {

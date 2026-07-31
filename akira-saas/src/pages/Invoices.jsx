@@ -244,7 +244,9 @@ function InvoicePreview({ invoice, company, onBack }) {
         <div style={{ display: 'flex', gap: '8px' }}>
           {canCharge && (
             <button type="button" onClick={handleCharge} disabled={charging}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: charging ? 'not-allowed' : 'pointer', opacity: charging ? 0.7 : 1 }}
+              onMouseEnter={function (e) { if (!charging) e.currentTarget.style.boxShadow = '0 0 18px 1px rgba(34,197,94,0.4)' }}
+              onMouseLeave={function (e) { e.currentTarget.style.boxShadow = 'none' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: charging ? 'not-allowed' : 'pointer', opacity: charging ? 0.7 : 1, transition: 'box-shadow 0.2s' }}
             >{charging ? 'Generando enlace...' : 'Cobrar'}</button>
           )}
           <button type="button" onClick={handleDownload} disabled={downloading}

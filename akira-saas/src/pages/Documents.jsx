@@ -195,7 +195,10 @@ function DocumentPreview({ doc, company, onBack, onConvert, converting }) {
         <button type="button" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: 'var(--text-3)', fontSize: '13px', cursor: 'pointer' }}><ChevronLeft style={{ width: '15px', height: '15px' }} /> Volver a documentos</button>
         <div style={{ display: 'flex', gap: '8px' }}>
           {canCharge && (
-            <button type="button" onClick={handleCharge} disabled={charging} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: charging ? 'not-allowed' : 'pointer', opacity: charging ? 0.7 : 1 }}><CreditCard style={{ width: '15px', height: '15px' }} /> {charging ? 'Generando enlace...' : 'Cobrar'}</button>
+            <button type="button" onClick={handleCharge} disabled={charging}
+              onMouseEnter={function (e) { if (!charging) e.currentTarget.style.boxShadow = '0 0 18px 1px rgba(34,197,94,0.4)' }}
+              onMouseLeave={function (e) { e.currentTarget.style.boxShadow = 'none' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: charging ? 'not-allowed' : 'pointer', opacity: charging ? 0.7 : 1, transition: 'box-shadow 0.2s' }}><CreditCard style={{ width: '15px', height: '15px' }} /> {charging ? 'Generando enlace...' : 'Cobrar'}</button>
           )}
           {isQuote && doc.status === 'accepted' && (
             <button type="button" onClick={onConvert} disabled={converting} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: '#22c55e', border: 'none', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: converting ? 'not-allowed' : 'pointer' }}><ArrowRightCircle style={{ width: '15px', height: '15px' }} /> {converting ? 'Convirtiendo...' : 'Convertir en factura'}</button>

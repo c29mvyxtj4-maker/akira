@@ -11,7 +11,6 @@ import { useClients } from '@/hooks/useClients'
 import { CLIENT_NICHES } from '@/services/clients.service'
 import { CLIENT_STATUS, PROJECT_STATUS } from '@/config/constants'
 import { getEmailTemplates, buildTemplateMailto } from '@/services/templates.service'
-import AskAkiraButton from '@/components/akira/AskAkiraButton'
 import PageHeader      from '@/components/layout/PageHeader'
 import Modal           from '@/components/ui/Modal'
 import Badge           from '@/components/ui/Badge'
@@ -521,8 +520,6 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
         </AnimatePresence>
       </div>
 
-      {/* Boton contextual de Akira — colocado aqui, ya con "client" en su ambito correcto */}
-      <AskAkiraButton contextLabel={client.name} contextText={akiraContext} />
     </motion.div>
   )
 }

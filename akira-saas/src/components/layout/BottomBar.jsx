@@ -42,7 +42,7 @@ export default function BottomBar() {
 
   return (
     <>
-      <div style={{ flexShrink: 0, position: 'relative', zIndex: 40, height: '82px', marginBottom: 'var(--safe-bottom)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflow: 'visible', pointerEvents: 'none' }}>
+      <div style={{ flexShrink: 0, position: 'relative', zIndex: 40, boxSizing: 'border-box', height: 'calc(78px + var(--safe-bottom))', paddingBottom: 'var(--safe-bottom)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflow: 'visible', pointerEvents: 'none' }}>
         <div style={{ pointerEvents: 'auto', width: '100%' }}>
           <Dock items={items} panelHeight={58} baseItemSize={46} magnification={66} distance={170} dockHeight={106} />
         </div>

@@ -861,9 +861,8 @@ body {
     padding-bottom: max(20px, var(--safe-bottom)) !important;
   }
 
-  .app-main {
-    padding-bottom: var(--safe-bottom) !important;
-  }
+  /* La barra inferior (Dock) ya reserva el área segura como padding propio;
+     no lo dupliques aquí o el contenido se corta por abajo. */
 
   .topbar-kpis {
     display: none !important;

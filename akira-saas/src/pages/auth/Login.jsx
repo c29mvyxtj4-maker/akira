@@ -4,6 +4,9 @@ import { motion } from 'framer-motion'
 import { useAuth } from '@/context/AuthContext'
 import { ROUTES } from '@/config/constants'
 import { Eye, EyeOff, ArrowRight, AlertTriangle, CheckCircle } from 'lucide-react'
+import Stepper, { Step } from '@/components/ui/Stepper'
+
+function emailValid(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || '').trim()) }
 
 export default function Login() {
   var { signIn, signUp, isAuthenticated, loading: authLoading } = useAuth()
@@ -15,6 +18,8 @@ export default function Login() {
   var [loading,  setLoading]  = useState(false)
   var [error,    setError]    = useState('')
   var [notice,   setNotice]   = useState('')
+  var [signupStep, setSignupStep] = useState(1)
+  var [stepperKey, setStepperKey] = useState(0)
 
   if (!authLoading && isAuthenticated) {
     return <Navigate to="/" replace />
@@ -26,6 +31,35 @@ export default function Login() {
     setMode(isSignup ? 'login' : 'signup')
     setError('')
     setNotice('')
+    setSignupStep(1)
+    setStepperKey(function (k) { return k + 1 })
+  }
+
+  // Valida el paso actual del asistente de alta (deshabilita "Continuar").
+  function canProceed() {
+    if (loading) return false
+    if (signupStep === 1) return fullName.trim().length > 0
+    if (signupStep === 2) return emailValid(email)
+    if (signupStep === 3) return password.length >= 6
+    return true
+  }
+
+  // Alta real, disparada al completar el último paso del Stepper.
+  async function doSignup() {
+    if (loading) return
+    setLoading(true); setError(''); setNotice('')
+    try {
+      var data = await signUp(email, password, fullName.trim())
+      if (!data || !data.session) {
+        setNotice('Cuenta creada. Revisa tu correo para confirmarla y luego inicia sesión.')
+        setMode('login'); setPassword('')
+      }
+      // Si hay sesión, isAuthenticated cambia y redirige solo.
+    } catch (err) {
+      setError(err.message || 'Error al crear la cuenta')
+      // Reinicia el asistente para reintentar (los campos siguen rellenados).
+      setSignupStep(1); setStepperKey(function (k) { return k + 1 })
+    } finally { setLoading(false) }
   }
 
   async function handleSubmit(e) {
@@ -81,32 +115,77 @@ export default function Login() {
           <p style={{ fontSize: '13px', color: 'var(--text-4)' }}>Business Operating System</p>
         </div>
 
-        {/* Card */}
+        {/* Alta de cuenta guiada por pasos (Stepper) */}
+        {isSignup ? (
+          <div style={{ position: 'relative' }}>
+            <Stepper
+              key={stepperKey}
+              initialStep={1}
+              onStepChange={setSignupStep}
+              onFinalStepCompleted={doSignup}
+              backButtonText="Atrás"
+              nextButtonText="Continuar"
+              completeButtonText={loading ? 'Creando…' : 'Crear cuenta'}
+              nextButtonProps={{ disabled: !canProceed() }}
+            >
+              <Step>
+                <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '4px' }}>¿Cómo te llamas?</h2>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-4)', marginBottom: '16px' }}>Así te reconocerán tus clientes y tu equipo en AKIRA.</p>
+                <label className="label-base" htmlFor="su-name">Nombre</label>
+                <input id="su-name" type="text" value={fullName} autoFocus autoComplete="name"
+                  onChange={function(e) { setFullName(e.target.value); setError('') }}
+                  placeholder="Tu nombre" className="input-base" style={{ marginTop: '5px' }} />
+              </Step>
+              <Step>
+                <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '4px' }}>Tu correo</h2>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-4)', marginBottom: '16px' }}>Lo usarás para iniciar sesión.</p>
+                <label className="label-base" htmlFor="su-email">Email</label>
+                <input id="su-email" type="email" value={email} autoComplete="email" inputMode="email"
+                  onChange={function(e) { setEmail(e.target.value); setError('') }}
+                  placeholder="tu@email.com" className="input-base" style={{ marginTop: '5px' }} />
+              </Step>
+              <Step>
+                <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '4px' }}>Crea una contraseña</h2>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-4)', marginBottom: '16px' }}>Mínimo 6 caracteres. Guárdala bien.</p>
+                <label className="label-base" htmlFor="su-pwd">Contraseña</label>
+                <div style={{ position: 'relative', marginTop: '5px' }}>
+                  <input id="su-pwd" type={showPwd ? 'text' : 'password'} value={password} autoComplete="new-password"
+                    onChange={function(e) { setPassword(e.target.value); setError('') }}
+                    placeholder="Mínimo 6 caracteres" className="input-base" style={{ paddingRight: '40px' }} />
+                  <button type="button" onClick={function() { setShowPwd(function(v) { return !v }) }}
+                    aria-label={showPwd ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-4)', display: 'flex', alignItems: 'center' }}>
+                    {showPwd ? <EyeOff style={{ width: '15px', height: '15px' }} /> : <Eye style={{ width: '15px', height: '15px' }} />}
+                  </button>
+                </div>
+              </Step>
+            </Stepper>
+
+            {error && (
+              <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', margin: '12px 0 0', background: 'var(--brand-dim)', border: '1px solid var(--brand-border)', borderRadius: '8px', fontSize: '12px', color: 'var(--brand-hover)' }}>
+                <AlertTriangle style={{ width: '13px', height: '13px', flexShrink: 0 }} /> {error}
+              </div>
+            )}
+            <p style={{ fontSize: '11px', color: 'var(--text-5)', textAlign: 'center', lineHeight: 1.5, marginTop: '14px' }}>
+              Al crear una cuenta aceptas la{' '}
+              <a href="/legal" target="_blank" rel="noreferrer" style={{ color: 'var(--brand)', fontWeight: 600 }}>Política de Privacidad y los Términos</a>.
+            </p>
+            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-4)', marginTop: '14px' }}>
+              ¿Ya tienes cuenta?{' '}
+              <button type="button" onClick={switchMode} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--brand)', fontSize: '12px', fontWeight: 700, padding: 0 }}>Inicia sesión</button>
+            </p>
+          </div>
+        ) : (
+        /* Card de inicio de sesión */
         <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '28px', boxShadow: 'var(--shadow-modal)' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '4px' }}>
-            {isSignup ? 'Crea tu cuenta' : 'Bienvenido'}
+            Bienvenido
           </h2>
           <p style={{ fontSize: '12px', color: 'var(--text-4)', marginBottom: '24px' }}>
-            {isSignup ? 'Empieza tu prueba de AKIRA' : 'Inicia sesión en tu cuenta'}
+            Inicia sesión en tu cuenta
           </p>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {isSignup && (
-              <div>
-                <label className="label-base" htmlFor="login-name">Nombre</label>
-                <input
-                  id="login-name"
-                  type="text"
-                  value={fullName}
-                  onChange={function(e) { setFullName(e.target.value); setError('') }}
-                  placeholder="Tu nombre"
-                  className="input-base"
-                  autoComplete="name"
-                  style={{ marginTop: '5px' }}
-                />
-              </div>
-            )}
-
             <div>
               <label className="label-base" htmlFor="login-email">Email</label>
               <input
@@ -221,6 +300,7 @@ export default function Login() {
             </button>
           </p>
         </div>
+        )}
 
         <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-5)', marginTop: '20px' }}>
           AKIRA Business OS · Beta · build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}

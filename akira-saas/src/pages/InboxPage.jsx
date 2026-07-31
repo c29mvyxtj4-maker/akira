@@ -24,7 +24,13 @@ export default function InboxPage() {
     setLoading(true)
     getMyMentions().then(setItems).catch(function () {}).finally(function () { setLoading(false) })
   }
-  useEffect(function () { load() }, [])
+  // Al abrir la bandeja se marcan todas como leídas: así la insignia de Inicio
+  // se limpia y no queda un contador "fantasma" colgado. Las filas mantienen su
+  // estilo leído/no-leído de esta vista porque no recargamos.
+  useEffect(function () {
+    load()
+    markAllMentionsRead().catch(function () {})
+  }, [])
 
   function open(m) {
     if (!m.read) markMentionRead(m.id).then(load).catch(function () {})

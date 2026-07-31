@@ -18,7 +18,6 @@ import {
 } from '@/services/time.service'
 import { supabase } from '@/lib/supabase'
 import KanbanBoard from '@/components/projects/KanbanBoard'
-import AskAkiraButton from '@/components/akira/AskAkiraButton'
 import PageHeader      from '@/components/layout/PageHeader'
 import Modal           from '@/components/ui/Modal'
 import Badge           from '@/components/ui/Badge'
@@ -833,8 +832,6 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
 
       </div>
 
-      {/* Boton contextual de Akira — NUEVO, colocado aqui, ya con "project" en su ambito correcto */}
-      <AskAkiraButton contextLabel={project.name} contextText={akiraContext} />
     </div>
   )
 }

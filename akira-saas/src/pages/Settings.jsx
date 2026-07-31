@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  User, Lock, Database, Receipt, History,
+  User, Lock, Database, Receipt, History, Building2,
   Users2, Tag, Bell, AlertOctagon, Download, FileText, Workflow,
   ChevronRight, ChevronLeft, X,
 } from 'lucide-react'
@@ -42,53 +42,79 @@ export default function Settings({ onClose, initialTab }) {
     setMobileStep('content')
   }
 
-  var TABS = [
-    { id: 'profile',       label: 'Perfil y espacio', icon: User },
-    { id: 'billing',       label: 'Facturacion',     icon: Receipt },
-    { id: 'categories',    label: 'Categorias',      icon: Tag },
-    { id: 'templates',     label: 'Plantillas',      icon: FileText },
-    { id: 'notifications', label: 'Notificaciones',  icon: Bell },
-    { id: 'data',          label: 'Exportar datos',  icon: Download },
-    { id: 'audit',         label: 'Auditoria',       icon: History },
-    { id: 'team',          label: 'Equipo',          icon: Users2 },
-    { id: 'danger',        label: 'Zona de peligro', icon: AlertOctagon },
-    { id: 'security',      label: 'Seguridad',       icon: Lock },
-    { id: 'account',       label: 'Cuenta',          icon: Database },
-    { id: 'automations', label: 'Automatizaciones', icon: Workflow },
+  // Estructura por grupos (estilo Notion): cada grupo tiene un encabezado y sus
+  // pestañas. El mapa plano TABS se deriva para búsquedas por id.
+  var GROUPS = [
+    { title: 'Cuenta', tabs: [
+      { id: 'profile',       label: 'Perfil',            icon: User },
+      { id: 'notifications', label: 'Notificaciones',    icon: Bell },
+      { id: 'account',       label: 'Cuenta y sesión',   icon: Database },
+    ] },
+    { title: 'Espacio de trabajo', tabs: [
+      { id: 'workspace',   label: 'General',    icon: Building2 },
+      { id: 'team',        label: 'Personas',   icon: Users2 },
+      { id: 'categories',  label: 'Categorías', icon: Tag },
+      { id: 'templates',   label: 'Plantillas', icon: FileText },
+    ] },
+    { title: 'Funciones', tabs: [
+      { id: 'automations', label: 'Automatizaciones',    icon: Workflow },
+      { id: 'data',        label: 'Importar y exportar', icon: Download },
+    ] },
+    { title: 'Administración', tabs: [
+      { id: 'security', label: 'Seguridad',       icon: Lock },
+      { id: 'audit',    label: 'Auditoría',       icon: History },
+      { id: 'danger',   label: 'Zona de peligro', icon: AlertOctagon },
+    ] },
+    { title: 'Acceso y facturación', tabs: [
+      { id: 'billing', label: 'Plan y facturación', icon: Receipt },
+    ] },
   ]
 
+  var TABS = GROUPS.reduce(function(acc, g) { return acc.concat(g.tabs) }, [])
   var activeTabInfo = TABS.find(function(t) { return t.id === activeTab })
+  var initial = (user && (user.user_metadata && user.user_metadata.full_name || user.email) || 'A').trim().charAt(0).toUpperCase()
   var showListPane    = !isMobile || mobileStep === 'list'
   var showContentPane = !isMobile || mobileStep === 'content'
 
   var twoPane = (
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
 
-        {/* Sidebar de tabs — en móvil, pantalla completa hasta que se elige una */}
+        {/* Sidebar de tabs, agrupada estilo Notion — en móvil, pantalla completa hasta elegir */}
         {showListPane && (
-          <div style={{ width: isMobile ? '100%' : '220px', flexShrink: 0, borderRight: '1px solid var(--border)', padding: '16px 10px', background: 'rgba(255,255,255,0.01)', overflowY: 'auto' }}>
-            {TABS.map(function(tab) {
-              var Icon   = tab.icon
-              var active = activeTab === tab.id
+          <div style={{ width: isMobile ? '100%' : '248px', flexShrink: 0, borderRight: '1px solid var(--border)', padding: '14px 10px', background: 'rgba(255,255,255,0.012)', overflowY: 'auto' }}>
+            {GROUPS.map(function(group, gi) {
               return (
-                <button key={tab.id} type="button" onClick={function() { selectTab(tab.id) }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
-                    padding: '10px 12px', borderRadius: '8px', border: 'none',
-                    background: active && !isMobile ? 'rgba(230,57,70,0.1)' : 'transparent',
-                    color: active && !isMobile ? 'var(--brand)' : 'var(--text-4)',
-                    fontSize: '13px', fontWeight: active && !isMobile ? 600 : 400,
-                    cursor: 'pointer', marginBottom: '2px', textAlign: 'left',
-                    transition: 'all 0.1s',
-                    borderLeft: active && !isMobile ? '2px solid var(--brand)' : '2px solid transparent',
-                  }}
-                  onMouseEnter={function(e) { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
-                  onMouseLeave={function(e) { if (!active) e.currentTarget.style.background = 'transparent' }}
-                >
-                  <Icon style={{ width: '15px', height: '15px', flexShrink: 0 }} />
-                  {tab.label}
-                  <ChevronRight style={{ width: '13px', height: '13px', marginLeft: 'auto', opacity: isMobile ? 0.4 : (active ? 1 : 0) }} />
-                </button>
+                <div key={group.title} style={{ marginBottom: '10px', marginTop: gi === 0 ? 0 : '6px' }}>
+                  <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.02em', color: 'var(--text-5)', padding: '6px 12px 4px' }}>{group.title}</p>
+                  {group.tabs.map(function(tab) {
+                    var Icon   = tab.icon
+                    var active = activeTab === tab.id
+                    var isProfile = tab.id === 'profile'
+                    return (
+                      <button key={tab.id} type="button" onClick={function() { selectTab(tab.id) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                          padding: '8px 12px', borderRadius: '8px', border: 'none',
+                          background: active && !isMobile ? 'var(--brand-dim)' : 'transparent',
+                          color: active && !isMobile ? 'var(--brand)' : 'var(--text-3)',
+                          fontSize: '13px', fontWeight: active && !isMobile ? 600 : 500,
+                          cursor: 'pointer', marginBottom: '1px', textAlign: 'left',
+                          transition: 'background 0.1s, color 0.1s',
+                        }}
+                        onMouseEnter={function(e) { if (!(active && !isMobile)) e.currentTarget.style.background = 'var(--bg-3)' }}
+                        onMouseLeave={function(e) { if (!(active && !isMobile)) e.currentTarget.style.background = 'transparent' }}
+                      >
+                        {isProfile ? (
+                          <span style={{ width: '20px', height: '20px', borderRadius: '6px', flexShrink: 0, background: 'var(--gradient-brand)', color: '#fff', fontSize: '11px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{initial}</span>
+                        ) : (
+                          <Icon style={{ width: '16px', height: '16px', flexShrink: 0 }} />
+                        )}
+                        {tab.label}
+                        <ChevronRight style={{ width: '13px', height: '13px', marginLeft: 'auto', opacity: isMobile ? 0.4 : (active ? 0.9 : 0) }} />
+                      </button>
+                    )
+                  })}
+                </div>
               )
             })}
           </div>
@@ -115,6 +141,10 @@ export default function Settings({ onClose, initialTab }) {
                 {activeTab === 'profile' && (
                   <motion.div key="profile" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
                     <ProfileTab user={user} />
+                  </motion.div>
+                )}
+                {activeTab === 'workspace' && (
+                  <motion.div key="workspace" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
                     <WorkspaceTab />
                   </motion.div>
                 )}

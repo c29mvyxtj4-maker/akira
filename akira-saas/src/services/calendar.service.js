@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
 export var EVENT_TYPES = {
   meeting:  { label: 'Reunion',    color: '#6366f1', emoji: '📅' },
@@ -30,6 +31,7 @@ export async function getCalendarEvents(dateFrom, dateTo) {
     .select('*, clients(id, name), projects(id, name)')
     .eq('archived', false)
     .order('start_at', { ascending: true })
+  q = scopeToOrg(q) // aislar por workspace activo (defensivo)
 
   if (dateFrom) q = q.gte('start_at', dateFrom)
   if (dateTo)   q = q.lte('start_at', dateTo)
@@ -58,6 +60,7 @@ export async function createCalendarEvent(form) {
     client_id:   form.client_id   || null,
     project_id:  form.project_id  || null,
     owner_id:    ownerId,
+    org_id:      getActiveOrgId() || null,
     archived:    false,
   }).select('*, clients(id, name), projects(id, name)').single()
   if (res.error) throw res.error

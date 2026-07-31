@@ -12,7 +12,13 @@ import { useOrg } from '@/context/OrgContext'
 import { ROUTES } from '@/config/constants'
 import { DUR, EASE, SPRING } from '@/config/motion'
 import { getUnreadMentionCount } from '@/services/mentions.service'
+import { getFinanceKpis } from '@/services/finance.service'
 import { getPref } from '@/hooks/usePreferences'
+import TransparentArea from '@/components/charts/TransparentArea'
+
+function fmtEur(n) {
+  return (Number(n) || 0).toLocaleString('es-ES', { maximumFractionDigits: 0 }) + '€'
+}
 import AccountMenu from '@/components/layout/AccountMenu'
 import BorderGlow from '@/components/ui/BorderGlow'
 import SettingsPanel from '@/pages/Settings'
@@ -42,11 +48,13 @@ export default function Inicio() {
   var initial = profile && profile.full_name ? profile.full_name[0].toUpperCase() : 'M'
 
   var [unread, setUnread] = useState(0)
+  var [fin, setFin] = useState(null)
   var [menuOpen, setMenuOpen] = useState(false)
   var [menuAnchor, setMenuAnchor] = useState(null)
   var [settingsOpen, setSettingsOpen] = useState(false)
   var [settingsTab, setSettingsTab] = useState('profile')
   useEffect(function () { getUnreadMentionCount().then(setUnread).catch(function () {}) }, [])
+  useEffect(function () { getFinanceKpis().then(setFin).catch(function () {}) }, [])
 
   function openSettings(t) { setMenuOpen(false); setSettingsTab(t || 'profile'); setSettingsOpen(true) }
   function openMenu(e) {
@@ -186,6 +194,43 @@ export default function Inicio() {
             )
           })}
         </div>
+
+        {/* Resumen financiero — gráfica transparente (datos del workspace activo) */}
+        {fin && fin.sparkline && (
+          <>
+            <p style={sectionLabel}>Resumen financiero</p>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR.slow, ease: EASE.out }}
+              style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', marginBottom: '14px' }}>
+                <div>
+                  <p style={{ fontSize: '12px', color: 'var(--text-4)' }}>Ingresos este mes</p>
+                  <p style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.02em' }}>
+                    {fmtEur(fin.monthIncome)}
+                    {fin.incomeTrend !== null && fin.incomeTrend !== undefined && (
+                      <span style={{ fontSize: '12px', fontWeight: 700, marginLeft: '8px', color: fin.incomeTrend >= 0 ? '#22c55e' : 'var(--brand)' }}>
+                        {fin.incomeTrend >= 0 ? '▲' : '▼'} {Math.abs(fin.incomeTrend)}%
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text-4)' }}>
+                    <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: 'var(--brand)' }} /> Ingresos
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text-4)' }}>
+                    <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#64748b' }} /> Gastos
+                  </span>
+                </div>
+              </div>
+              <TransparentArea data={fin.sparkline} height={150} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', padding: '0 8px' }}>
+                {fin.sparkline.map(function (m, i) {
+                  return <span key={i} style={{ fontSize: '10px', color: 'var(--text-5)', textTransform: 'capitalize' }}>{m.name}</span>
+                })}
+              </div>
+            </motion.div>
+          </>
+        )}
 
         {/* Accesos rápidos — rejilla (sin scroll horizontal: el escalado ya no recorta) */}
         <p style={sectionLabel}>Accesos rápidos</p>

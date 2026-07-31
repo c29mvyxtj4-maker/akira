@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   User, Lock, Database, Receipt, History, Building2, SlidersHorizontal,
   Users2, Tag, Bell, AlertOctagon, Download, FileText, Workflow,
-  Sparkles, Plug, Globe, ChevronRight, ChevronLeft, X,
+  Sparkles, Plug, Globe, Terminal, WifiOff, Boxes, Fingerprint, Scale,
+  ChevronRight, ChevronLeft, X,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import PageHeader from '@/components/layout/PageHeader'
@@ -24,6 +25,11 @@ import AutomationsTab from '@/components/settings/AutomationsTab'
 import AITab from '@/components/settings/AITab'
 import ConnectionsTab from '@/components/settings/ConnectionsTab'
 import PublicPagesTab from '@/components/settings/PublicPagesTab'
+import MCPTab from '@/components/settings/MCPTab'
+import OfflineTab from '@/components/settings/OfflineTab'
+import TeamspaceTab from '@/components/settings/TeamspaceTab'
+import IdentityTab from '@/components/settings/IdentityTab'
+import LegalTab from '@/components/settings/LegalTab'
 
 export default function Settings({ onClose, initialTab }) {
   var { user, signOut } = useAuth()
@@ -50,28 +56,33 @@ export default function Settings({ onClose, initialTab }) {
   // pestañas. El mapa plano TABS se deriva para búsquedas por id.
   var GROUPS = [
     { title: 'Cuenta', tabs: [
-      { id: 'profile',       label: 'Perfil',            icon: User },
-      { id: 'preferences',   label: 'Preferencias',      icon: SlidersHorizontal },
-      { id: 'notifications', label: 'Notificaciones',    icon: Bell },
-      { id: 'account',       label: 'Cuenta y sesión',   icon: Database },
+      { id: 'profile',       label: 'Mi perfil',       icon: User },
+      { id: 'preferences',   label: 'Preferencias',    icon: SlidersHorizontal },
+      { id: 'notifications', label: 'Notificaciones',  icon: Bell },
+      { id: 'account',       label: 'Cuenta y sesión', icon: Database },
+      { id: 'legal',         label: 'Legal',           icon: Scale },
     ] },
     { title: 'Espacio de trabajo', tabs: [
       { id: 'workspace',   label: 'General',    icon: Building2 },
       { id: 'team',        label: 'Personas',   icon: Users2 },
+      { id: 'data',        label: 'Importar',   icon: Download },
       { id: 'categories',  label: 'Categorías', icon: Tag },
       { id: 'templates',   label: 'Plantillas', icon: FileText },
     ] },
     { title: 'Funciones', tabs: [
-      { id: 'ai',          label: 'IA de AKIRA',         icon: Sparkles },
-      { id: 'connections', label: 'Conexiones',          icon: Plug },
-      { id: 'publicpages', label: 'Páginas públicas',    icon: Globe },
-      { id: 'automations', label: 'Automatizaciones',    icon: Workflow },
-      { id: 'data',        label: 'Importar y exportar', icon: Download },
+      { id: 'ai',          label: 'IA de AKIRA',      icon: Sparkles },
+      { id: 'connections', label: 'Conexiones',       icon: Plug },
+      { id: 'mcp',         label: 'MCP de AKIRA',     icon: Terminal },
+      { id: 'offline',     label: 'Sin conexión',     icon: WifiOff },
+      { id: 'publicpages', label: 'Páginas públicas', icon: Globe },
+      { id: 'automations', label: 'Automatizaciones', icon: Workflow },
     ] },
     { title: 'Administración', tabs: [
-      { id: 'security', label: 'Seguridad',       icon: Lock },
-      { id: 'audit',    label: 'Auditoría',       icon: History },
-      { id: 'danger',   label: 'Zona de peligro', icon: AlertOctagon },
+      { id: 'teamspace', label: 'Espacio de equipo', icon: Boxes },
+      { id: 'security',  label: 'Seguridad',         icon: Lock },
+      { id: 'identity',  label: 'Identidad',         icon: Fingerprint },
+      { id: 'audit',     label: 'Auditoría',         icon: History },
+      { id: 'danger',    label: 'Zona de peligro',   icon: AlertOctagon },
     ] },
     { title: 'Acceso y facturación', tabs: [
       { id: 'billing', label: 'Plan y facturación', icon: Receipt },
@@ -230,6 +241,31 @@ export default function Settings({ onClose, initialTab }) {
                   <motion.div key="automations" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
                    <AutomationsTab />
                  </motion.div>
+                )}
+                {activeTab === 'legal' && (
+                  <motion.div key="legal" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <LegalTab />
+                  </motion.div>
+                )}
+                {activeTab === 'mcp' && (
+                  <motion.div key="mcp" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <MCPTab />
+                  </motion.div>
+                )}
+                {activeTab === 'offline' && (
+                  <motion.div key="offline" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <OfflineTab />
+                  </motion.div>
+                )}
+                {activeTab === 'teamspace' && (
+                  <motion.div key="teamspace" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <TeamspaceTab />
+                  </motion.div>
+                )}
+                {activeTab === 'identity' && (
+                  <motion.div key="identity" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <IdentityTab />
+                  </motion.div>
                 )}
               </AnimatePresence>
             </div>

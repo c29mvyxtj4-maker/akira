@@ -13,11 +13,13 @@
   width: fit-content;
   gap: 0.75rem;
   border-radius: 999px;
-  background: var(--bg-2);
+  /* Fondo translúcido: deja ver (borroso) el contenido de detrás en vez de tapar
+     con negro opaco. El desenfoque da el efecto cristal esmerilado. */
+  background: color-mix(in srgb, var(--bg-2) 60%, transparent);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-modal);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
   padding: 0 0.6rem 0.55rem;
   pointer-events: auto;
 }

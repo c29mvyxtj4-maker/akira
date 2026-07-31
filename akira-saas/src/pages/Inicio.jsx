@@ -12,6 +12,7 @@ import { useOrg } from '@/context/OrgContext'
 import { ROUTES } from '@/config/constants'
 import { DUR, EASE, SPRING } from '@/config/motion'
 import { getUnreadMentionCount } from '@/services/mentions.service'
+import { getPref } from '@/hooks/usePreferences'
 import AccountMenu from '@/components/layout/AccountMenu'
 import SettingsPanel from '@/pages/Settings'
 
@@ -90,7 +91,8 @@ export default function Inicio() {
   ]
 
   var sectionLabel = { fontSize: '11px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '28px 0 12px' }
-  var silkOn = typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  var noReduce = typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  var silkOn = noReduce && getPref('pref_bg_animation', true) !== false && getPref('pref_reduce_motion', false) !== true
 
   return (
     <div style={{ height: '100%', position: 'relative', overflow: 'hidden', background: 'var(--bg-base)' }}>

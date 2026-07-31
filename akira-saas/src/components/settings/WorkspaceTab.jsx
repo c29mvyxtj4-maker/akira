@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { getWorkspace, updateWorkspace } from '@/services/settings.service'
-import { Field, INP, SaveBtn, Section, onBlur, onFocus } from './_shared'
+import { usePrefs } from '@/hooks/usePreferences'
+import { Field, INP, SaveBtn, Section, RowSection, Row, Toggle, RowSelect, onBlur, onFocus } from './_shared'
 
 function WorkspaceTab() {
   var [ws,      setWs]      = useState({ business_name: '', currency: 'EUR', timezone: 'Europe/Madrid', language: 'es' })
   var [loading, setLoading] = useState(true)
   var [saving,  setSaving]  = useState(false)
   var [saved,   setSaved]   = useState(false)
+  var [prefs, setPref] = usePrefs({ ws_landing: 'inicio', ws_sidebar_apps: true, ws_allowed_domains: '' })
 
   useEffect(function() {
     getWorkspace()
@@ -72,6 +74,30 @@ function WorkspaceTab() {
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <SaveBtn loading={saving} saved={saved} onClick={handleSave} />
       </div>
+
+      <RowSection title="Configuración del espacio" description="Comportamiento general del espacio de trabajo.">
+        <Row title="Página de destino" description="La primera página que verá un miembro nuevo al entrar al espacio.">
+          <RowSelect value={prefs.ws_landing} onChange={function (e) { setPref('ws_landing', e.target.value) }}
+            options={[
+              { value: 'inicio',    label: 'Inicio' },
+              { value: 'dashboard', label: 'Panel' },
+              { value: 'projects',  label: 'Proyectos' },
+              { value: 'clients',   label: 'Clientes' },
+            ]} />
+        </Row>
+        <Row title="Mostrar accesos rápidos en la barra" description="Muestra los atajos de módulos en la barra inferior (Dock)." last>
+          <Toggle checked={prefs.ws_sidebar_apps} onClick={function () { setPref('ws_sidebar_apps', !prefs.ws_sidebar_apps) }} />
+        </Row>
+      </RowSection>
+
+      <RowSection title="Acceso en función del dominio" description="Controla quién puede unirse automáticamente a tu espacio.">
+        <div style={{ padding: '14px 0' }}>
+          <Field label="Dominios de correo permitidos" hint="Separa varios dominios con comas. Ej: miempresa.com, agencia.es">
+            <input value={prefs.ws_allowed_domains} onChange={function (e) { setPref('ws_allowed_domains', e.target.value) }}
+              placeholder="miempresa.com" style={INP} onFocus={onFocus} onBlur={onBlur} />
+          </Field>
+        </div>
+      </RowSection>
     </div>
   )
 }

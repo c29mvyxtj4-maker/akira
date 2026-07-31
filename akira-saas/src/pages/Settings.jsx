@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  User, Lock, Database, Receipt, History, Building2,
+  User, Lock, Database, Receipt, History, Building2, SlidersHorizontal,
   Users2, Tag, Bell, AlertOctagon, Download, FileText, Workflow,
-  ChevronRight, ChevronLeft, X,
+  Sparkles, Plug, Globe, ChevronRight, ChevronLeft, X,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import PageHeader from '@/components/layout/PageHeader'
 import ProfileTab from '@/components/settings/ProfileTab'
+import PreferencesTab from '@/components/settings/PreferencesTab'
 import WorkspaceTab from '@/components/settings/WorkspaceTab'
 import BillingTab from '@/components/settings/BillingTab'
 import CategoriesTab from '@/components/settings/CategoriesTab'
@@ -20,6 +21,9 @@ import DangerZoneTab from '@/components/settings/DangerZoneTab'
 import SecurityTab from '@/components/settings/SecurityTab'
 import AccountTab from '@/components/settings/AccountTab'
 import AutomationsTab from '@/components/settings/AutomationsTab'
+import AITab from '@/components/settings/AITab'
+import ConnectionsTab from '@/components/settings/ConnectionsTab'
+import PublicPagesTab from '@/components/settings/PublicPagesTab'
 
 export default function Settings({ onClose, initialTab }) {
   var { user, signOut } = useAuth()
@@ -47,6 +51,7 @@ export default function Settings({ onClose, initialTab }) {
   var GROUPS = [
     { title: 'Cuenta', tabs: [
       { id: 'profile',       label: 'Perfil',            icon: User },
+      { id: 'preferences',   label: 'Preferencias',      icon: SlidersHorizontal },
       { id: 'notifications', label: 'Notificaciones',    icon: Bell },
       { id: 'account',       label: 'Cuenta y sesión',   icon: Database },
     ] },
@@ -57,6 +62,9 @@ export default function Settings({ onClose, initialTab }) {
       { id: 'templates',   label: 'Plantillas', icon: FileText },
     ] },
     { title: 'Funciones', tabs: [
+      { id: 'ai',          label: 'IA de AKIRA',         icon: Sparkles },
+      { id: 'connections', label: 'Conexiones',          icon: Plug },
+      { id: 'publicpages', label: 'Páginas públicas',    icon: Globe },
       { id: 'automations', label: 'Automatizaciones',    icon: Workflow },
       { id: 'data',        label: 'Importar y exportar', icon: Download },
     ] },
@@ -143,9 +151,29 @@ export default function Settings({ onClose, initialTab }) {
                     <ProfileTab user={user} />
                   </motion.div>
                 )}
+                {activeTab === 'preferences' && (
+                  <motion.div key="preferences" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <PreferencesTab />
+                  </motion.div>
+                )}
                 {activeTab === 'workspace' && (
                   <motion.div key="workspace" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
                     <WorkspaceTab />
+                  </motion.div>
+                )}
+                {activeTab === 'ai' && (
+                  <motion.div key="ai" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <AITab />
+                  </motion.div>
+                )}
+                {activeTab === 'connections' && (
+                  <motion.div key="connections" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <ConnectionsTab />
+                  </motion.div>
+                )}
+                {activeTab === 'publicpages' && (
+                  <motion.div key="publicpages" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <PublicPagesTab />
                   </motion.div>
                 )}
                 {activeTab === 'billing' && (

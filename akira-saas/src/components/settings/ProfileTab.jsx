@@ -1,8 +1,26 @@
 import { useEffect, useState } from 'react'
+import { Copy, Check } from 'lucide-react'
 import { getProfile, updateProfile } from '@/services/settings.service'
-import { Field, INP, SaveBtn, Section, onBlur, onFocus } from './_shared'
+import { supabase } from '@/lib/supabase'
+import { Field, INP, SaveBtn, Section, RowSection, Row, MiniBtn, onBlur, onFocus } from './_shared'
 
 function ProfileTab({ user }) {
+  var [copied, setCopied] = useState(false)
+  var [pwSent, setPwSent] = useState(false)
+
+  function copyId() {
+    if (!user) return
+    try { navigator.clipboard.writeText(user.id) } catch (_) { /* noop */ }
+    setCopied(true); setTimeout(function () { setCopied(false) }, 1800)
+  }
+
+  function changePassword() {
+    if (!user || !user.email) return
+    supabase.auth.resetPasswordForEmail(user.email, { redirectTo: window.location.origin + '/reset-password' })
+      .then(function () { setPwSent(true); setTimeout(function () { setPwSent(false) }, 3000) })
+      .catch(function (e) { window.alert('Error: ' + e.message) })
+  }
+
   var [profile, setProfile] = useState({ full_name: '', phone: '', website: '', bio: '', location: '', company: '', role: '' })
   var [loading, setLoading] = useState(true)
   var [saving,  setSaving]  = useState(false)
@@ -64,6 +82,24 @@ function ProfileTab({ user }) {
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <SaveBtn loading={saving} saved={saved} onClick={handleSave} />
       </div>
+
+      <RowSection title="Seguridad de la cuenta" description="Protege el acceso a tu cuenta de AKIRA.">
+        <Row title="Contraseña" description="Te enviaremos un enlace a tu correo para cambiarla de forma segura.">
+          <MiniBtn label={pwSent ? 'Enlace enviado' : 'Cambiar contraseña'} icon={pwSent ? Check : undefined} onClick={changePassword} />
+        </Row>
+        <Row title="Verificación en dos pasos" description="Añade una capa extra de seguridad al iniciar sesión." badge="Próximamente">
+          <MiniBtn label="Activar" disabled />
+        </Row>
+        <Row title="Passkeys" description="Inicia sesión con huella o Face ID en vez de contraseña." last badge="Próximamente">
+          <MiniBtn label="Añadir passkey" disabled />
+        </Row>
+      </RowSection>
+
+      <RowSection title="ID de usuario" description="Tu identificador único en AKIRA (útil para soporte).">
+        <Row title="ID de usuario" description={user ? user.id : '—'} last>
+          <MiniBtn label={copied ? 'Copiado' : 'Copiar'} icon={copied ? Check : Copy} onClick={copyId} />
+        </Row>
+      </RowSection>
     </div>
   )
 }

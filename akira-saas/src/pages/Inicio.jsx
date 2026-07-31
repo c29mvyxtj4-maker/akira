@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Home, MessageSquare, Calendar as CalendarIcon, Inbox, LayoutDashboard,
-  Users, FolderKanban, Wallet, FileText, Clock, BookOpen, Settings,
+  Users, FolderKanban, Wallet, FileText, Clock, BookOpen,
   ChevronRight, TrendingUp,
 } from 'lucide-react'
 import { useApp } from '@/context/AppContext'
@@ -14,7 +14,11 @@ import { DUR, EASE, SPRING } from '@/config/motion'
 import { getUnreadMentionCount } from '@/services/mentions.service'
 import { getPref } from '@/hooks/usePreferences'
 import AccountMenu from '@/components/layout/AccountMenu'
+import BorderGlow from '@/components/ui/BorderGlow'
 import SettingsPanel from '@/pages/Settings'
+
+// Props de BorderGlow afinados para botones pequeños del top bar (tono de marca).
+var GLOW = { className: 'glow-btn', borderRadius: 19, glowRadius: 15, glowIntensity: 1.4, coneSpread: 25, backgroundColor: 'transparent', glowColor: '355 78 62', colors: ['#e63946', '#ff5a66', '#a01f2b'], animated: true }
 
 // Fondo animado (three.js) — en diferido para no bloquear la carga inicial.
 var Silk = lazy(function () { return import('@/components/effects/Silk') })
@@ -87,7 +91,6 @@ export default function Inicio() {
     { label: 'Time tracking',        icon: Clock,        to: ROUTES.TIME_TRACKING },
     { label: 'Calendario',           icon: CalendarIcon, to: ROUTES.CALENDAR },
     { label: 'Base de conocimiento', icon: BookOpen,     to: ROUTES.KNOWLEDGE },
-    { label: 'Ajustes',              icon: Settings,     to: ROUTES.SETTINGS },
   ]
 
   var sectionLabel = { fontSize: '11px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '28px 0 12px' }
@@ -109,10 +112,12 @@ export default function Inicio() {
 
         {/* Barra de pastillas */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '22px' }}>
-          <button type="button" onClick={openMenu} aria-label="Tu cuenta"
-            style={{ width: '38px', height: '38px', flexShrink: 0, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--gradient-brand)', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-brand)' }}>
-            {initial}
-          </button>
+          <BorderGlow {...GLOW}>
+            <button type="button" onClick={openMenu} aria-label="Tu cuenta"
+              style={{ width: '38px', height: '38px', flexShrink: 0, borderRadius: '50%', border: 'none', background: 'var(--gradient-brand)', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-brand)' }}>
+              {initial}
+            </button>
+          </BorderGlow>
           {menuOpen && (
             <AccountMenu
               anchor={menuAnchor}
@@ -139,13 +144,15 @@ export default function Inicio() {
             var Icon = p.icon
             var showBadge = p.label === 'Bandeja' && unread > 0
             return (
-              <button key={p.label} type="button" onClick={function() { navigate(p.to) }} title={p.label} aria-label={p.label}
-                style={{ position: 'relative', width: '40px', height: '38px', borderRadius: '999px', flexShrink: 0, background: 'var(--bg-3)', border: '1px solid var(--border)', color: 'var(--text-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon style={{ width: '16px', height: '16px' }} />
-                {showBadge && (
-                  <span style={{ position: 'absolute', top: '4px', right: '5px', minWidth: '15px', height: '15px', padding: '0 4px', borderRadius: '999px', background: 'var(--brand)', color: '#fff', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 0 2px var(--bg-base)' }}>{unread > 9 ? '9+' : unread}</span>
-                )}
-              </button>
+              <BorderGlow key={p.label} {...GLOW}>
+                <button type="button" onClick={function() { navigate(p.to) }} title={p.label} aria-label={p.label}
+                  style={{ position: 'relative', width: '40px', height: '38px', borderRadius: '999px', flexShrink: 0, background: 'var(--bg-3)', border: 'none', color: 'var(--text-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon style={{ width: '16px', height: '16px' }} />
+                  {showBadge && (
+                    <span style={{ position: 'absolute', top: '4px', right: '5px', minWidth: '15px', height: '15px', padding: '0 4px', borderRadius: '999px', background: 'var(--brand)', color: '#fff', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 0 2px var(--bg-base)' }}>{unread > 9 ? '9+' : unread}</span>
+                  )}
+                </button>
+              </BorderGlow>
             )
           })}
         </div>

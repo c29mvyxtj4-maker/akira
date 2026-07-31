@@ -275,6 +275,17 @@ export function useProjects() {
       })
   }
 
+  // Guarda el contenido de la "página" (editor tipo Notion) del proyecto.
+  function savePage(projectId, content) {
+    supabase.from('projects').update({ page_content: content }).eq('id', projectId).then(function(res) {
+      if (res.error) { showToast('No se pudo guardar la página', 'error'); return }
+      setDetail(function(prev) {
+        if (!prev || prev.id !== projectId) return prev
+        return Object.assign({}, prev, { page_content: content })
+      })
+    })
+  }
+
   return {
     projects: projects, loading: loading, error: error,
     search: search, setSearch: setSearch,
@@ -295,6 +306,7 @@ export function useProjects() {
     handleUpdateTaskAssignee: handleUpdateTaskAssignee,
     handleUpdateProgress: handleUpdateProgress,
     handleUpdateStage: handleUpdateStage, // ← NUEVO
+    savePage: savePage,
     toastMsg: toastMsg,
   }
 }

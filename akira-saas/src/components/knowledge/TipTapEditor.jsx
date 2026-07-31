@@ -19,6 +19,7 @@ import { CharacterCount }           from '@tiptap/extension-character-count'
 import { Youtube }                  from '@tiptap/extension-youtube'
 import { useEffect, useRef, useState } from 'react'
 import { uploadFile } from '@/services/kb.service'
+import { SlashCommand } from './SlashCommand'
 
 /* ── Limpieza de JSON para evitar referencias circulares ──── */
 function cleanJSON(node) {
@@ -417,7 +418,8 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
   var editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [1,2,3,4,5,6] } }),
-      Placeholder.configure({ placeholder: 'Empieza a escribir...' }),
+      Placeholder.configure({ placeholder: "Escribe '/' para insertar bloques…" }),
+      SlashCommand,
       Underline,
       TextStyle,
       Color,

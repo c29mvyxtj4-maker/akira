@@ -18,6 +18,7 @@ import {
 } from '@/services/time.service'
 import { supabase } from '@/lib/supabase'
 import KanbanBoard from '@/components/projects/KanbanBoard'
+import ProjectPage from '@/components/projects/ProjectPage'
 import PageHeader      from '@/components/layout/PageHeader'
 import Modal           from '@/components/ui/Modal'
 import Badge           from '@/components/ui/Badge'
@@ -597,7 +598,7 @@ function TeamPanel({ project }) {
   )
 }
 
-function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateTaskAssignee, onUpdateProgress, onBack }) {
+function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateTaskAssignee, onUpdateProgress, onBack, onSavePage }) {
   var [tab, setTab] = useState('overview')
 
   if (loading) return <div className="flex-1 flex items-center justify-center"><PageSpinner label="Cargando..." /></div>
@@ -629,6 +630,7 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
 
   var TABS = [
     { id: 'overview', label: 'Resumen' },
+    { id: 'page',     label: 'Página' },
     { id: 'tasks',    label: 'Tareas (' + tasks.length + ')' },
     { id: 'team',     label: 'Equipo' },
     { id: 'files',    label: 'Archivos' },
@@ -753,6 +755,10 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
             onPriorityChange={onUpdateTaskPriority}
             onAssigneeChange={onUpdateTaskAssignee}
           />
+        </div>
+
+        <div style={{ display: tab === 'page' ? 'block' : 'none' }}>
+          {tab === 'page' && <ProjectPage project={project} onSave={onSavePage} />}
         </div>
 
         <div style={{ display: tab === 'team' ? 'block' : 'none' }}>
@@ -1096,6 +1102,7 @@ export default function Projects() {
             onUpdateTaskAssignee={hook.handleUpdateTaskAssignee}
             onUpdateProgress={hook.handleUpdateProgress}
             onBack={function() { hook.setSelectedId(null) }}
+            onSavePage={hook.savePage}
           />
         </div>
       </div>

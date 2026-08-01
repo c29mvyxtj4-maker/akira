@@ -7,8 +7,13 @@ import { AppProvider }  from './context/AppContext.jsx'
 import { OrgProvider }  from './context/OrgContext.jsx'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
+import { installPrefsListener } from './lib/applyPrefs'
 import './lib/sentry'   // inicializa Sentry si hay VITE_SENTRY_DSN (no-op si no)
 import './index.css'
+
+// Aplica tema / contraste / reducir-movimiento desde el arranque y reacciona a
+// cambios de preferencias, para que sean globales (no solo en el modal Ajustes).
+installPrefsListener()
 
 // Anti-caché: un build antiguo con vite-plugin-pwa dejaba un service worker que
 // congelaba la app en versiones viejas (sobre todo en PWA de iOS). Ya no usamos

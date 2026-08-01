@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { usePrefs } from '@/hooks/usePreferences'
 import { Row, RowSection, Toggle, Kbd, RowSelect, MiniBtn } from './_shared'
 
@@ -27,17 +26,10 @@ function PreferencesTab() {
     pref_profile_visible: true,
   })
 
+  // El tema / contraste / reducir-movimiento se aplican globalmente en
+  // lib/applyPrefs.js (reacciona al evento 'akira-prefs-change' que emite usePrefs).
   function toggle(key) { return function () { setPref(key, !prefs[key]) } }
   function onSel(key) { return function (e) { setPref(key, e.target.value) } }
-
-  // Aplica el tema de verdad (clase .light) según preferencia o sistema.
-  useEffect(function () {
-    var root = document.documentElement
-    var wantLight = prefs.pref_theme === 'light' ||
-      (prefs.pref_theme === 'system' && typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)
-    root.classList.toggle('light', !!wantLight)
-    root.classList.toggle('high-contrast', !!prefs.pref_high_contrast)
-  }, [prefs.pref_theme, prefs.pref_high_contrast])
 
   return (
     <div>

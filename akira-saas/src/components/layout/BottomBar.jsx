@@ -5,6 +5,7 @@ import { ROUTES } from '@/config/constants'
 import Dock from '@/components/ui/Dock'
 import CommandPalette from '@/components/layout/CommandPalette'
 import AskAkiraButton from '@/components/akira/AskAkiraButton'
+import { getPref } from '@/hooks/usePreferences'
 
 /*
  * Barra inferior global (sustituye a la sidebar como navegación principal).
@@ -21,6 +22,8 @@ export default function BottomBar() {
 
   useEffect(function () {
     function onKey(e) {
+      // Respeta la preferencia "Usar atajo de búsqueda".
+      if (getPref('pref_search_shortcut', true) === false) return
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setCmdOpen(function (v) { return !v }) }
     }
     window.addEventListener('keydown', onKey)

@@ -503,6 +503,28 @@ body {
 /* ════════════════════════════════════════════════════════════
    PAGE HEADER
 ════════════════════════════════════════════════════════════ */
+/* Preferencia "Reducir movimiento": neutraliza animaciones y transiciones. */
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Preferencia "Contraste alto": sube el contraste de texto y bordes. */
+.high-contrast {
+  --text-2: #f4f4f6;
+  --text-3: #e6e6ea;
+  --text-4: #cfcfd6;
+  --border: rgba(255,255,255,0.28);
+}
+.high-contrast.light {
+  --text-2: #101014;
+  --text-3: #22222a;
+  --text-4: #333340;
+  --border: rgba(0,0,0,0.32);
+}
+
 .page-header {
   display: flex;
   align-items: center;

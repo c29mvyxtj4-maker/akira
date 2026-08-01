@@ -15,9 +15,10 @@ import { getUnreadMentionCount } from '@/services/mentions.service'
 import { getFinanceKpis } from '@/services/finance.service'
 import { getPref } from '@/hooks/usePreferences'
 import TransparentArea from '@/components/charts/TransparentArea'
+import { fmtEuro, numberLocale } from '@/lib/format'
 
 function fmtEur(n) {
-  return (Number(n) || 0).toLocaleString('es-ES', { maximumFractionDigits: 0 }) + '€'
+  return fmtEuro(n)
 }
 import AccountMenu from '@/components/layout/AccountMenu'
 import BorderGlow from '@/components/ui/BorderGlow'
@@ -36,7 +37,7 @@ var Silk = lazy(function () { return import('@/components/effects/Silk') })
 
 function fmtCur(n) {
   if (!n && n !== 0) return '--'
-  return Number(n).toLocaleString('es-ES', { maximumFractionDigits: 0 }) + '€'
+  return Number(n).toLocaleString(numberLocale(), { maximumFractionDigits: 0 }) + '€'
 }
 
 export default function Inicio() {

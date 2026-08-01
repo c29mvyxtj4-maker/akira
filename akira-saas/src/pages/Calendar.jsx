@@ -9,9 +9,14 @@ import { useCalendar } from '@/hooks/useCalendar'
 import PageHeader from '@/components/layout/PageHeader'
 import Button from '@/components/ui/Button'
 import Modal from '@/components/ui/Modal'
+import { getPref } from '@/hooks/usePreferences'
 import clsx from 'clsx'
 
-var DAYS   = ['LUN','MAR','MIE','JUE','VIE','SAB','DOM']
+// Respeta la preferencia "Comenzar la semana el lunes".
+function weekStartsMonday() { return getPref('pref_week_monday', true) !== false }
+var DAYS_MON = ['LUN','MAR','MIE','JUE','VIE','SAB','DOM']
+var DAYS_SUN = ['DOM','LUN','MAR','MIE','JUE','VIE','SAB']
+function daysArr() { return weekStartsMonday() ? DAYS_MON : DAYS_SUN }
 var MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
 // Categorías de evento (una sola fuente): etiqueta + color distintivo para
@@ -51,7 +56,7 @@ function getDaysInMonth(year, month) {
 
 function getFirstDayOfMonth(year, month) {
   var day = new Date(year, month, 1).getDay()
-  return day === 0 ? 6 : day - 1
+  return weekStartsMonday() ? (day === 0 ? 6 : day - 1) : day
 }
 
 function fmtTime(t) {
@@ -71,10 +76,11 @@ function toDateStr(d) {
   return y + '-' + m + '-' + day
 }
 
+// Inicio de la semana (lunes o domingo según preferencia).
 function getMonday(date) {
   var d = new Date(date)
   var day = d.getDay()
-  var diff = day === 0 ? -6 : 1 - day
+  var diff = weekStartsMonday() ? (day === 0 ? -6 : 1 - day) : -day
   d.setDate(d.getDate() + diff)
   d.setHours(0, 0, 0, 0)
   return d
@@ -501,7 +507,7 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent })
           var isToday = dateStr === todayStr
           return (
             <div key={i} style={{ padding: '10px 2px', textAlign: 'center', borderLeft: '1px solid rgba(255,255,255,0.04)' }}>
-              <p style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '2px' }}>{DAYS[i]}</p>
+              <p style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '2px' }}>{daysArr()[i]}</p>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: '24px', height: '24px', borderRadius: '50%',
@@ -975,7 +981,7 @@ export default function Calendar() {
             ) : (
               <>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
-                  {DAYS.map(function(day) {
+                  {daysArr().map(function(day) {
                     return (
                       <div key={day} style={{ padding: '8px 2px', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                         {isMobile ? day.slice(0, 1) : day}

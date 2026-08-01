@@ -96,9 +96,9 @@ export async function getAutoEvents(dateFrom, dateTo) {
 
   // Deadlines de proyectos activos
   try {
-    var rp = await supabase
+    var rp = await scopeToOrg(supabase
       .from('projects')
-      .select('id, name, due_date, status, clients(id, name)')
+      .select('id, name, due_date, status, clients(id, name)'))
       .eq('archived', false)
       .not('due_date', 'is', null)
     if (!rp.error) {
@@ -127,9 +127,9 @@ export async function getAutoEvents(dateFrom, dateTo) {
 
   // Proximos cobros de suscripciones activas
   try {
-    var rs = await supabase
+    var rs = await scopeToOrg(supabase
       .from('subscriptions')
-      .select('id, name, next_billing, status, clients(id, name)')
+      .select('id, name, next_billing, status, clients(id, name)'))
       .eq('archived', false)
       .eq('status', 'active')
       .not('next_billing', 'is', null)

@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { scopeToOrg } from '@/lib/activeOrg'
 
 var GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY
 
@@ -14,10 +15,10 @@ async function buildBusinessContext() {
   var ownerId = await uid()
 
   var results = await Promise.allSettled([
-    supabase.from('clients').select('id,name,status,company,monthly_value,niche').eq('owner_id', ownerId).eq('archived', false).order('created_at', { ascending: false }).limit(30),
-    supabase.from('projects').select('id,name,status,stage,budget,actual_cost,due_date,progress,client_id').eq('owner_id', ownerId).eq('archived', false).order('created_at', { ascending: false }).limit(30),
-    supabase.from('subscriptions').select('name,status,price,period').eq('owner_id', ownerId).eq('archived', false),
-    supabase.from('finance_entries').select('type,amount,status,entry_date,description').eq('owner_id', ownerId).eq('archived', false).order('entry_date', { ascending: false }).limit(50),
+    scopeToOrg(supabase.from('clients').select('id,name,status,company,monthly_value,niche').eq('owner_id', ownerId).eq('archived', false)).order('created_at', { ascending: false }).limit(30),
+    scopeToOrg(supabase.from('projects').select('id,name,status,stage,budget,actual_cost,due_date,progress,client_id').eq('owner_id', ownerId).eq('archived', false)).order('created_at', { ascending: false }).limit(30),
+    scopeToOrg(supabase.from('subscriptions').select('name,status,price,period').eq('owner_id', ownerId).eq('archived', false)),
+    scopeToOrg(supabase.from('finance_entries').select('type,amount,status,entry_date,description').eq('owner_id', ownerId).eq('archived', false)).order('entry_date', { ascending: false }).limit(50),
     supabase.from('services').select('id,name,category,price,cost,active').eq('owner_id', ownerId).eq('archived', false),
   ])
 

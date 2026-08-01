@@ -1,11 +1,12 @@
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg } from '@/lib/activeOrg'
 
 // Elementos recientes para mostrar al abrir el buscador (sin escribir).
 export async function getRecent() {
   var results = await Promise.allSettled([
     supabase.from('kb_documents').select('id, title, updated_at').eq('archived', false).order('updated_at', { ascending: false }).limit(6),
-    supabase.from('clients').select('id, name, company, updated_at').eq('archived', false).order('updated_at', { ascending: false }).limit(4),
-    supabase.from('projects').select('id, name, updated_at').eq('archived', false).order('updated_at', { ascending: false }).limit(4),
+    scopeToOrg(supabase.from('clients').select('id, name, company, updated_at').eq('archived', false)).order('updated_at', { ascending: false }).limit(4),
+    scopeToOrg(supabase.from('projects').select('id, name, updated_at').eq('archived', false)).order('updated_at', { ascending: false }).limit(4),
     supabase.from('invoices').select('id, invoice_number, created_at').eq('archived', false).order('created_at', { ascending: false }).limit(3),
   ])
   function safe(r) { return r.status === 'fulfilled' && !r.value.error ? (r.value.data || []) : [] }
@@ -39,8 +40,8 @@ export async function searchAll(query) {
   var like = '%' + q + '%'
 
   var results = await Promise.allSettled([
-    supabase.from('clients').select('id, name, company').eq('archived', false).or('name.ilike.' + like + ',company.ilike.' + like).limit(5),
-    supabase.from('projects').select('id, name').eq('archived', false).ilike('name', like).limit(5),
+    scopeToOrg(supabase.from('clients').select('id, name, company').eq('archived', false).or('name.ilike.' + like + ',company.ilike.' + like)).limit(5),
+    scopeToOrg(supabase.from('projects').select('id, name').eq('archived', false).ilike('name', like)).limit(5),
     supabase.from('invoices').select('id, invoice_number, total').eq('archived', false).ilike('invoice_number', like).limit(5),
     supabase.from('quotes').select('id, quote_number, total').eq('archived', false).ilike('quote_number', like).limit(5),
     supabase.from('kb_documents').select('id, title').eq('archived', false).ilike('title', like).limit(5),

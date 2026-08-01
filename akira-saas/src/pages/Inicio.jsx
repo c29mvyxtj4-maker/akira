@@ -117,7 +117,7 @@ export default function Inicio() {
       )}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.58) 100%)' }} />
       <div style={{ position: 'relative', zIndex: 1, height: '100%', overflowY: 'auto', paddingTop: 'calc(var(--safe-top) + 18px)' }}>
-      <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 24px 24px' }}>
+      <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 24px calc(112px + var(--safe-bottom))' }}>
 
         {/* Barra de pastillas */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '22px' }}>

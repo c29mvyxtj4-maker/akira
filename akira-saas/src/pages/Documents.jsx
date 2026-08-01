@@ -180,8 +180,9 @@ function DocumentPreview({ doc, company, onBack, onConvert, converting }) {
       if (res.error) throw res.error
       var url = res.data && res.data.url
       if (!url) throw new Error((res.data && res.data.error) || 'No se recibió el enlace de pago')
-      try { await navigator.clipboard.writeText(url) } catch (_) { /* sin permiso de portapapeles */ }
-      window.open(url, '_blank')
+      // En móvil, window.open tras un await lo bloquea el navegador (se pierde el
+      // gesto). Redirigimos la pestaña actual a Stripe: funciona en todos lados.
+      window.location.href = url
     } catch (e) {
       window.alert('No se pudo generar el cobro: ' + (e.message || e))
     } finally {

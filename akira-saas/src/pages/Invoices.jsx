@@ -242,13 +242,7 @@ function InvoicePreview({ invoice, company, onBack }) {
         ><ChevronLeft style={{ width: '15px', height: '15px' }} /> Volver a facturas</button>
 
         <div style={{ display: 'flex', gap: '8px' }}>
-          {canCharge && (
-            <button type="button" onClick={handleCharge} disabled={charging}
-              onMouseEnter={function (e) { if (!charging) e.currentTarget.style.boxShadow = '0 0 18px 1px rgba(34,197,94,0.4)' }}
-              onMouseLeave={function (e) { e.currentTarget.style.boxShadow = 'none' }}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: charging ? 'not-allowed' : 'pointer', opacity: charging ? 0.7 : 1, transition: 'box-shadow 0.2s' }}
-            >{charging ? 'Generando enlace...' : 'Cobrar'}</button>
-          )}
+          {/* Cobro retirado de Facturas: se gestiona desde Documentos (facturas reales). */}
           <button type="button" onClick={handleDownload} disabled={downloading}
             style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'var(--gradient-brand)', border: 'none', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: downloading ? 'not-allowed' : 'pointer', opacity: downloading ? 0.7 : 1 }}
           >{downloading ? 'Generando...' : 'Descargar PDF'}</button>
@@ -592,15 +586,6 @@ export default function Invoices() {
                       </td>
                       <td style={{ padding: '12px 14px', position: 'sticky', right: 0, background: 'var(--bg-2)', boxShadow: '-10px 0 12px -8px rgba(0,0,0,0.55)' }}>
                         <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
-                          {inv.status !== 'paid' && inv.status !== 'void' && (
-                            <button type="button" onClick={function() { handleCharge(inv) }} disabled={chargingId === inv.id}
-                              title="Generar enlace de cobro"
-                              style={{ display: 'flex', alignItems: 'center', gap: '5px', height: '28px', padding: '0 10px', borderRadius: '6px', border: '1px solid rgba(34,197,94,0.35)', background: 'rgba(34,197,94,0.12)', color: '#22c55e', fontSize: '12px', fontWeight: 700, cursor: chargingId === inv.id ? 'not-allowed' : 'pointer', opacity: chargingId === inv.id ? 0.6 : 1, whiteSpace: 'nowrap' }}
-                            >
-                              <CreditCard style={{ width: '13px', height: '13px' }} />
-                              {chargingId === inv.id ? 'Generando…' : 'Cobrar'}
-                            </button>
-                          )}
                           <button type="button" onClick={function() { openEdit(inv) }}
                             style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', color: '#94a3b8' }}
                           >✎</button>

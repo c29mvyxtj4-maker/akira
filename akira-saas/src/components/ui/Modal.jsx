@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 
@@ -11,7 +12,24 @@ export default function Modal({ open, onClose, title, description, children, siz
     return function() { document.removeEventListener('keydown', onKey) }
   }, [open, onClose])
 
-  return (
+  // Mientras hay un modal abierto, marcamos el body para poder ocultar el dock
+  // (y evitar que tape los botones de acción del modal).
+  useEffect(function() {
+    if (!open) return
+    var b = document.body
+    var prev = Number(b.getAttribute('data-modal-count') || '0')
+    b.setAttribute('data-modal-count', String(prev + 1))
+    b.setAttribute('data-modal-open', 'true')
+    return function() {
+      var n = Number(b.getAttribute('data-modal-count') || '1') - 1
+      if (n <= 0) { b.removeAttribute('data-modal-count'); b.removeAttribute('data-modal-open') }
+      else { b.setAttribute('data-modal-count', String(n)) }
+    }
+  }, [open])
+
+  // Portal al <body>: escapa del stacking context de <main> (z-index:1), que si
+  // no dejaría el dock por encima del modal.
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -56,6 +74,7 @@ export default function Modal({ open, onClose, title, description, children, siz
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }

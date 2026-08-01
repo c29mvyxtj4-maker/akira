@@ -671,6 +671,10 @@ body {
   flex: 1;
 }
 
+/* Con un modal abierto, ocultamos el dock flotante para que no tape los
+   botones de acción del formulario. */
+body[data-modal-open] .app-dock { display: none !important; }
+
 /* ════════════════════════════════════════════════════════════
    BADGES / STATUS
 ════════════════════════════════════════════════════════════ */
@@ -890,12 +894,26 @@ body {
     grid-template-columns: 1fr !important;
   }
 
- .modal-overlay {
-    padding-bottom: max(20px, var(--safe-bottom)) !important;
+ /* Modal como hoja a pantalla completa en móvil: sin recortes arriba/abajo,
+     con áreas seguras (notch y barra inferior) y sin línea/borde negro. */
+  .modal-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
   }
-
-  /* La barra inferior (Dock) ya reserva el área segura como padding propio;
-     no lo dupliques aquí o el contenido se corta por abajo. */
+  .modal-box {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  .modal-header {
+    padding-top: calc(16px + var(--safe-top)) !important;
+  }
+  .modal-body {
+    padding-bottom: calc(24px + var(--safe-bottom)) !important;
+  }
 
   .topbar-kpis {
     display: none !important;

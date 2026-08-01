@@ -48,7 +48,7 @@ export default function BottomBar() {
       {/* Flota sobre el contenido (position:absolute) para que el desenfoque del
          dock difumine el contenido real que hay detrás = cristal esmerilado.
          El contenedor no captura clics; solo el propio dock. */}
-      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 40, boxSizing: 'border-box', paddingBottom: 'var(--safe-bottom)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflow: 'visible', pointerEvents: 'none' }}>
+      <div className="app-dock" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 40, boxSizing: 'border-box', paddingBottom: 'var(--safe-bottom)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflow: 'visible', pointerEvents: 'none' }}>
         <div style={{ pointerEvents: 'auto', width: '100%' }}>
           <Dock items={items} panelHeight={58} baseItemSize={46} magnification={66} distance={170} dockHeight={106} />
         </div>

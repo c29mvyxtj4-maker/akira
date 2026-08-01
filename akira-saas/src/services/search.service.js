@@ -7,7 +7,7 @@ export async function getRecent() {
     supabase.from('kb_documents').select('id, title, updated_at').eq('archived', false).order('updated_at', { ascending: false }).limit(6),
     scopeToOrg(supabase.from('clients').select('id, name, company, updated_at').eq('archived', false)).order('updated_at', { ascending: false }).limit(4),
     scopeToOrg(supabase.from('projects').select('id, name, updated_at').eq('archived', false)).order('updated_at', { ascending: false }).limit(4),
-    supabase.from('invoices').select('id, invoice_number, created_at').eq('archived', false).order('created_at', { ascending: false }).limit(3),
+    scopeToOrg(supabase.from('commercial_documents').select('id, invoice_number, created_at').eq('document_type', 'invoice').eq('archived', false)).order('created_at', { ascending: false }).limit(3),
   ])
   function safe(r) { return r.status === 'fulfilled' && !r.value.error ? (r.value.data || []) : [] }
   var out = []
@@ -42,8 +42,8 @@ export async function searchAll(query) {
   var results = await Promise.allSettled([
     scopeToOrg(supabase.from('clients').select('id, name, company').eq('archived', false).or('name.ilike.' + like + ',company.ilike.' + like)).limit(5),
     scopeToOrg(supabase.from('projects').select('id, name').eq('archived', false).ilike('name', like)).limit(5),
-    supabase.from('invoices').select('id, invoice_number, total').eq('archived', false).ilike('invoice_number', like).limit(5),
-    supabase.from('quotes').select('id, quote_number, total').eq('archived', false).ilike('quote_number', like).limit(5),
+    scopeToOrg(supabase.from('commercial_documents').select('id, invoice_number, total').eq('document_type', 'invoice').eq('archived', false).ilike('invoice_number', like)).limit(5),
+    scopeToOrg(supabase.from('commercial_documents').select('id, quote_number, total').eq('document_type', 'quote').eq('archived', false).ilike('quote_number', like)).limit(5),
     supabase.from('kb_documents').select('id, title').eq('archived', false).ilike('title', like).limit(5),
   ])
 
@@ -61,7 +61,7 @@ export async function searchAll(query) {
     out.push({ type: 'invoice', id: i.id, label: i.invoice_number, sublabel: 'Factura', path: '/invoices' })
   })
   safe(results[3]).forEach(function(qt) {
-    out.push({ type: 'quote', id: qt.id, label: qt.quote_number, sublabel: 'Presupuesto', path: '/quotes' })
+    out.push({ type: 'quote', id: qt.id, label: qt.quote_number, sublabel: 'Presupuesto', path: '/invoices' })
   })
   safe(results[4]).forEach(function(d) {
     out.push({ type: 'doc', id: d.id, label: d.title || 'Sin titulo', sublabel: 'Documento', path: '/knowledge' })

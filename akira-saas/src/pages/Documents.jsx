@@ -368,7 +368,7 @@ export default function Documents() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <PageHeader
-        title="Documentos"
+        title={tab === 'quote' ? 'Presupuestos' : 'Facturas'}
         description={documents.length + ' documento' + (documents.length !== 1 ? 's' : '')}
         actions={<Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>{tab === 'quote' ? 'Nuevo presupuesto' : 'Nueva factura'}</Button>}
       />

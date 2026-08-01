@@ -120,16 +120,18 @@ export default function App() {
           <Route path="services/*"      element={<Services />} />
           <Route path="subscriptions/*" element={<Subscriptions />} />
           <Route path="finance/*"       element={<Finance />} />
-          <Route path="invoices/*"      element={<Invoices />} />
+          {/* Facturas + Presupuestos unificados en commercial_documents (Documents).
+             Las rutas antiguas redirigen aquí. */}
+          <Route path="invoices/*"      element={<Documents />} />
+          <Route path="documents/*"     element={<Navigate to="/invoices" replace />} />
+          <Route path="quotes/*"        element={<Navigate to="/invoices" replace />} />
           <Route path="time/*"          element={<TimeTracking />} />
           <Route path="operatives/*"    element={<AIOperatives />} />
-          <Route path="quotes/*"        element={<Quotes />} />
           <Route path="calendar/*"      element={<Calendar />} />
           <Route path="knowledge/*"     element={<Knowledge />} />
           <Route path="brain/*"         element={<Brain />} />
           <Route path="settings/*"      element={<Settings />} />
           <Route path="offers/*"        element={<Offers />} />
-          <Route path="documents/*"     element={<Documents />} />
         </Route>
 
         {/* Portal de clientes — rutas públicas */}

@@ -220,9 +220,18 @@ body {
 .bg-glow {
   position: fixed;
   inset: 0;
-  background: var(--gradient-glow);
+  /* Glow superior (marca) + glow inferior tenue (tono Silk) para que la franja
+     de la barra inferior no sea negro plano, sino un dégradé oscuro y suave. */
+  background:
+    var(--gradient-glow),
+    radial-gradient(ellipse 120% 42% at 50% 100%, rgba(90,22,22,0.5) 0%, rgba(40,12,12,0.24) 32%, transparent 66%);
   pointer-events: none;
   z-index: 0;
+}
+.light .bg-glow {
+  background:
+    var(--gradient-glow),
+    radial-gradient(ellipse 120% 42% at 50% 100%, rgba(230,57,70,0.06) 0%, transparent 60%);
 }
 
 /* ── Dashboard: static container panel + responsive grids ── */

@@ -38,6 +38,7 @@ const AIOperatives  = lazy(() => import('@/pages/AIOperatives'))
 const Inicio        = lazy(() => import('@/pages/Inicio')) // PRUEBA: home experimental
 const Mensajes      = lazy(() => import('@/pages/Mensajes'))
 const InboxPage     = lazy(() => import('@/pages/InboxPage'))
+const LandingPage   = lazy(() => import('@/pages/LandingPage'))
 
 function ComingSoon({ name }) {
   return (
@@ -99,6 +100,7 @@ export default function App() {
         {/* Públicas */}
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.RESET} element={<ResetPassword />} />
+        <Route path="/landing" element={<LandingPage />} />
 
         {/* Privadas */}
         <Route

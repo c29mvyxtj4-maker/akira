@@ -19,6 +19,7 @@ import {
 import { supabase } from '@/lib/supabase'
 import KanbanBoard from '@/components/projects/KanbanBoard'
 import ProjectPage from '@/components/projects/ProjectPage'
+import TaskTemplateSelector from '@/components/projects/TaskTemplateSelector'
 import PageHeader      from '@/components/layout/PageHeader'
 import Modal           from '@/components/ui/Modal'
 import Badge           from '@/components/ui/Badge'
@@ -29,6 +30,7 @@ import { SkeletonCard } from '@/components/ui/Skeleton'
 import clsx            from 'clsx'
 import ProjectSummaryCard from '@/components/projects/ProjectSummaryCard'
 import ProjectFilesTab from '@/components/projects/ProjectFilesTab'
+import { applyTemplate } from '@/services/taskTemplates.service'
 
 function fmtDate(d) {
   if (!d) return '--'
@@ -250,8 +252,21 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, o
     )
   }
 
+  function handleApplyTemplate(templateKey) {
+    var tasks = applyTemplate(templateKey)
+    tasks.forEach(function(task) {
+      onAdd(project.id, task.title, task.priority || 'medium')
+    })
+  }
+
   return (
     <div style={{ padding: '0' }}>
+      {/* Template Selector */}
+      <div style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <TaskTemplateSelector onApplyTemplate={handleApplyTemplate} disabled={tasks.length > 0} />
+      </div>
+
+      {/* Manual Task Entry */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
         <input
           ref={inputRef}

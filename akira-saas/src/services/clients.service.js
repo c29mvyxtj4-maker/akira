@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { getActiveOrgId, scopeToOrg } from '@/lib/activeOrg'
 
 /* ── Constantes exportadas ──────────────────────────────── */
 export const CLIENT_NICHES = [
@@ -35,6 +36,12 @@ async function uid() {
   return user.id
 }
 
+function getOrgId() {
+  const orgId = getActiveOrgId()
+  if (!orgId) throw new Error('No hay org activa')
+  return orgId
+}
+
 /* ═══════════════════════════════════════════════════════════
    CLIENTS — CRUD
 ═══════════════════════════════════════════════════════════ */
@@ -59,6 +66,7 @@ export async function getClients({
     q = q.or(`name.ilike.${s},company.ilike.${s},email.ilike.${s}`)
   }
 
+  q = scopeToOrg(q)
   q = q.order(sortBy, { ascending: sortDir === 'asc', nullsFirst: false })
 
   const { data, error } = await q
@@ -67,20 +75,24 @@ export async function getClients({
 }
 
 export async function getClientById(id) {
-  const { data, error } = await supabase
+  let q = supabase
     .from('clients')
     .select('*')
     .eq('id', id)
-    .single()
+
+  q = scopeToOrg(q)
+
+  const { data, error } = await q.single()
   if (error) throw error
   return data
 }
 
 export async function createClient(payload) {
   const ownerId = await uid()
+  const orgId = getOrgId()
   const { data, error } = await supabase
     .from('clients')
-    .insert({ ...sanitize(payload), owner_id: ownerId })
+    .insert({ ...sanitize(payload), owner_id: ownerId, org_id: orgId })
     .select()
     .single()
   if (error) throw error
@@ -88,21 +100,27 @@ export async function createClient(payload) {
 }
 
 export async function updateClient(id, payload) {
-  const { data, error } = await supabase
+  let q = supabase
     .from('clients')
     .update(sanitize(payload))
     .eq('id', id)
-    .select()
-    .single()
+
+  q = scopeToOrg(q)
+
+  const { data, error } = await q.select().single()
   if (error) throw error
   return data
 }
 
 export async function archiveClient(id) {
-  const { error } = await supabase
+  let q = supabase
     .from('clients')
     .update({ archived: true })
     .eq('id', id)
+
+  q = scopeToOrg(q)
+
+  const { error } = await q
   if (error) throw error
   return true
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { PROJECT_STAGE_MAP, PROJECT_STATUS_MAP } from '@/services/projects.service'
 
@@ -10,6 +10,12 @@ function KanbanCard({ project, onSelect, onDragStart }) {
   var sc = PROJECT_STATUS_MAP[project.status]
   var tasks = Array.isArray(project.tasks) ? project.tasks : []
   var done  = tasks.filter(function(t) { return t.done }).length
+
+  // Calcula el progreso automáticamente
+  var progress = useMemo(function() {
+    if (tasks.length === 0) return 0
+    return Math.round((done / tasks.length) * 100)
+  }, [done, tasks.length])
 
   return (
     <motion.div
@@ -27,6 +33,29 @@ function KanbanCard({ project, onSelect, onDragStart }) {
     >
       <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-1)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.name}</p>
       <p style={{ fontSize: '11px', color: 'var(--text-4)', marginBottom: '8px' }}>{project.clients ? (project.clients.company || project.clients.name) : 'Sin cliente'}</p>
+
+      {/* Barra de progreso automática */}
+      {tasks.length > 0 && (
+        <div style={{ marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-3)' }}>Progreso</span>
+            <span style={{ fontSize: '10px', fontWeight: 700, color: '#e63946' }}>{progress}%</span>
+          </div>
+          <div style={{ height: '4px', borderRadius: '2px', background: 'var(--bg-4)', overflow: 'hidden', border: '0.5px solid var(--border)' }}>
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: progress + '%' }}
+              transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+              style={{
+                height: '100%',
+                background: progress === 100 ? 'linear-gradient(90deg, #22c55e 0%, #10b981 100%)' : 'linear-gradient(90deg, #e63946 0%, #f97316 100%)',
+                boxShadow: progress > 0 ? `0 0 6px ${progress === 100 ? '#22c55e' : '#e63946'}44` : 'none'
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {sc && <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '20px', background: sc.color + '22', color: sc.color }}>{sc.label}</span>}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

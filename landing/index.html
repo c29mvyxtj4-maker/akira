@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage clients, projects, and invoices in one place. Built for marketing agencies.">
+    <title>AKIRA – The workspace for marketing agencies</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* AKIRA Brand Colors */
+        :root {
+            --brand-500: #e63946;
+            --brand-600: #cc2936;
+            --brand-700: #a81d28;
+            --brand-light: #ff6b6b;
+
+            --surface-0: #060608;
+            --surface-1: #0a0a0d;
+            --surface-2: #0f0f14;
+            --surface-3: #141419;
+            --surface-4: #1a1a21;
+
+            --text-1: #ffffff;
+            --text-2: #e0e0e8;
+            --text-3: #a0a0b0;
+
+            --border-default: rgba(255, 255, 255, 0.07);
+            --border-brand: rgba(230, 57, 70, 0.35);
+
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #060608 0%, #0f0507 50%, #060608 100%);
+            color: var(--text-1);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background orbs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(230, 57, 70, 0.12) 0%, transparent 60%);
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -20%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(230, 57, 70, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 25s ease-in-out infinite reverse;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(30px); }
+        }
+
+        /* Typography */
+        h1 {
+            font-size: clamp(42px, 8vw, 72px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: clamp(32px, 6vw, 52px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            margin-bottom: 24px;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--text-2);
+        }
+
+        /* Layout */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 24px;
+            }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(6, 6, 8, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-default);
+            z-index: 100;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--brand-light);
+            text-decoration: none;
+            letter-spacing: -1px;
+            animation: fadeInDown 0.8s var(--ease-out);
+        }
+
+        nav {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 200ms var(--ease-smooth);
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            color: var(--brand-light);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 200ms var(--ease-smooth);
+            font-family: 'Outfit', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e63946 0%, #cc2936 100%);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(230, 57, 70, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-1);
+            border: 2px solid var(--border-default);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-2);
+            border-color: var(--brand-500);
+        }
+
+        main {
+            margin-top: 72px;
+            position: relative;
+            z-index: 2;
+        }
+
+        section {
+            padding: 100px 0;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding-top: 120px;
+            padding-bottom: 120px;
+            text-align: center;
+        }
+
+        .hero .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            background: linear-gradient(135deg, #ffffff 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s var(--ease-out) 0.1s backwards;
+        }
+
+        .hero > .container > p {
+            font-size: 18px;
+            margin-bottom: 48px;
+            animation: fadeInUp 0.8s var(--ease-out) 0.2s backwards;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s var(--ease-out) 0.3s backwards;
+        }
+
+        /* Cards 3D Section */
+        .cards-section {
+            perspective: 1000px;
+            padding: 100px 0;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .card-3d {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-default);
+            border-radius: 16px;
+            padding: 32px;
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 300ms var(--ease-smooth);
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(0);
+            animation: slideUp 0.8s var(--ease-out) backwards;
+        }
+
+        .card-3d:nth-child(1) { animation-delay: 0.2s; }
+        .card-3d:nth-child(2) { animation-delay: 0.3s; }
+        .card-3d:nth-child(3) { animation-delay: 0.4s; }
+        .card-3d:nth-child(4) { animation-delay: 0.5s; }
+
+        .card-3d:hover {
+            border-color: var(--brand-500);
+            transform: translateY(-12px) rotateX(5deg);
+            box-shadow: 0 40px 80px rgba(230, 57, 70, 0.15);
+        }
+
+        .card-3d::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(230, 57, 70, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 300ms var(--ease-smooth);
+        }
+
+        .card-3d:hover::before {
+            top: -30%;
+            right: -30%;
+            opacity: 0.5;
+        }
+
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .card-3d h3 {
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-3d p {
+            font-size: 14px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Features Section */
+        .features {
+            text-align: center;
+        }
+
+        .features h2 {
+            animation: fadeInUp 0.8s var(--ease-out);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .feature {
+            animation: fadeInUp 0.8s var(--ease-out) backwards;
+        }
+
+        .feature:nth-child(1) { animation-delay: 0.2s; }
+        .feature:nth-child(2) { animation-delay: 0.3s; }
+        .feature:nth-child(3) { animation-delay: 0.4s; }
+        .feature:nth-child(4) { animation-delay: 0.5s; }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: inline-block;
+            transition: transform 300ms var(--ease-smooth);
+        }
+
+        .feature:hover .feature-icon {
+            transform: scale(1.2) rotateZ(10deg);
+        }
+
+        .feature h3 {
+            margin-bottom: 8px;
+        }
+
+        .feature p {
+            font-size: 14px;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            text-align: center;
+        }
+
+        .pricing h2 {
+            animation: fadeInUp 0.8s var(--ease-out);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .pricing-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 2px solid var(--border-default);
+            border-radius: 16px;
+            padding: 40px 32px;
+            text-align: left;
+            transition: all 300ms var(--ease-smooth);
+            animation: slideUp 0.8s var(--ease-out) backwards;
+        }
+
+        .pricing-card:nth-child(1) { animation-delay: 0.2s; }
+        .pricing-card:nth-child(2) { animation-delay: 0.3s; }
+        .pricing-card:nth-child(3) { animation-delay: 0.4s; }
+
+        .pricing-card:hover {
+            border-color: var(--brand-500);
+            transform: translateY(-16px);
+            box-shadow: 0 40px 80px rgba(230, 57, 70, 0.15);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--brand-500);
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.1) 0%, rgba(230, 57, 70, 0.05) 100%);
+        }
+
+        .pricing-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .pricing-price {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--brand-light);
+            margin-bottom: 4px;
+        }
+
+        .pricing-period {
+            font-size: 14px;
+            color: var(--text-3);
+            margin-bottom: 24px;
+        }
+
+        .pricing-features {
+            display: grid;
+            gap: 12px;
+            margin: 32px 0;
+            border-top: 1px solid var(--border-default);
+            border-bottom: 1px solid var(--border-default);
+            padding: 24px 0;
+        }
+
+        .pricing-feature {
+            display: flex;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .pricing-feature-check {
+            color: var(--brand-light);
+            font-weight: 700;
+        }
+
+        .pricing-cta {
+            width: 100%;
+            margin-top: 24px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.1) 0%, rgba(230, 57, 70, 0.05) 100%);
+            border: 1px solid var(--border-brand);
+            border-radius: 20px;
+            padding: 80px 40px;
+            text-align: center;
+            margin: 80px 0;
+        }
+
+        .cta-section h2 {
+            animation: fadeInUp 0.8s var(--ease-out);
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s var(--ease-out) 0.1s backwards;
+        }
+
+        .cta-form {
+            display: flex;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s var(--ease-out) 0.2s backwards;
+        }
+
+        .cta-form input {
+            flex: 1;
+            min-width: 200px;
+            padding: 14px 20px;
+            border: 1px solid var(--border-default);
+            border-radius: 50px;
+            background: rgba(6, 6, 8, 0.5);
+            color: var(--text-1);
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            transition: all 200ms var(--ease-smooth);
+        }
+
+        .cta-form input:focus {
+            outline: none;
+            border-color: var(--brand-500);
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+        }
+
+        .cta-form input::placeholder {
+            color: #606070;
+        }
+
+        @media (max-width: 640px) {
+            .cta-form {
+                flex-direction: column;
+            }
+
+            .cta-form input,
+            .cta-form .btn {
+                width: 100%;
+            }
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-default);
+            padding: 40px 0;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-3);
+        }
+
+        footer a {
+            color: var(--brand-light);
+            text-decoration: none;
+            transition: color 200ms var(--ease-smooth);
+        }
+
+        footer a:hover {
+            color: var(--brand-500);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) rotateX(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s var(--ease-out);
+        }
+
+        .fade-in-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Accessibility */
+        *:focus-visible {
+            outline: 2px solid var(--brand-500);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 60px 0;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            nav {
+                gap: 20px;
+            }
+
+            nav a {
+                display: none;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-section {
+                padding: 60px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <a href="#" class="logo">AKIRA</a>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#cta">Contact</a>
+            </nav>
+            <button class="btn btn-primary">Join Beta</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1>Stop using 5 SaaS tools to run your agency</h1>
+                <p>Manage clients, projects, and invoices in one place. No more juggling HubSpot, FreshBooks, Monday.com, and Harvest.</p>
+                <div class="hero-cta">
+                    <button class="btn btn-primary">Join the Beta — Free for 3 Months</button>
+                    <button class="btn btn-secondary">Watch Demo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards 3D Section -->
+        <section class="cards-section">
+            <div class="container">
+                <h2 style="text-align: center;">The all-in-one workspace</h2>
+                <div class="cards-container">
+                    <div class="card-3d">
+                        <div>
+                            <div class="card-icon">👥</div>
+                            <h3>Know Your Clients</h3>
+                        </div>
+                        <p>Stop losing client context in email threads. Every client has one profile with contact info, communication history, all their projects, invoices, and payment status.</p>
+                    </div>
+
+                    <div class="card-3d">
+                        <div>
+                            <div class="card-icon">🎯</div>
+                            <h3>See Your Work</h3>
+                        </div>
+                        <p>Track every project, every deadline. Kanban board shows status. Your team knows what to work on. Clients see progress via shared portal.</p>
+                    </div>
+
+                    <div class="card-3d">
+                        <div>
+                            <div class="card-icon">💳</div>
+                            <h3>Get Paid Faster</h3>
+                        </div>
+                        <p>Invoicing takes 60 seconds, not 30 minutes. Generate from project, send with one click, track payments. Never lose money to forgotten invoices.</p>
+                    </div>
+
+                    <div class="card-3d">
+                        <div>
+                            <div class="card-icon">📈</div>
+                            <h3>Know Your Margins</h3>
+                        </div>
+                        <p>See exactly how profitable every project is. Log hours per project, compare to estimate, identify low-margin clients. Make smarter pricing.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="container">
+                <h2>Built for marketing agencies</h2>
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <h3>CRM</h3>
+                        <p>Manage all client relationships in one place</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <h3>Projects</h3>
+                        <p>Kanban boards, task tracking, deadlines</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <h3>Invoicing</h3>
+                        <p>Create, send, and track payments instantly</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">✓</div>
+                        <h3>Time Tracking</h3>
+                        <p>Log hours and calculate project margins</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing" id="pricing">
+            <div class="container">
+                <h2 style="text-align: center;">Simple Pricing, No Surprises</h2>
+
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="pricing-name">Starter</div>
+                        <div class="pricing-price">€29</div>
+                        <div class="pricing-period">/month • €261/year (save 10%)</div>
+
+                        <div class="pricing-features">
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>1 user account</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>Up to 5 clients</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>CRM + Projects + Invoicing</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>Client portal</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-secondary pricing-cta">Get Started</button>
+                    </div>
+
+                    <div class="pricing-card featured">
+                        <div class="pricing-name">Professional</div>
+                        <div class="pricing-price">€79</div>
+                        <div class="pricing-period">/month • €711/year (save 10%)</div>
+
+                        <div class="pricing-features">
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>3 user accounts</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>Unlimited clients</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>Everything in Starter</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>Time tracking + Reporting</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>Zapier integration</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary pricing-cta">Get Started</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <div class="pricing-name">Enterprise</div>
+                        <div class="pricing-price">€199+</div>
+                        <div class="pricing-period">/month</div>
+
+                        <div class="pricing-features">
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>5+ user accounts</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>Unlimited everything</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>Advanced analytics</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>White-label + Custom integrations</span>
+                            </div>
+                            <div class="pricing-feature">
+                                <span class="pricing-feature-check">✓</span>
+                                <span>Dedicated support</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-secondary pricing-cta">Contact Sales</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section" id="cta">
+            <div class="container" style="max-width: 700px;">
+                <h2>Join the Private Beta</h2>
+                <p>Free for 3 months + direct support from Marc. No credit card required.</p>
+
+                <form class="cta-form" onsubmit="handleBetaSignup(event)">
+                    <input
+                        type="email"
+                        placeholder="your@email.com"
+                        required
+                        aria-label="Email address"
+                    >
+                    <button type="submit" class="btn btn-primary">Join Now</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AKIRA. Built for marketing agencies.<br>
+            <a href="mailto:marcroson7@gmail.com">Contact</a> •
+            <a href="https://twitter.com" target="_blank">Twitter</a> •
+            <a href="https://linkedin.com" target="_blank">LinkedIn</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth navigation
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // Beta signup handler
+        function handleBetaSignup(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            alert('Thanks for signing up! Check your email for access link.');
+            e.target.reset();
+        }
+
+        // Mouse follow effect on cards (subtle)
+        document.querySelectorAll('.card-3d').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+
+                const rotateX = (y - 0.5) * 10;
+                const rotateY = (x - 0.5) * 10;
+
+                card.style.transform = `translateY(-12px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(-12px) rotateX(5deg)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,9 +1,16 @@
 import { supabase } from '@/lib/supabase'
+import { getActiveOrgId, scopeToOrg } from '@/lib/activeOrg'
 
 async function uid() {
   const res = await supabase.auth.getUser()
   if (!res.data || !res.data.user) throw new Error('No autenticado')
   return res.data.user.id
+}
+
+function getOrgId() {
+  const orgId = getActiveOrgId()
+  if (!orgId) throw new Error('No hay org activa')
+  return orgId
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -12,21 +19,26 @@ async function uid() {
 
 export async function getPortalUsers(clientId) {
   const ownerId = await uid()
-  const res = await supabase
+  const orgId = getOrgId()
+  let q = supabase
     .from('portal_users')
     .select('*, portal_permissions(*)')
     .eq('client_id', clientId)
-    .eq('owner_id', ownerId)
-    .order('created_at', { ascending: false })
+
+  q = scopeToOrg(q)
+
+  const res = await q.order('created_at', { ascending: false })
   if (res.error) throw res.error
   return res.data || []
 }
 
 export async function createPortalUser(clientId, email, name) {
   const ownerId = await uid()
+  const orgId = getOrgId()
   const res = await supabase.from('portal_users').insert({
     client_id: clientId,
     owner_id:  ownerId,
+    org_id:    orgId,
     email:     email.toLowerCase().trim(),
     name:      name || '',
     active:    true,
@@ -243,15 +255,57 @@ export async function deletePortalApproval(id) {
 ═══════════════════════════════════════════════════════════ */
 
 export async function getPortalClientData(clientId, ownerId) {
+  const orgId = getOrgId()
+
+  // Get invoices from BOTH tables (legacy + new)
+  // This handles the migration period where invoices live in two places
+  const getInvoices = async () => {
+    try {
+      // New invoices from commercial_documents
+      const newRes = await supabase
+        .from('commercial_documents')
+        .select('id,invoice_number,total,status,issue_date,due_date')
+        .eq('client_id', clientId)
+        .eq('org_id', orgId)
+        .eq('document_type', 'invoice')
+        .eq('archived', false)
+        .in('status', ['sent', 'paid'])
+        .order('issue_date', { ascending: false })
+
+      // Legacy invoices from invoices table
+      const legacyRes = await supabase
+        .from('invoices')
+        .select('id,invoice_number,total,status,issue_date,due_date')
+        .eq('client_id', clientId)
+        .eq('org_id', orgId)
+        .eq('archived', false)
+        .in('status', ['sent', 'paid'])
+        .order('issue_date', { ascending: false })
+
+      const newInvoices = !newRes.error ? (newRes.data || []) : []
+      const legacyInvoices = !legacyRes.error ? (legacyRes.data || []) : []
+
+      // Union: combine and deduplicate by ID
+      const allInvoices = [...newInvoices, ...legacyInvoices]
+      const seen = new Set()
+      return allInvoices.filter(inv => {
+        if (seen.has(inv.id)) return false
+        seen.add(inv.id)
+        return true
+      })
+    } catch (e) {
+      console.warn('Error fetching invoices:', e)
+      return []
+    }
+  }
+
   const results = await Promise.allSettled([
-    supabase.from('clients').select('id,name,company,status,niche').eq('id', clientId).eq('owner_id', ownerId).single(),
-    supabase.from('projects').select('id,name,status,stage,progress,due_date,description').eq('client_id', clientId).eq('owner_id', ownerId).eq('archived', false),
-    supabase.from('portal_messages').select('*').eq('client_id', clientId).eq('owner_id', ownerId).order('created_at', { ascending: true }),
-    supabase.from('portal_files').select('*').eq('client_id', clientId).eq('owner_id', ownerId).order('created_at', { ascending: false }),
-    supabase.from('portal_approvals').select('*').eq('client_id', clientId).eq('owner_id', ownerId).order('created_at', { ascending: false }),
-    // Facturas visibles para el cliente (solo enviadas/pagadas), vía política RLS de portal.
-    // Las facturas reales viven en commercial_documents (document_type='invoice'); ver [[invoices-two-tables]].
-    supabase.from('commercial_documents').select('id,invoice_number,total,status,issue_date,due_date').eq('client_id', clientId).eq('document_type', 'invoice').eq('archived', false).in('status', ['sent', 'paid']).order('issue_date', { ascending: false }),
+    supabase.from('clients').select('id,name,company,status,niche').eq('id', clientId).eq('org_id', orgId).single(),
+    supabase.from('projects').select('id,name,status,stage,progress,due_date,description').eq('client_id', clientId).eq('org_id', orgId).eq('archived', false),
+    supabase.from('portal_messages').select('*').eq('client_id', clientId).eq('org_id', orgId).order('created_at', { ascending: true }),
+    supabase.from('portal_files').select('*').eq('client_id', clientId).eq('org_id', orgId).order('created_at', { ascending: false }),
+    supabase.from('portal_approvals').select('*').eq('client_id', clientId).eq('org_id', orgId).order('created_at', { ascending: false }),
+    getInvoices(), // Union query: new + legacy invoices
   ])
 
   const safe = (r) => (r.status === 'fulfilled' && !r.value.error ? r.value.data : null)
@@ -262,7 +316,7 @@ export async function getPortalClientData(clientId, ownerId) {
     messages:  safe(results[2]) || [],
     files:     safe(results[3]) || [],
     approvals: safe(results[4]) || [],
-    invoices:  safe(results[5]) || [],
+    invoices:  await results[5], // Union already resolved
   }
 }
 

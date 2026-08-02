@@ -263,7 +263,7 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, o
     <div style={{ padding: '0' }}>
       {/* Template Selector */}
       <div style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <TaskTemplateSelector onApplyTemplate={handleApplyTemplate} disabled={tasks.length > 0} />
+        <TaskTemplateSelector onApplyTemplate={handleApplyTemplate} />
       </div>
 
       {/* Manual Task Entry */}

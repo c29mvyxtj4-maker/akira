@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
+import { applyTemplate } from '@/services/taskTemplates.service'
 
 export function useProjects() {
   var [projects,      setProjects]      = useState([])
@@ -21,6 +22,8 @@ export function useProjects() {
   var [editing,       setEditing]       = useState(null)
   var [formLoading,   setFormLoading]   = useState(false)
   var [toastMsg,      setToastMsg]      = useState(null)
+  var [showTemplateModal, setShowTemplateModal] = useState(false)
+  var [newProjectId, setNewProjectId] = useState(null)
 
   function showToast(msg, type) {
     setToastMsg({ msg: msg, type: type || 'success' })
@@ -144,7 +147,9 @@ export function useProjects() {
             var n = Object.assign({}, r.data, { tasks: [] })
             setProjects(function(prev) { return [n].concat(prev) })
             setSelectedId(r.data.id)
-            showToast('Proyecto creado')
+            setNewProjectId(r.data.id)
+            setShowTemplateModal(true) // Mostrar selector de templates
+            showToast('Proyecto creado - selecciona un template de tareas')
             closeModal()
           })
       }
@@ -289,6 +294,39 @@ export function useProjects() {
     })
   }
 
+  // Aplica un template de tareas a un proyecto existente
+  function applyTaskTemplate(projectId, templateKey) {
+    var templateTasks = applyTemplate(templateKey)
+    if (!templateTasks || templateTasks.length === 0) {
+      showToast('Template no encontrado', 'error')
+      return
+    }
+
+    // Agregar IDs únicos a las tareas
+    var tasksWithIds = templateTasks.map(function(t) {
+      return Object.assign({}, t, { id: makeId() })
+    })
+
+    supabase.from('projects').select('tasks').eq('id', projectId).single()
+      .then(function(res) {
+        if (res.error) throw res.error
+        var existingTasks = safeTasks(res.data.tasks) || []
+        var mergedTasks = existingTasks.concat(tasksWithIds)
+        return saveTasksToDB(projectId, mergedTasks)
+      })
+      .then(function() {
+        showToast('Template aplicado exitosamente')
+        setShowTemplateModal(false)
+        setNewProjectId(null)
+        if (selectedId === projectId) {
+          loadDetail(projectId)
+        }
+      })
+      .catch(function(e) {
+        showToast(e.message || 'Error al aplicar template', 'error')
+      })
+  }
+
   return {
     projects: projects, loading: loading, error: error,
     search: search, setSearch: setSearch,
@@ -308,8 +346,11 @@ export function useProjects() {
     handleDeleteTask: handleDeleteTask, handleUpdateTaskPriority: handleUpdateTaskPriority,
     handleUpdateTaskAssignee: handleUpdateTaskAssignee,
     handleUpdateProgress: handleUpdateProgress,
-    handleUpdateStage: handleUpdateStage, // ← NUEVO
+    handleUpdateStage: handleUpdateStage,
     savePage: savePage,
     toastMsg: toastMsg,
+    showTemplateModal: showTemplateModal, setShowTemplateModal: setShowTemplateModal,
+    newProjectId: newProjectId, setNewProjectId: setNewProjectId,
+    applyTaskTemplate: applyTaskTemplate,
   }
 }

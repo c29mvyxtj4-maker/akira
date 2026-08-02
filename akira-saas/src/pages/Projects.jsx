@@ -20,6 +20,7 @@ import { supabase } from '@/lib/supabase'
 import KanbanBoard from '@/components/projects/KanbanBoard'
 import ProjectPage from '@/components/projects/ProjectPage'
 import TaskTemplateSelector from '@/components/projects/TaskTemplateSelector'
+import TaskTemplateModal from '@/components/projects/TaskTemplateModal'
 import PageHeader      from '@/components/layout/PageHeader'
 import Modal           from '@/components/ui/Modal'
 import Badge           from '@/components/ui/Badge'
@@ -1126,6 +1127,13 @@ export default function Projects() {
       <Modal open={hook.modalOpen} onClose={hook.closeModal} title={hook.editing ? 'Editar proyecto' : 'Nuevo proyecto'} size="lg">
         <ProjectForm initial={hook.editing} clients={hook.clients} onSave={hook.handleSave} onCancel={hook.closeModal} loading={hook.formLoading} />
       </Modal>
+
+      <TaskTemplateModal
+        isOpen={hook.showTemplateModal}
+        onClose={() => hook.setShowTemplateModal(false)}
+        onSelectTemplate={(templateId) => hook.applyTaskTemplate(hook.newProjectId, templateId)}
+        loading={hook.formLoading}
+      />
 
       <AnimatePresence>
         {hook.toastMsg && (

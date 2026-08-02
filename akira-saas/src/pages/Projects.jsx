@@ -255,7 +255,7 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, o
   function handleApplyTemplate(templateKey) {
     var tasks = applyTemplate(templateKey)
     tasks.forEach(function(task) {
-      onAdd(project.id, task.title, task.priority || 'medium')
+      onAddTask(project.id, task.title, task.priority || 'medium')
     })
   }
 

@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react'
+import { Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import BottomBar from './BottomBar'
@@ -6,7 +6,6 @@ import InstallBanner from '@/components/pwa/InstallBanner'
 import { PageSpinner } from '@/components/ui/Spinner'
 import { useApp } from '@/context/AppContext'
 import { DUR, EASE } from '@/config/motion'
-import { WidgetGrid, useWidgets } from '@/modules/widgets'
 
 /*
  * Shell sin sidebar ni topbar: navegación por la barra inferior global
@@ -16,8 +15,6 @@ import { WidgetGrid, useWidgets } from '@/modules/widgets'
 export default function AppShell() {
   var { toasts, removeToast } = useApp()
   var location = useLocation()
-  var [showWidgets, setShowWidgets] = useState(false)
-  var { dashboard, addWidget, removeWidget, updateWidget, reorderWidgets, saveDashboard } = useWidgets()
 
   return (
     <div className="app-shell">
@@ -38,30 +35,6 @@ export default function AppShell() {
       </main>
 
       <BottomBar />
-
-      {/* WIDGETS BUTTON - GLOBAL FIXED */}
-      <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9998 }}>
-        <button onClick={() => setShowWidgets(!showWidgets)} style={{ padding: '10px 16px', borderRadius: '8px', background: '#e63946', color: 'white', border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: 700, boxShadow: '0 4px 12px rgba(230,57,70,0.4)' }}>
-          {showWidgets ? '✕ Widgets' : '✚ Widgets'}
-        </button>
-      </div>
-
-      {/* WIDGETS MODAL */}
-      {showWidgets && (
-        <div style={{ position: 'fixed', top: '70px', right: '20px', zIndex: 9997, maxWidth: '900px', maxHeight: '70vh', overflowY: 'auto', background: 'var(--bg-0)', border: '2px solid var(--brand)', borderRadius: '12px', padding: '24px', boxShadow: '0 20px 60px rgba(230,57,70,0.2)' }}>
-          <div style={{ marginBottom: '16px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-1)' }}>Widgets Personalizados</h2>
-            <p style={{ fontSize: '12px', color: 'var(--text-4)', marginTop: '4px' }}>Arrastra para reordenar, click en X para eliminar</p>
-          </div>
-          {dashboard ? (
-            <WidgetGrid dashboard={dashboard} onUpdateDashboard={saveDashboard} onAddWidget={addWidget} onRemoveWidget={removeWidget} onReorderWidgets={reorderWidgets} />
-          ) : (
-            <div style={{ padding: '20px', textAlign: 'center', background: 'var(--bg-2)', borderRadius: '8px', color: 'var(--text-4)' }}>
-              <p style={{ fontSize: '14px' }}>Cargando widgets...</p>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Toast stack */}
       <div style={{ position: 'fixed', bottom: '96px', right: '20px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '8px' }}>

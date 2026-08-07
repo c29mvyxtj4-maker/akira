@@ -169,18 +169,20 @@ export default function Inicio() {
           })}
         </div>
 
-        {/* Saludo + Widget Toggle */}
+        {/* Saludo + Widget Toggle - WIDGETS ADDED v2.0 */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '8px' }}>
           <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR.slow, ease: EASE.out }}
             style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
             Bienvenido, {name} ✨
           </motion.h1>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowWidgets(!showWidgets)}
-            style={{ padding: '6px 12px', borderRadius: '6px', background: 'var(--brand-500)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap' }}
+            style={{ padding: '8px 14px', borderRadius: '6px', background: 'var(--brand-500)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap', transition: 'all 0.2s' }}
           >
             {showWidgets ? 'Ocultar widgets' : 'Mostrar widgets'}
-          </button>
+          </motion.button>
         </div>
         <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
 

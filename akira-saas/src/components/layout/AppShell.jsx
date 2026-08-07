@@ -47,9 +47,19 @@ export default function AppShell() {
       </div>
 
       {/* WIDGETS MODAL */}
-      {showWidgets && dashboard && (
-        <div style={{ position: 'fixed', top: '70px', right: '20px', zIndex: 9997, maxWidth: '800px', maxHeight: '70vh', overflowY: 'auto', background: 'var(--bg-0)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
-          <WidgetGrid dashboard={dashboard} onUpdateDashboard={saveDashboard} onAddWidget={addWidget} onRemoveWidget={removeWidget} onReorderWidgets={reorderWidgets} />
+      {showWidgets && (
+        <div style={{ position: 'fixed', top: '70px', right: '20px', zIndex: 9997, maxWidth: '900px', maxHeight: '70vh', overflowY: 'auto', background: 'var(--bg-0)', border: '2px solid var(--brand)', borderRadius: '12px', padding: '24px', boxShadow: '0 20px 60px rgba(230,57,70,0.2)' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-1)' }}>Widgets Personalizados</h2>
+            <p style={{ fontSize: '12px', color: 'var(--text-4)', marginTop: '4px' }}>Arrastra para reordenar, click en X para eliminar</p>
+          </div>
+          {dashboard ? (
+            <WidgetGrid dashboard={dashboard} onUpdateDashboard={saveDashboard} onAddWidget={addWidget} onRemoveWidget={removeWidget} onReorderWidgets={reorderWidgets} />
+          ) : (
+            <div style={{ padding: '20px', textAlign: 'center', background: 'var(--bg-2)', borderRadius: '8px', color: 'var(--text-4)' }}>
+              <p style={{ fontSize: '14px' }}>Cargando widgets...</p>
+            </div>
+          )}
         </div>
       )}
 

@@ -184,7 +184,7 @@ export default function Inicio() {
             {showWidgets ? 'Ocultar widgets' : 'Mostrar widgets'}
           </motion.button>
         </div>
-        <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
+        <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>🎉 Dashboard actualizado con widgets edibles - Tu negocio de un vistazo</p>
 
         {/* Widget Grid - NEW v2.0 Feature */}
         {showWidgets && dashboard && (

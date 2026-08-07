@@ -173,7 +173,7 @@ export default function Inicio() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '8px' }}>
           <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR.slow, ease: EASE.out }}
             style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
-            Hola, {name}
+            Bienvenido, {name} ✨
           </motion.h1>
           <button
             onClick={() => setShowWidgets(!showWidgets)}

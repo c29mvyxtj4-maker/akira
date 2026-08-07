@@ -39,6 +39,7 @@ const Inicio        = lazy(() => import('@/pages/Inicio')) // PRUEBA: home exper
 const Mensajes      = lazy(() => import('@/pages/Mensajes'))
 const InboxPage     = lazy(() => import('@/pages/InboxPage'))
 const LandingPage   = lazy(() => import('@/pages/LandingPage'))
+const Automation    = lazy(() => import('@/pages/Automation')) // v2.0 Automation workflows
 
 function ComingSoon({ name }) {
   return (
@@ -132,6 +133,7 @@ export default function App() {
           <Route path="calendar/*"      element={<Calendar />} />
           <Route path="knowledge/*"     element={<Knowledge />} />
           <Route path="brain/*"         element={<Brain />} />
+          <Route path="automation/*"    element={<Automation />} />
           <Route path="settings/*"      element={<Settings />} />
           <Route path="offers/*"        element={<Offers />} />
         </Route>

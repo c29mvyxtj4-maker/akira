@@ -15,6 +15,8 @@ import { SkeletonText, SkeletonCard, SkeletonPageHeader } from '@/components/ui/
 import { useNotifications, buildInvoiceReminderMailto } from '@/hooks/useNotifications'
 import { getCompanySettings } from '@/services/company.service'
 import { useNavigate } from 'react-router-dom'
+import { WidgetGrid, useWidgets } from '@/modules/widgets'
+import { useGlobalSync } from '@/modules/sync'
 
 function fmtCur(n) {
   if (!n && n !== 0) return '--'
@@ -170,6 +172,9 @@ export default function Dashboard() {
   var navigate           = useNavigate()
   var notifs = useNotifications()
   var [company, setCompany] = useState(null)
+  var sync = useGlobalSync()
+  var { dashboard, addWidget, removeWidget, updateWidget, reorderWidgets, saveDashboard } = useWidgets()
+  var [showWidgets, setShowWidgets] = useState(false)
 
   useEffect(function() { getCompanySettings().then(setCompany).catch(function() {}) }, [])
 
@@ -223,19 +228,57 @@ export default function Dashboard() {
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-      {/* Saludo */}
+      {/* Saludo + Sync Status */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         style={{ marginBottom: '20px' }}
       >
-        <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em', marginBottom: '4px' }}>
-          {GREETING}, {name} 👋
-        </h1>
-        <p style={{ fontSize: '13px', color: 'var(--text-4)' }}>
-          {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
+            {GREETING}, {name} 👋
+          </h1>
+          <button
+            onClick={() => setShowWidgets(!showWidgets)}
+            style={{ padding: '6px 12px', borderRadius: '6px', background: 'var(--brand-500)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
+          >
+            {showWidgets ? 'Ocultar widgets' : 'Mostrar widgets'}
+          </button>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--text-4)' }}>
+            {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </p>
+          {!sync.isOnline && (
+            <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: 'var(--warning)/10', color: 'var(--warning)' }}>
+              Modo offline
+            </span>
+          )}
+          {sync.queueLength > 0 && (
+            <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', background: 'var(--info)/10', color: 'var(--info)' }}>
+              {sync.queueLength} cambios pendientes
+            </span>
+          )}
+        </div>
       </motion.div>
+
+      {/* Widget Grid - NEW v2.0 Feature */}
+      {showWidgets && dashboard && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          style={{ marginBottom: '24px' }}
+        >
+          <WidgetGrid
+            dashboard={dashboard}
+            onUpdateDashboard={saveDashboard}
+            onAddWidget={addWidget}
+            onRemoveWidget={removeWidget}
+            onReorderWidgets={reorderWidgets}
+          />
+        </motion.div>
+      )}
 
       {/* CAPA 1 — atencion hoy */}
       <AttentionSection notifs={notifs} urgentTasks={kpis && kpis.urgentTasksList} company={company} navigate={navigate} />

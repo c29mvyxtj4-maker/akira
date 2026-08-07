@@ -34,6 +34,7 @@ var GROUPS = [
     id: 'akira', label: 'Akira', icon: Brain,
     children: [
       { to: '/brain',       icon: Brain,    label: 'Akira Brain' },
+      { to: '/automation',  icon: Zap,      label: 'Automation v2.0' },
       { to: '/knowledge',   icon: BookOpen, label: 'Conocimiento' },
       { to: '/operatives',  icon: Zap,      label: 'AI Operatives' },
     ],

@@ -21,9 +21,19 @@ export default function Automation() {
 
   const loadExecutions = async () => {
     try {
-      // This would load from database in production
-      // const data = await workflowsService.fetchExecutions(id)
-      // setExecutions(data)
+      const stored = localStorage.getItem('akira_workflow_executions')
+      if (stored) {
+        const execs = JSON.parse(stored)
+        setExecutions(execs.map(e => ({
+          id: e.id,
+          templateName: e.name || 'Workflow',
+          status: e.status,
+          progress: e.progress || 0,
+          startedAt: e.startedAt,
+          completedAt: e.completedAt,
+          result: e.result,
+        })))
+      }
     } catch (err) {
       console.error('Failed to load executions:', err)
     }
@@ -50,6 +60,12 @@ export default function Automation() {
 
       // Execute workflow
       const execution = await workflowEngine.executeWorkflow(workflow)
+
+      // Save to localStorage
+      const stored = localStorage.getItem('akira_workflow_executions') || '[]'
+      const execs = JSON.parse(stored)
+      execs.unshift(execution)
+      localStorage.setItem('akira_workflow_executions', JSON.stringify(execs))
 
       // Add to history
       setExecutions((prev) => [

@@ -1,176 +1,114 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
 import { DashboardConfig, WidgetConfig } from '../types'
+
+const STORAGE_KEY = 'akira_dashboard_widgets'
 
 export function useWidgets(dashboardId?: string) {
   const [dashboard, setDashboard] = useState<DashboardConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch user's default dashboard
-  const fetchDashboard = useCallback(async () => {
+  // Fetch from localStorage
+  const fetchDashboard = useCallback(() => {
     try {
       setLoading(true)
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
-
-      const query = dashboardId
-        ? supabase.from('dashboards').select('*').eq('id', dashboardId)
-        : supabase.from('dashboards').select('*').eq('is_default', true)
-
-      const { data, error: err } = await query.single()
-
-      if (err) throw err
-      setDashboard(data)
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        const data = JSON.parse(stored)
+        setDashboard(data)
+      } else {
+        setDashboard({ widgets: [] })
+      }
     } catch (err) {
       console.error('[useWidgets] fetch error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to fetch dashboard')
+      setDashboard({ widgets: [] })
+      setError('Error loading dashboard')
     } finally {
       setLoading(false)
     }
-  }, [dashboardId])
+  }, [])
 
-  // Save dashboard configuration
-  const saveDashboard = useCallback(
-    async (config: Partial<DashboardConfig>) => {
-      try {
-        if (!dashboard) throw new Error('No dashboard loaded')
+  // Save to localStorage
+  const saveDashboard = useCallback((config: Partial<DashboardConfig>) => {
+    try {
+      setDashboard((prev) => {
+        const updated = prev ? { ...prev, ...config } : (config as DashboardConfig)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+        return updated
+      })
+    } catch (err) {
+      console.error('[useWidgets] save error:', err)
+      setError('Error saving dashboard')
+    }
+  }, [])
 
-        const { error: err } = await supabase
-          .from('dashboards')
-          .update({
-            ...config,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', dashboard.id)
+  // Add widget
+  const addWidget = useCallback((widget: WidgetConfig) => {
+    try {
+      setDashboard((prev) => {
+        const updated = prev
+          ? { ...prev, widgets: [...(prev.widgets || []), widget] }
+          : { widgets: [widget] }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+        return updated
+      })
+    } catch (err) {
+      console.error('[useWidgets] add widget error:', err)
+      setError('Error adding widget')
+    }
+  }, [])
 
-        if (err) throw err
-        setDashboard((prev) => (prev ? { ...prev, ...config } : null))
-      } catch (err) {
-        console.error('[useWidgets] save error:', err)
-        setError(err instanceof Error ? err.message : 'Failed to save dashboard')
-      }
-    },
-    [dashboard]
-  )
+  // Remove widget
+  const removeWidget = useCallback((widgetId: string) => {
+    try {
+      setDashboard((prev) => {
+        if (!prev) return null
+        const updated = {
+          ...prev,
+          widgets: prev.widgets?.filter((w) => w.id !== widgetId) || [],
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+        return updated
+      })
+    } catch (err) {
+      console.error('[useWidgets] remove widget error:', err)
+      setError('Error removing widget')
+    }
+  }, [])
 
-  // Add widget to dashboard
-  const addWidget = useCallback(
-    async (widget: WidgetConfig) => {
-      try {
-        if (!dashboard) throw new Error('No dashboard loaded')
-
-        const { error: err } = await supabase.from('dashboard_widgets').insert({
-          dashboard_id: dashboard.id,
-          widget_type: widget.type,
-          position: (dashboard.widgets?.length || 0) + 1,
-          size: widget.size,
-          config: widget.config,
-        })
-
-        if (err) throw err
-
-        setDashboard((prev) =>
-          prev
-            ? {
-                ...prev,
-                widgets: [...(prev.widgets || []), widget],
-              }
-            : null
-        )
-      } catch (err) {
-        console.error('[useWidgets] add widget error:', err)
-        setError(err instanceof Error ? err.message : 'Failed to add widget')
-      }
-    },
-    [dashboard]
-  )
-
-  // Remove widget from dashboard
-  const removeWidget = useCallback(
-    async (widgetId: string) => {
-      try {
-        const { error: err } = await supabase
-          .from('dashboard_widgets')
-          .delete()
-          .eq('id', widgetId)
-
-        if (err) throw err
-
-        setDashboard((prev) =>
-          prev
-            ? {
-                ...prev,
-                widgets: prev.widgets?.filter((w) => w.id !== widgetId) || [],
-              }
-            : null
-        )
-      } catch (err) {
-        console.error('[useWidgets] remove widget error:', err)
-        setError(err instanceof Error ? err.message : 'Failed to remove widget')
-      }
-    },
-    []
-  )
-
-  // Update widget configuration
-  const updateWidget = useCallback(
-    async (widgetId: string, config: Partial<WidgetConfig>) => {
-      try {
-        const { error: err } = await supabase
-          .from('dashboard_widgets')
-          .update(config)
-          .eq('id', widgetId)
-
-        if (err) throw err
-
-        setDashboard((prev) =>
-          prev
-            ? {
-                ...prev,
-                widgets: prev.widgets?.map((w) =>
-                  w.id === widgetId ? { ...w, ...config } : w
-                ),
-              }
-            : null
-        )
-      } catch (err) {
-        console.error('[useWidgets] update widget error:', err)
-        setError(err instanceof Error ? err.message : 'Failed to update widget')
-      }
-    },
-    []
-  )
+  // Update widget
+  const updateWidget = useCallback((widgetId: string, config: Partial<WidgetConfig>) => {
+    try {
+      setDashboard((prev) => {
+        if (!prev) return null
+        const updated = {
+          ...prev,
+          widgets: prev.widgets?.map((w) =>
+            w.id === widgetId ? { ...w, ...config } : w
+          ),
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+        return updated
+      })
+    } catch (err) {
+      console.error('[useWidgets] update widget error:', err)
+      setError('Error updating widget')
+    }
+  }, [])
 
   // Reorder widgets
-  const reorderWidgets = useCallback(
-    async (widgets: WidgetConfig[]) => {
-      try {
-        // Update all positions
-        await Promise.all(
-          widgets.map((w, idx) =>
-            supabase
-              .from('dashboard_widgets')
-              .update({ position: idx })
-              .eq('id', w.id)
-          )
-        )
-
-        setDashboard((prev) =>
-          prev
-            ? {
-                ...prev,
-                widgets,
-              }
-            : null
-        )
-      } catch (err) {
-        console.error('[useWidgets] reorder error:', err)
-        setError(err instanceof Error ? err.message : 'Failed to reorder widgets')
-      }
-    },
-    []
-  )
+  const reorderWidgets = useCallback((widgets: WidgetConfig[]) => {
+    try {
+      setDashboard((prev) => {
+        const updated = prev ? { ...prev, widgets } : { widgets }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+        return updated
+      })
+    } catch (err) {
+      console.error('[useWidgets] reorder error:', err)
+      setError('Error reordering widgets')
+    }
+  }, [])
 
   useEffect(() => {
     fetchDashboard()

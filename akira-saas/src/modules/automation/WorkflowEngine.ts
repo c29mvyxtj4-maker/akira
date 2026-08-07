@@ -116,9 +116,13 @@ export class WorkflowEngine {
         status: execution.status,
         progress: execution.progress,
         started_at: execution.startedAt,
-      }).catch((err) => console.warn('Failed to save execution:', err))
+      }).catch((err) => {
+        console.warn('Failed to save execution to DB, using localStorage:', err)
+        this.saveExecutionLocal(execution)
+      })
     } catch (error) {
       console.warn('[WorkflowEngine] Failed to save execution:', error)
+      this.saveExecutionLocal(execution)
     }
   }
 
@@ -134,9 +138,30 @@ export class WorkflowEngine {
           error: execution.error,
         })
         .eq('id', execution.id)
-        .catch((err) => console.warn('Failed to update execution:', err))
+        .catch((err) => {
+          console.warn('Failed to update execution in DB, using localStorage:', err)
+          this.saveExecutionLocal(execution)
+        })
     } catch (error) {
       console.warn('[WorkflowEngine] Failed to update execution:', error)
+      this.saveExecutionLocal(execution)
+    }
+  }
+
+  private saveExecutionLocal(execution: WorkflowExecution): void {
+    try {
+      const key = 'akira_workflow_executions'
+      const stored = localStorage.getItem(key)
+      const executions = stored ? JSON.parse(stored) : []
+      const idx = executions.findIndex((e: any) => e.id === execution.id)
+      if (idx >= 0) {
+        executions[idx] = execution
+      } else {
+        executions.push(execution)
+      }
+      localStorage.setItem(key, JSON.stringify(executions))
+    } catch (err) {
+      console.error('Failed to save execution to localStorage:', err)
     }
   }
 }

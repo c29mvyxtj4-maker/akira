@@ -122,6 +122,29 @@ export default function Inicio() {
       <div style={{ position: 'relative', zIndex: 1, height: '100%', overflowY: 'auto', paddingTop: 'calc(var(--safe-top) + 18px)' }}>
       <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 24px calc(112px + var(--safe-bottom))' }}>
 
+        {/* WIDGETS BUTTON - TOP PRIORITY */}
+        <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 50 }}>
+          <button
+            onClick={() => setShowWidgets(!showWidgets)}
+            style={{ padding: '8px 14px', borderRadius: '6px', background: '#e63946', color: 'white', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 700 }}
+          >
+            {showWidgets ? '✕ Ocultar' : '✚ Widgets'}
+          </button>
+        </div>
+
+        {/* Widget Grid - Fixed at top */}
+        {showWidgets && dashboard && (
+          <div style={{ marginBottom: '24px', marginTop: '60px' }}>
+            <WidgetGrid
+              dashboard={dashboard}
+              onUpdateDashboard={saveDashboard}
+              onAddWidget={addWidget}
+              onRemoveWidget={removeWidget}
+              onReorderWidgets={reorderWidgets}
+            />
+          </div>
+        )}
+
         {/* Barra de pastillas */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '22px' }}>
           <BorderGlow {...GLOW}>

@@ -6,6 +6,7 @@ import {
   Users, FolderKanban, Wallet, FileText, Clock, BookOpen,
   ChevronRight, TrendingUp,
 } from 'lucide-react'
+import { WidgetGrid, useWidgets } from '@/modules/widgets'
 import { useApp } from '@/context/AppContext'
 import { useAuth } from '@/context/AuthContext'
 import { useOrg } from '@/context/OrgContext'
@@ -54,6 +55,8 @@ export default function Inicio() {
   var [menuAnchor, setMenuAnchor] = useState(null)
   var [settingsOpen, setSettingsOpen] = useState(false)
   var [settingsTab, setSettingsTab] = useState('profile')
+  var [showWidgets, setShowWidgets] = useState(false)
+  var { dashboard, addWidget, removeWidget, updateWidget, reorderWidgets, saveDashboard } = useWidgets()
   useEffect(function () { getUnreadMentionCount().then(setUnread).catch(function () {}) }, [])
   useEffect(function () { getFinanceKpis().then(setFin).catch(function () {}) }, [])
 
@@ -166,12 +169,38 @@ export default function Inicio() {
           })}
         </div>
 
-        {/* Saludo */}
-        <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR.slow, ease: EASE.out }}
-          style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
-          Hola, {name}
-        </motion.h1>
+        {/* Saludo + Widget Toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '8px' }}>
+          <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR.slow, ease: EASE.out }}
+            style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
+            Hola, {name}
+          </motion.h1>
+          <button
+            onClick={() => setShowWidgets(!showWidgets)}
+            style={{ padding: '6px 12px', borderRadius: '6px', background: 'var(--brand-500)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600, whiteSpace: 'nowrap' }}
+          >
+            {showWidgets ? 'Ocultar widgets' : 'Mostrar widgets'}
+          </button>
+        </div>
         <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
+
+        {/* Widget Grid - NEW v2.0 Feature */}
+        {showWidgets && dashboard && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            style={{ marginBottom: '24px', marginTop: '20px' }}
+          >
+            <WidgetGrid
+              dashboard={dashboard}
+              onUpdateDashboard={saveDashboard}
+              onAddWidget={addWidget}
+              onRemoveWidget={removeWidget}
+              onReorderWidgets={reorderWidgets}
+            />
+          </motion.div>
+        )}
 
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3" style={{ marginTop: '20px' }}>

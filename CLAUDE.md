@@ -4,6 +4,27 @@ This guide provides comprehensive guidance for Claude Code when working with AKI
 
 ---
 
+## 🚀 CRITICAL: Deployment & Domains
+
+**DO NOT CHANGE THESE SETTINGS** — This prevents errors:
+
+| Setting | Value |
+|---------|-------|
+| **GitHub Repository** | https://github.com/c29mvyxtj4-maker/akira |
+| **Main Branch** | `master` |
+| **Vercel Project Name** | `akira-os` ← **NOT** akira-saas |
+| **Production Domain** | https://akira-os-dun.vercel.app |
+| **Project Root** | `akira-saas/` (folder, NOT root) |
+| **Build Command** | `npm run build` |
+| **Install Command** | `npm install --legacy-peer-deps` |
+
+**⚠️ MISTAKE TO AVOID:**
+- ❌ Do NOT deploy to "akira-saas-five" Vercel project — that's disconnected
+- ✅ Only deploy to "akira-os" Vercel project — it's connected to GitHub
+- ✅ When pushing to master branch, Vercel auto-deploys to akira-os-dun.vercel.app
+
+---
+
 ## 🎯 Project Overview
 
 **AKIRA** is a multi-tenant SaaS application for agencies and freelancers to manage:

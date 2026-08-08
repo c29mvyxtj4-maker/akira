@@ -10,7 +10,7 @@ import ResetPassword from '@/pages/auth/ResetPassword'
 
 // Layout
 import AppShell from '@/components/layout/AppShell'
-import { LayoutWrapper } from '@/components/Layout/LayoutWrapper'
+import { LayoutWrapper } from '@/components/layout/LayoutWrapper'
 import '@/styles/layout.css'
 
 // Components

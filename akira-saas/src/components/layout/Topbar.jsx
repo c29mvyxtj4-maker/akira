@@ -78,6 +78,9 @@ export default function Topbar() {
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
+      position: 'sticky',
+      top: 0,
+      zIndex: 100,
     }}>
       <button
         onClick={() => navigate('/inicio')}

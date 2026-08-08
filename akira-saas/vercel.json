@@ -1,5 +1,5 @@
 {
-  "buildCommand": "rm -rf .next dist node_modules/.vite node_modules/.cache && npm run build",
+  "buildCommand": "echo 'TOPBAR_DEPLOYMENT_TIMESTAMP=2026-08-08T$(date +%s)Z' > .env.build && rm -rf .next .vercel dist build node_modules/.vite node_modules/.cache && npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "vite",
@@ -7,10 +7,13 @@
   "crons": [],
   "cleanUrls": true,
   "trailingSlash": false,
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- akira-saas/ || exit 0",
   "env": {
-    "FORCE_BUILD": "true",
-    "VERCEL_DISABLE_PREBUILT_CACHE": "true"
+    "FORCE_BUILD": "1",
+    "VERCEL_DISABLE_PREBUILT_CACHE": "1",
+    "NODE_ENV": "production"
   },
+  "regions": ["sfo1"],
   "rewrites": [
     {
       "source": "/:path*",
@@ -32,6 +35,10 @@
         {
           "key": "Expires",
           "value": "0"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         }
       ]
     },

@@ -18,28 +18,13 @@ export default function AppShell() {
     <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <div className="bg-glow" />
 
-      {/* DEPLOYMENT BANNER - VISIBLE PROOF */}
-      {!isInicio && (
-        <div style={{
-          background: '#2ecc71',
-          color: 'white',
-          padding: '8px 16px',
-          fontSize: '12px',
-          fontWeight: 600,
-          textAlign: 'center',
-          zIndex: 200,
-        }}>
-          ✅ AKIRA v0.3.1 - TopBar Deployed Successfully
-        </div>
-      )}
-
-      {/* TopMenu - solo en páginas que no sean /inicio */}
-      {!isInicio && <TopMenu />}
+      {/* TopMenu is now handled by AppLayout - disabled here to avoid conflicts */}
+      {/* {!isInicio && <TopMenu />} */}
 
       {/* Main Content */}
       <main className="app-main" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
-        {/* Topbar (tabs) - solo en páginas que no sean /inicio */}
-        {!isInicio && <Topbar />}
+        {/* Topbar is now handled by AppLayout - disabled here to avoid conflicts */}
+        {/* {!isInicio && <Topbar />} */}
 
         <motion.div
           key={location.pathname.split('/')[1] || 'home'}

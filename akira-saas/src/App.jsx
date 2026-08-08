@@ -9,8 +9,7 @@ import Login         from '@/pages/auth/Login'
 import ResetPassword from '@/pages/auth/ResetPassword'
 
 // Layout
-import AppShell from '@/components/layout/AppShell'
-import { LayoutWrapper } from '@/components/layout/LayoutWrapper'
+import { AppLayoutContainer } from '@/components/layout/AppLayoutContainer'
 import '@/styles/layout.css'
 
 // Components
@@ -111,9 +110,7 @@ export default function App() {
           path="/"
           element={
             <PrivateRoute>
-              <LayoutWrapper>
-                <AppShell />
-              </LayoutWrapper>
+              <AppLayoutContainer />
             </PrivateRoute>
           }
         >

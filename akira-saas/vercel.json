@@ -1,5 +1,5 @@
 {
-  "buildCommand": "echo 'TOPBAR_DEPLOYMENT_TIMESTAMP=2026-08-08T$(date +%s)Z' > .env.build && rm -rf .next .vercel dist build node_modules/.vite node_modules/.cache && npm run build",
+  "buildCommand": "rm -rf .next .vercel dist build node_modules .cache .turbo && npm install --legacy-peer-deps && npm run build && echo 'BUILD_TIMESTAMP='$(date +%s%N)",
   "devCommand": "npm run dev",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "vite",

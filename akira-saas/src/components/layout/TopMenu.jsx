@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Settings, Users, LogOut, Plus, MessageCircle, Video, Inbox, Search, Minus, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Settings, Users, LogOut, Plus, Home, MessageSquare, Video, Inbox, Search, Minus, X, Zap } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useOrg } from '@/context/OrgContext'
 import { useNavigate } from 'react-router-dom'
@@ -27,11 +27,11 @@ export default function TopMenu() {
   }
 
   const navItems = [
-    { icon: '🏠', tooltip: 'Inicio', route: '/' },
-    { icon: '💬', tooltip: 'Chat', route: '/brain' },
-    { icon: '📹', tooltip: 'Reuniones', route: '/calendar' },
-    { icon: '📥', tooltip: 'Bandeja', route: '/inbox' },
-    { icon: '🔍', tooltip: 'Buscar', route: '#' },
+    { Icon: Home, tooltip: 'Inicio', route: '/' },
+    { Icon: MessageSquare, tooltip: 'Chat', route: '/brain' },
+    { Icon: Video, tooltip: 'Reuniones', route: '/calendar' },
+    { Icon: Inbox, tooltip: 'Bandeja', route: '/inbox' },
+    { Icon: Search, tooltip: 'Buscar', route: '#' },
   ]
 
   const name = profile?.full_name || 'Usuario'
@@ -89,13 +89,13 @@ export default function TopMenu() {
                 top: '100%',
                 left: 0,
                 marginTop: '8px',
-                background: 'var(--surface-0)',
+                background: 'var(--surface-1)',
                 border: '1px solid var(--surface-2)',
                 borderRadius: '12px',
                 padding: '12px 8px',
                 minWidth: '240px',
                 zIndex: 1001,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                boxShadow: '0 12px 32px rgba(0,0,0,0.25)',
               }}
             >
               {/* Header with Avatar */}
@@ -358,14 +358,13 @@ export default function TopMenu() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '16px',
             transition: 'all 0.2s ease',
           }}
           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-1)'}
           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
           title={item.tooltip}
         >
-          {item.icon}
+          <item.Icon style={{ width: '16px', height: '16px' }} />
         </motion.button>
       ))}
 

@@ -73,8 +73,8 @@ export default function Topbar() {
   return (
     <div style={{
       padding: '12px 16px',
-      borderBottom: '1px solid var(--surface-2)',
-      background: 'var(--surface-0)',
+      borderBottom: '2px solid #e63946',
+      background: 'rgba(230, 57, 70, 0.1)',
       display: 'flex',
       alignItems: 'center',
       gap: '12px',

@@ -142,6 +142,69 @@ export default function Inicio() {
           <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
         </motion.div>
 
+        {/* Quick Pills - Top Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: '28px',
+            padding: '12px 16px',
+            borderRadius: 'var(--radius-lg)',
+            background: 'var(--surface-1)',
+            border: '1px solid var(--surface-2)',
+          }}
+        >
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              background: 'var(--brand-500)',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 800,
+              fontSize: '16px',
+              flexShrink: 0,
+            }}
+          >
+            {initial}
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+            {PILLS.map(function(pill) {
+              var Icon = pill.icon
+              return (
+                <motion.button
+                  key={pill.label}
+                  onClick={() => navigate(pill.to)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 14px',
+                    borderRadius: '20px',
+                    border: '1px solid var(--surface-2)',
+                    background: 'var(--surface-0)',
+                    color: 'var(--text-1)',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                  }}
+                >
+                  <Icon style={{ width: '14px', height: '14px' }} />
+                  {pill.label}
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+
         {/* Widget Grid */}
         {showWidgets && dashboard && (
           <motion.div

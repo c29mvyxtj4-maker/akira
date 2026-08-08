@@ -2,11 +2,12 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "akira-dev-server",
+      "name": "akira-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 3000,
-      "cwd": "akira-saas"
+      "port": 5173,
+      "cwd": "akira-saas",
+      "autoPort": true
     }
   ]
 }

@@ -61,7 +61,7 @@ export default function TopMenu() {
             width: '40px',
             height: '40px',
             borderRadius: '8px',
-            border: 'none',
+            border: '2px solid var(--brand-500)',
             background: 'var(--brand-500)',
             color: 'white',
             cursor: 'pointer',

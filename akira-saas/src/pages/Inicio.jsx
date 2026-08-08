@@ -177,7 +177,7 @@ export default function Inicio() {
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
             <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
-              Hola, {name} 👋
+              Hola, {name} 👋 v20260808
             </h1>
             <button
               onClick={() => setShowWidgets(!showWidgets)}

@@ -4,15 +4,5 @@
   "framework": "vite",
   "outputDirectory": "dist",
   "cleanUrls": true,
-  "trailingSlash": false,
-  "regions": ["sfo1"],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "trailingSlash": false
 }

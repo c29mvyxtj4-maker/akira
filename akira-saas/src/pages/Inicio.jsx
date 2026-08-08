@@ -142,25 +142,22 @@ export default function Inicio() {
           <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
         </motion.div>
 
-        {/* Quick Pills - Top Bar */}
+        {/* Quick Pills - Top Bar (Notion-style) */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '12px',
+            gap: '16px',
             marginBottom: '28px',
-            padding: '12px 16px',
-            borderRadius: 'var(--radius-lg)',
-            background: 'var(--surface-1)',
-            border: '1px solid var(--surface-2)',
           }}
         >
+          {/* Avatar */}
           <div
             style={{
-              width: '40px',
-              height: '40px',
+              width: '44px',
+              height: '44px',
               borderRadius: '50%',
               background: 'var(--brand-500)',
               color: 'white',
@@ -168,37 +165,76 @@ export default function Inicio() {
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 800,
-              fontSize: '16px',
+              fontSize: '18px',
               flexShrink: 0,
+              boxShadow: '0 4px 12px rgba(230, 57, 70, 0.25)',
             }}
           >
             {initial}
           </div>
-          <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+
+          {/* Inicio Tab */}
+          <motion.button
+            onClick={() => navigate(ROUTES.HOME)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '8px 18px',
+              borderRadius: '20px',
+              border: '2px solid var(--brand-500)',
+              background: 'transparent',
+              color: 'var(--brand-500)',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 600,
+              flexShrink: 0,
+            }}
+          >
+            <Home style={{ width: '16px', height: '16px' }} />
+            Inicio
+          </motion.button>
+
+          {/* Spacer */}
+          <div style={{ flex: 1 }} />
+
+          {/* Icon Pills */}
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             {PILLS.map(function(pill) {
               var Icon = pill.icon
               return (
                 <motion.button
                   key={pill.label}
                   onClick={() => navigate(pill.to)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title={pill.label}
                   style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    border: '1px solid var(--surface-2)',
+                    background: 'var(--surface-1)',
+                    color: 'var(--text-2)',
+                    cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 14px',
-                    borderRadius: '20px',
-                    border: '1px solid var(--surface-2)',
-                    background: 'var(--surface-0)',
-                    color: 'var(--text-1)',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    fontWeight: 500,
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--surface-2)'
+                    e.currentTarget.style.color = 'var(--text-1)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--surface-1)'
+                    e.currentTarget.style.color = 'var(--text-2)'
                   }}
                 >
-                  <Icon style={{ width: '14px', height: '14px' }} />
-                  {pill.label}
+                  <Icon style={{ width: '18px', height: '18px' }} />
                 </motion.button>
               )
             })}

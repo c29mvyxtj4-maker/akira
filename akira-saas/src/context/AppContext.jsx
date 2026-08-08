@@ -30,6 +30,37 @@ export function AppProvider({ children }) {
   const toggleSidebar = useCallback(function() { setSidebarCollapsed(function(v) { return !v }) }, [])
   const { toasts, toast, removeToast } = useToasts()
 
+  // Tab management (like Notion)
+  const [openTabs, setOpenTabs] = useState([
+    { id: 'inicio', label: 'Inicio', icon: 'home', route: '/inicio' }
+  ])
+  const [activeTabId, setActiveTabId] = useState('inicio')
+
+  const addTab = useCallback(function(tab) {
+    setOpenTabs(function(prev) {
+      var exists = prev.find(function(t) { return t.route === tab.route })
+      if (exists) { setActiveTabId(exists.id); return prev }
+      return prev.concat([tab])
+    })
+    setActiveTabId(tab.id)
+  }, [])
+
+  const closeTab = useCallback(function(tabId) {
+    setOpenTabs(function(prev) {
+      var filtered = prev.filter(function(t) { return t.id !== tabId })
+      if (filtered.length === 0) filtered = [{ id: 'inicio', label: 'Inicio', icon: 'home', route: '/inicio' }]
+      return filtered
+    })
+    if (activeTabId === tabId) {
+      setActiveTabId(openTabs[openTabs.length - 1]?.id || 'inicio')
+    }
+  }, [activeTabId, openTabs])
+
+  const closeAllTabs = useCallback(function() {
+    setOpenTabs([{ id: 'inicio', label: 'Inicio', icon: 'home', route: '/inicio' }])
+    setActiveTabId('inicio')
+  }, [])
+
   const [data, setData] = useState({
     clients: [], projects: [], services: [], subscriptions: [], financeEntries: [],
   })
@@ -212,6 +243,12 @@ export function AppProvider({ children }) {
       lastSync: lastSync,
       refresh: fetchAll,
       kpis: kpis,
+      openTabs: openTabs,
+      activeTabId: activeTabId,
+      setActiveTabId: setActiveTabId,
+      addTab: addTab,
+      closeTab: closeTab,
+      closeAllTabs: closeAllTabs,
     }}>
       {children}
     </AppContext.Provider>

@@ -26,7 +26,6 @@ export default function Topbar() {
   const name = user?.user_metadata?.full_name?.split(' ')[0] || 'Usuario'
   const initial = name?.charAt(0).toUpperCase() || '?'
 
-  // Actualizar tab activo cuando navega
   useEffect(() => {
     const currentPath = location.pathname
     const existingTab = openTabs.find(t => t.route === currentPath)
@@ -41,18 +40,19 @@ export default function Topbar() {
     } else {
       setActiveTab(existingTab.id)
     }
-  }, [location.pathname])
+  }, [location.pathname, openTabs])
 
   const handleAddTab = (category) => {
     const existingTab = openTabs.find(t => t.route === category.route)
     if (existingTab) {
       setActiveTab(existingTab.id)
+      navigate(category.route)
     } else {
       const newTab = { id: Math.random(), ...category }
       setOpenTabs(prev => [...prev, newTab])
       setActiveTab(newTab.id)
+      navigate(category.route)
     }
-    navigate(category.route)
     setShowMenu(false)
   }
 
@@ -71,19 +71,14 @@ export default function Topbar() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      style={{
-        padding: `calc(var(--safe-top) + 12px) 16px 12px`,
-        borderBottom: '1px solid var(--border)',
-        background: 'var(--bg-base)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-      }}
-    >
-      {/* Avatar */}
+    <div style={{
+      padding: '12px 16px',
+      borderBottom: '1px solid var(--surface-2)',
+      background: 'var(--surface-0)',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+    }}>
       <button
         onClick={() => navigate('/inicio')}
         style={{
@@ -92,7 +87,7 @@ export default function Topbar() {
           flexShrink: 0,
           borderRadius: '50%',
           border: 'none',
-          background: 'var(--gradient-brand)',
+          background: 'var(--brand-500)',
           color: '#fff',
           fontSize: '13px',
           fontWeight: 800,
@@ -105,10 +100,9 @@ export default function Topbar() {
         {initial}
       </button>
 
-      {/* Tabs */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1, overflowX: 'auto' }}>
         {openTabs.map((tab) => (
-          <motion.button
+          <div
             key={tab.id}
             onClick={() => {
               setActiveTab(tab.id)
@@ -121,8 +115,8 @@ export default function Topbar() {
               padding: '6px 12px',
               borderRadius: '6px',
               border: 'none',
-              background: activeTab === tab.id ? 'var(--brand-dim)' : 'var(--bg-2)',
-              color: activeTab === tab.id ? 'var(--brand)' : 'var(--text-2)',
+              background: activeTab === tab.id ? 'var(--brand-500)' : 'var(--surface-1)',
+              color: activeTab === tab.id ? '#fff' : 'var(--text-1)',
               cursor: 'pointer',
               fontSize: '12px',
               fontWeight: 500,
@@ -149,11 +143,10 @@ export default function Topbar() {
             >
               <X style={{ width: '14px', height: '14px' }} />
             </button>
-          </motion.button>
+          </div>
         ))}
       </div>
 
-      {/* Add Tab Button */}
       <div style={{ position: 'relative' }}>
         <button
           onClick={() => setShowMenu(!showMenu)}
@@ -165,9 +158,9 @@ export default function Topbar() {
             height: '32px',
             padding: 0,
             borderRadius: '6px',
-            border: '1px dashed var(--border)',
+            border: '1px dashed var(--surface-2)',
             background: 'transparent',
-            color: 'var(--text-3)',
+            color: 'var(--text-2)',
             cursor: 'pointer',
             flexShrink: 0,
           }}
@@ -175,7 +168,6 @@ export default function Topbar() {
           <Plus style={{ width: '16px', height: '16px' }} />
         </button>
 
-        {/* Dropdown Menu */}
         <AnimatePresence>
           {showMenu && (
             <motion.div
@@ -187,8 +179,8 @@ export default function Topbar() {
                 top: '100%',
                 right: 0,
                 marginTop: '8px',
-                background: 'var(--bg-2)',
-                border: '1px solid var(--border)',
+                background: 'var(--surface-1)',
+                border: '1px solid var(--surface-2)',
                 borderRadius: '8px',
                 padding: '8px',
                 minWidth: '180px',
@@ -214,7 +206,7 @@ export default function Topbar() {
                     fontSize: '13px',
                     textAlign: 'left',
                   }}
-                  onMouseEnter={(e) => e.target.style.background = 'var(--bg-3)'}
+                  onMouseEnter={(e) => e.target.style.background = 'var(--surface-2)'}
                   onMouseLeave={(e) => e.target.style.background = 'transparent'}
                 >
                   <span>{cat.icon}</span>
@@ -225,6 +217,6 @@ export default function Topbar() {
           )}
         </AnimatePresence>
       </div>
-    </motion.div>
+    </div>
   )
 }

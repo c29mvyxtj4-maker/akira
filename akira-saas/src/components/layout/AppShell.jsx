@@ -16,12 +16,13 @@ import { DUR, EASE } from '@/config/motion'
 export default function AppShell() {
   var { toasts, removeToast } = useApp()
   var location = useLocation()
+  var isInicio = location.pathname === '/inicio'
 
   return (
     <div className="app-shell">
       <div className="bg-glow" />
 
-      <Topbar />
+      {!isInicio && <Topbar />}
 
       <main className="app-main" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
         <motion.div

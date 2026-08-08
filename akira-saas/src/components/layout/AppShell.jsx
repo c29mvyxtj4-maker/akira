@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import BottomBar from './BottomBar'
+import Topbar from './Topbar'
 import InstallBanner from '@/components/pwa/InstallBanner'
 import { PageSpinner } from '@/components/ui/Spinner'
 import { useApp } from '@/context/AppContext'
@@ -19,6 +20,8 @@ export default function AppShell() {
   return (
     <div className="app-shell">
       <div className="bg-glow" />
+
+      <Topbar />
 
       <main className="app-main" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
         <motion.div

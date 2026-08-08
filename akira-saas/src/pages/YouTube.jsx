@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, ChevronRight, Film } from 'lucide-react'
-import { AppShell } from '@/components/layout/AppShell'
+import AppShell from '@/components/layout/AppShell'
 import { YouTubeProjectForm } from '@/components/YouTube/YouTubeProjectForm'
 import { YouTubeTimeline } from '@/components/YouTube/YouTubeTimeline'
 import { YouTubeMetrics } from '@/components/YouTube/YouTubeMetrics'

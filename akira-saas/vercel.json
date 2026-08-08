@@ -1,5 +1,5 @@
 {
-  "buildCommand": "rm -rf .next .vercel dist build node_modules .cache .turbo && npm install --legacy-peer-deps && npm run build && echo 'BUILD_TIMESTAMP='$(date +%s%N)",
+  "buildCommand": "npm install --legacy-peer-deps && npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "vite",
@@ -7,10 +7,7 @@
   "crons": [],
   "cleanUrls": true,
   "trailingSlash": false,
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- akira-saas/ || exit 0",
   "env": {
-    "FORCE_BUILD": "1",
-    "VERCEL_DISABLE_PREBUILT_CACHE": "1",
     "NODE_ENV": "production"
   },
   "regions": ["sfo1"],
@@ -26,19 +23,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate, max-age=0, private"
-        },
-        {
-          "key": "Pragma",
-          "value": "no-cache"
-        },
-        {
-          "key": "Expires",
-          "value": "0"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
+          "value": "public, max-age=3600, must-revalidate"
         }
       ]
     },

@@ -3,40 +3,47 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import BottomBar from './BottomBar'
 import Topbar from './Topbar'
+import TopMenu from './TopMenu'
+import Sidebar from './Sidebar'
 import InstallBanner from '@/components/pwa/InstallBanner'
 import { PageSpinner } from '@/components/ui/Spinner'
 import { useApp } from '@/context/AppContext'
 import { DUR, EASE } from '@/config/motion'
 
-/*
- * Shell sin sidebar ni topbar: navegación por la barra inferior global
- * (BottomBar) + la pantalla de Inicio como hub. El contenido va a ancho
- * completo y la barra queda en el flujo, reservando su espacio.
- */
 export default function AppShell() {
   var { toasts, removeToast } = useApp()
   var location = useLocation()
   var isInicio = location.pathname === '/inicio'
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <div className="bg-glow" />
 
-      {!isInicio && <Topbar />}
+      {/* TopMenu - solo en páginas que no sean /inicio */}
+      {!isInicio && <TopMenu />}
 
-      <main className="app-main" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
-        <motion.div
-          key={location.pathname.split('/')[1] || 'home'}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: DUR.page, ease: EASE.out }}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}
-        >
-          <Suspense fallback={<PageSpinner />}>
-            <Outlet />
-          </Suspense>
-        </motion.div>
-      </main>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        {/* Sidebar - solo en páginas que no sean /inicio */}
+        {!isInicio && <Sidebar />}
+
+        {/* Main Content */}
+        <main className="app-main" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
+          {/* Topbar (tabs) - solo en páginas que no sean /inicio */}
+          {!isInicio && <Topbar />}
+
+          <motion.div
+            key={location.pathname.split('/')[1] || 'home'}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: DUR.page, ease: EASE.out }}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflowY: 'auto' }}
+          >
+            <Suspense fallback={<PageSpinner />}>
+              <Outlet />
+            </Suspense>
+          </motion.div>
+        </main>
+      </div>
 
       <BottomBar />
 

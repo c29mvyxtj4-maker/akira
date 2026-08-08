@@ -1,17 +1,9 @@
-import { FC, ReactNode } from 'react';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { TopNavBar } from './TopNavBar';
 import { LeftSidebar } from './LeftSidebar';
 import { MobileMenu } from './MobileMenu';
 
-interface AppLayoutProps {
-  children: ReactNode;
-  title?: string;
-  showLeftSidebar?: boolean;
-  showControlPanel?: boolean;
-}
-
-export const AppLayout: FC<AppLayoutProps> = ({
+export const AppLayout = ({
   children,
   title,
   showLeftSidebar = true,

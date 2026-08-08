@@ -1,40 +1,9 @@
 {
-  "buildCommand": "npm ci --legacy-peer-deps && npm run build",
-  "devCommand": "npm run dev",
+  "buildCommand": "npm install --legacy-peer-deps && npm run build",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "vite",
   "outputDirectory": "dist",
-  "crons": [],
   "cleanUrls": true,
   "trailingSlash": false,
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "regions": ["sfo1"],
-  "rewrites": [
-    {
-      "source": "/:path*",
-      "destination": "/index.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ]
+  "regions": ["sfo1"]
 }

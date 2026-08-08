@@ -10,6 +10,8 @@ import ResetPassword from '@/pages/auth/ResetPassword'
 
 // Layout
 import AppShell from '@/components/layout/AppShell'
+import { LayoutWrapper } from '@/components/Layout/LayoutWrapper'
+import '@/styles/layout.css'
 
 // Components
 import KeyboardShortcutsModal from '@/components/ui/KeyboardShortcutsModal'
@@ -109,7 +111,9 @@ export default function App() {
           path="/"
           element={
             <PrivateRoute>
-              <AppShell />
+              <LayoutWrapper>
+                <AppShell />
+              </LayoutWrapper>
             </PrivateRoute>
           }
         >

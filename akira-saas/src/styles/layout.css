@@ -157,16 +157,18 @@
 
 /* Left Sidebar */
 .left-sidebar {
+  max-width: 240px;
   width: 240px;
   background-color: var(--layout-panel);
   border-right: 1px solid var(--layout-border);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease;
+  transition: max-width 0.3s ease;
   overflow: hidden;
 }
 
 .left-sidebar.closed {
+  max-width: 60px;
   width: 60px;
 }
 

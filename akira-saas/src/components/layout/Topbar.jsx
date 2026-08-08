@@ -1,39 +1,15 @@
-import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import {
-  Home, Users, FolderKanban, Wallet, FileText, Clock, CalendarIcon, BookOpen,
-} from 'lucide-react'
+import { Home, Calendar, MessageSquare, Mail } from 'lucide-react'
 import { ROUTES } from '@/config/constants'
 import { useAuth } from '@/context/AuthContext'
-import { useOrg } from '@/context/OrgContext'
-
-const PILLS = [
-  { label: 'Clientes', icon: Users, to: ROUTES.CLIENTS },
-  { label: 'Proyectos', icon: FolderKanban, to: ROUTES.PROJECTS },
-  { label: 'Finanzas', icon: Wallet, to: ROUTES.FINANCE },
-  { label: 'Facturas', icon: FileText, to: ROUTES.INVOICES },
-  { label: 'Time tracking', icon: Clock, to: ROUTES.TIME_TRACKING },
-  { label: 'Calendario', icon: CalendarIcon, to: ROUTES.CALENDAR },
-  { label: 'Base de conocimiento', icon: BookOpen, to: ROUTES.KNOWLEDGE },
-]
-
-const GLOW = { color: 'rgba(230, 57, 70, 0.3)', blur: 12, spread: 2 }
 
 export default function Topbar() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { currentOrg: org } = useOrg()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const menuAnchor = useRef(null)
 
   const name = user?.user_metadata?.full_name?.split(' ')[0] || 'Usuario'
   const initial = name?.charAt(0).toUpperCase() || '?'
-
-  const handleSignOut = async () => {
-    // Sign out logic would go here
-    setMenuOpen(false)
-  }
 
   return (
     <motion.div
@@ -45,11 +21,10 @@ export default function Topbar() {
         background: 'var(--bg-base)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {/* Avatar */}
         <button
-          ref={menuAnchor}
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => navigate(ROUTES.HOME)}
           aria-label="Tu cuenta"
           style={{
             width: '38px',
@@ -72,7 +47,8 @@ export default function Topbar() {
         </button>
 
         {/* Inicio Pill */}
-        <div
+        <button
+          onClick={() => navigate('/inicio')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -84,41 +60,71 @@ export default function Topbar() {
             color: 'var(--brand)',
             flexShrink: 0,
             cursor: 'pointer',
+            fontSize: '13px',
+            fontWeight: 700,
           }}
-          onClick={() => navigate('/inicio')}
         >
           <Home style={{ width: '16px', height: '16px' }} />
-          <span style={{ fontSize: '13px', fontWeight: 700 }}>Inicio</span>
-        </div>
+          <span>Inicio</span>
+        </button>
 
-        {/* Navigation Pills */}
-        {PILLS.map((pill) => {
-          const Icon = pill.icon
-          return (
-            <button
-              key={pill.label}
-              onClick={() => navigate(pill.to)}
-              title={pill.label}
-              aria-label={pill.label}
-              style={{
-                position: 'relative',
-                width: '40px',
-                height: '38px',
-                borderRadius: '999px',
-                flexShrink: 0,
-                background: 'var(--bg-3)',
-                border: 'none',
-                color: 'var(--text-3)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Icon style={{ width: '16px', height: '16px' }} />
-            </button>
-          )
-        })}
+        {/* Quick Icons */}
+        <button
+          onClick={() => navigate(ROUTES.CALENDAR)}
+          title="Calendario"
+          style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'var(--bg-3)',
+            border: 'none',
+            color: 'var(--text-3)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Calendar style={{ width: '18px', height: '18px' }} />
+        </button>
+
+        <button
+          onClick={() => navigate(ROUTES.BRAIN)}
+          title="Mensajes"
+          style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'var(--bg-3)',
+            border: 'none',
+            color: 'var(--text-3)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <MessageSquare style={{ width: '18px', height: '18px' }} />
+        </button>
+
+        <button
+          onClick={() => navigate(ROUTES.INVOICES)}
+          title="Correo"
+          style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'var(--bg-3)',
+            border: 'none',
+            color: 'var(--text-3)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Mail style={{ width: '18px', height: '18px' }} />
+        </button>
       </div>
     </motion.div>
   )

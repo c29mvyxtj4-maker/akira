@@ -122,53 +122,6 @@ export default function Inicio() {
       <div style={{ position: 'relative', zIndex: 1, height: '100%', overflowY: 'auto', paddingTop: 'calc(var(--safe-top) + 18px)' }}>
       <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 24px calc(112px + var(--safe-bottom))' }}>
 
-        {/* Barra de pastillas */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '22px' }}>
-          <BorderGlow {...GLOW}>
-            <button type="button" onClick={openMenu} aria-label="Tu cuenta"
-              style={{ width: '38px', height: '38px', flexShrink: 0, borderRadius: '50%', border: 'none', background: 'var(--gradient-brand)', color: '#fff', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-brand)' }}>
-              {initial}
-            </button>
-          </BorderGlow>
-          {menuOpen && (
-            <AccountMenu
-              anchor={menuAnchor}
-              orgName={org ? org.name : null}
-              plan={org && org.plan ? org.plan : 'gratuito'}
-              memberCount={members ? members.length : 1}
-              initial={initial}
-              email={user ? user.email : ''}
-              workspaces={workspaces || []}
-              activeOrgId={org ? org.id : null}
-              onSwitch={function(id) { setMenuOpen(false); switchWorkspace(id) }}
-              onCreateWorkspace={handleCreateWorkspace}
-              onSettings={function() { openSettings('profile') }}
-              onInvite={function() { openSettings('team') }}
-              onSignOut={function() { setMenuOpen(false); signOut() }}
-              onClose={function() { setMenuOpen(false) }}
-            />
-          )}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '999px', background: 'var(--brand-dim)', border: '1px solid var(--brand-border)', color: 'var(--brand)', flexShrink: 0 }}>
-            <Home style={{ width: '16px', height: '16px' }} />
-            <span style={{ fontSize: '13px', fontWeight: 700 }}>Inicio</span>
-          </div>
-          {PILLS.map(function(p) {
-            var Icon = p.icon
-            var showBadge = p.label === 'Bandeja' && unread > 0
-            return (
-              <BorderGlow key={p.label} {...GLOW}>
-                <button type="button" onClick={function() { navigate(p.to) }} title={p.label} aria-label={p.label}
-                  style={{ position: 'relative', width: '40px', height: '38px', borderRadius: '999px', flexShrink: 0, background: 'var(--bg-3)', border: 'none', color: 'var(--text-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon style={{ width: '16px', height: '16px' }} />
-                  {showBadge && (
-                    <span style={{ position: 'absolute', top: '4px', right: '5px', minWidth: '15px', height: '15px', padding: '0 4px', borderRadius: '999px', background: 'var(--brand)', color: '#fff', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 0 2px var(--bg-base)' }}>{unread > 9 ? '9+' : unread}</span>
-                  )}
-                </button>
-              </BorderGlow>
-            )
-          })}
-        </div>
-
         {/* Saludo + Widgets Button */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}

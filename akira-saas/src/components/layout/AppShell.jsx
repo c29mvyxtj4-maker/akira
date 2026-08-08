@@ -18,6 +18,21 @@ export default function AppShell() {
     <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <div className="bg-glow" />
 
+      {/* DEPLOYMENT BANNER - VISIBLE PROOF */}
+      {!isInicio && (
+        <div style={{
+          background: '#2ecc71',
+          color: 'white',
+          padding: '8px 16px',
+          fontSize: '12px',
+          fontWeight: 600,
+          textAlign: 'center',
+          zIndex: 200,
+        }}>
+          ✅ AKIRA v0.3.1 - TopBar Deployed Successfully
+        </div>
+      )}
+
       {/* TopMenu - solo en páginas que no sean /inicio */}
       {!isInicio && <TopMenu />}
 

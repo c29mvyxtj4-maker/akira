@@ -53,4 +53,7 @@ export var ROUTES = {
 
   // AI Operatives
   OPERATIVES:     '/operatives',
+
+  // YouTube Projects
+  YOUTUBE:        '/youtube',
 }

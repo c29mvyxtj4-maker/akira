@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Home, Search, Sparkles, PenSquare } from 'lucide-react'
+import { Home, Search, Sparkles, PenSquare, Film } from 'lucide-react'
 import { ROUTES } from '@/config/constants'
 import Dock from '@/components/ui/Dock'
 import CommandPalette from '@/components/layout/CommandPalette'
@@ -31,10 +31,13 @@ export default function BottomBar() {
   }, [])
 
   var atHome = location.pathname === '/inicio' || location.pathname === '/'
+  var atYouTube = location.pathname.startsWith('/youtube')
 
   var items = [
     { icon: <Home style={{ width: '20px', height: '20px' }} />, label: 'Inicio',
       className: atHome ? 'dock-item-active' : '', onClick: function () { navigate('/inicio') } },
+    { icon: <Film style={{ width: '20px', height: '20px' }} />, label: 'YouTube Projects',
+      className: atYouTube ? 'dock-item-active' : '', onClick: function () { navigate(ROUTES.YOUTUBE) } },
     { icon: <Search style={{ width: '20px', height: '20px' }} />, label: 'Buscar  (Ctrl+K)',
       onClick: function () { setCmdOpen(true) } },
     { icon: <Sparkles style={{ width: '20px', height: '20px' }} />, label: 'Preguntar a AKIRA',

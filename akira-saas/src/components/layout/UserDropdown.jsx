@@ -1,4 +1,4 @@
-import { FC, useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import {
   Zap,
@@ -10,24 +10,19 @@ import {
   LogOut,
 } from 'lucide-react';
 
-interface UserDropdownProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export const UserDropdown: FC<UserDropdownProps> = ({ isOpen, onClose }) => {
-  const dropdownRef = useRef<HTMLDivElement>(null);
+export const UserDropdown = ({ isOpen, onClose }) => {
+  const dropdownRef = useRef(null);
   const { user, profile, logout } = useAuth();
-  const [workspaces, setWorkspaces] = useState<Array<{ id: string; name: string }>>([
+  const [workspaces, setWorkspaces] = useState([
     { id: '1', name: 'Personal' },
   ]);
   const [activeWorkspace, setActiveWorkspace] = useState(workspaces[0]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target)
       ) {
         onClose();
       }

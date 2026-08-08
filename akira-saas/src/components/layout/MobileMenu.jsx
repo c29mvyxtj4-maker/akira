@@ -1,9 +1,8 @@
-import { FC } from 'react';
 import { useLayout } from '@/hooks/useLayout';
 import { LeftSidebar } from './LeftSidebar';
 import { X } from 'lucide-react';
 
-export const MobileMenu: FC = () => {
+export const MobileMenu = () => {
   const { mobileMenuOpen, closeMobileMenu } = useLayout();
 
   if (!mobileMenuOpen) return null;

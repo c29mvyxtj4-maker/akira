@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLayout } from '@/hooks/useLayout';
 import {
@@ -17,12 +16,12 @@ import {
   MessageCircle,
 } from 'lucide-react';
 
-export const LeftSidebar: FC = () => {
+export const LeftSidebar = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { sidebarOpen, toggleSidebar } = useLayout();
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path) => pathname === path;
 
   return (
     <aside className={`left-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>

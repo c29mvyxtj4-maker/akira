@@ -1,15 +1,11 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useLayout } from '@/hooks/useLayout';
 import { UserDropdown } from './UserDropdown';
 import { Menu, Home, ChevronDown } from 'lucide-react';
 
-interface TopNavBarProps {
-  title?: string;
-}
-
-export const TopNavBar: FC<TopNavBarProps> = ({ title }) => {
+export const TopNavBar = ({ title }) => {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const { toggleMobileMenu } = useLayout();

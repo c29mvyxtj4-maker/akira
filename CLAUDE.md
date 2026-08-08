@@ -25,6 +25,142 @@ This guide provides comprehensive guidance for Claude Code when working with AKI
 
 ---
 
+## 🎬 YouTube Projects System (AKIRA v2.0 Feature)
+
+**Purpose:** Marc is a content creator. This system automates video production workflow planning.
+
+### Core Features
+1. **Project Templates** — 5 predefined templates:
+   - Tutorial (research → recording → editing → publishing)
+   - Short Film (concept → storyboard → production → post-production)
+   - Documentary (research → interviews → editing → sound design)
+   - Review (research → recording → editing → publishing)
+   - Podcast (planning → recording → editing → publishing)
+
+2. **Automatic Phase Generation** — When creating a YouTube project:
+   - Select template + publishing deadline
+   - System calculates all phases working **backwards from deadline**
+   - Creates youtube_phases with start/end dates
+   - Creates youtube_milestones with reminders (3 days, 1 day before)
+
+3. **Smart Timeline** — Visual progress tracking:
+   - See all phases at a glance
+   - Color-coded by phase type
+   - Mark phases as completed
+   - Track estimated vs actual hours
+   - At-risk phases highlighted if deadline approaching
+
+4. **Metrics Dashboard** — Project overview:
+   - Overall progress %
+   - Days until publishing
+   - Hours invested vs estimated
+   - Phases at risk
+   - Time breakdown by phase
+
+### Database Schema
+```
+youtube_projects
+├── id, project_id, org_id
+├── title, description, template
+├── publishing_date (the key: all phases calculated from this)
+├── status: planning | in-progress | completed | published
+└── metadata (JSON)
+
+youtube_phases
+├── id, youtube_project_id
+├── phase_name: research | planning | scripting | recording | editing | review | publishing
+├── start_date, end_date (auto-calculated)
+├── status: pending | in-progress | completed
+├── estimated_hours, actual_hours
+└── deliverables (what gets done in this phase)
+
+youtube_milestones
+├── id, youtube_phase_id
+├── title, due_date, due_time
+├── reminder_days: [3, 1]  (notify 3 days and 1 day before)
+└── completed_at (when finished)
+```
+
+### File Structure
+```
+src/
+├── pages/YouTube.jsx                   # Main project page
+├── components/YouTube/
+│   ├── YouTubeProjectForm.tsx          # Create new project
+│   ├── YouTubeTimeline.tsx             # Visual phase timeline
+│   ├── YouTubeMetrics.tsx              # Progress dashboard
+│   └── index.ts
+├── services/youtube.service.ts         # Supabase queries
+├── hooks/useYouTube.ts                 # React state management
+├── utils/dateCalculations.ts           # Phase date math
+├── data/youtubeTemplates.ts            # Template definitions
+└── types/youtube.ts                    # TypeScript interfaces
+
+supabase/migrations/
+└── 20260808_create_youtube_tables.sql  # Database tables + RLS
+```
+
+### How It Works
+**Example: Tutorial Video due August 15, 2026**
+
+1. User clicks "New YouTube Project"
+2. Fills form:
+   - Title: "React Hooks Tutorial"
+   - Template: Tutorial
+   - Publishing Date: August 15, 2026
+3. System calculates backwards:
+   - Publishing: Aug 14 (1 day)
+   - Review: Aug 12-13 (2 days)
+   - Editing: Aug 5-11 (7 days)
+   - Recording: Jul 31-Aug 4 (5 days)
+   - Planning: Jul 29-30 (2 days)
+   - Research: Jul 26-28 (3 days)
+4. Creates all phases + milestones automatically
+5. User sees timeline with:
+   - Each phase with dates
+   - Deliverables for each phase
+   - Estimated hours
+   - Progress bar
+
+### Key Functions
+```typescript
+// In YouTubeService.ts
+createYouTubeProject()      // Create + auto-generate phases
+getYouTubeProject()         // Fetch project with all phases
+updatePublishingDate()      // Change deadline → recalculate all phases
+completePhase()             // Mark phase done + track hours
+deleteYouTubeProject()      // Delete (cascades to phases/milestones)
+
+// In dateCalculations.ts
+calculatePhaseDates()       // The core algorithm
+recalculatePhasesForNewDate() // Recalc if deadline changes
+daysUntil()                 // How many days to a date
+isPhaseAtRisk()             // Approaching deadline?
+calculateProjectProgress()  // % done
+```
+
+### Integration with Other Features
+- **Calendar:** YouTubeMilestones sync with Calendar events (future)
+- **Projects:** YouTube projects can be linked to main projects
+- **Dashboard:** Widget showing "Next YouTube Milestone"
+- **Time Tracking:** Hours logged can sync with youtube_phases.actual_hours
+- **Brain (AI):** Can suggest next steps based on phase
+
+### Navigation
+- Menu item in Dock (Film icon) → `/youtube`
+- Constant: `ROUTES.YOUTUBE = '/youtube'`
+- No database migrations needed — new tables are isolated
+
+### Customization Points
+Users can later:
+- Edit template phases
+- Manually change phase dates (auto-syncs)
+- Add custom milestones
+- Adjust estimated hours
+- Set reminders per milestone
+
+---
+
 ## 🎯 Project Overview
 
 **AKIRA** is a multi-tenant SaaS application for agencies and freelancers to manage:

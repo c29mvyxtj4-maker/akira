@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
 export function useClients() {
   const [clients, setClients]   = useState([])
@@ -35,6 +36,7 @@ export function useClients() {
         .from('clients')
         .select('*')
         .eq('archived', false)
+      q = scopeToOrg(q) // aislar por workspace activo (defensivo: no filtra si no hay)
 
       if (status !== 'all') q = q.eq('status', status)
       if (niche  !== 'all') q = q.eq('niche',  niche)
@@ -161,6 +163,7 @@ export function useClients() {
         notes:            form.notes            || null,
         next_followup_at: form.next_followup_at || null,
         owner_id:         ownerId,
+        org_id:           getActiveOrgId() || null, // etiquetar al workspace activo
         archived:         false,
       }
 

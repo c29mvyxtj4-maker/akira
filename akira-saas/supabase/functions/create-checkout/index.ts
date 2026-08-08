@@ -62,15 +62,23 @@ Deno.serve(async (req: Request) => {
   const { invoice_id, return_path } = await req.json().catch(() => ({}))
   if (!invoice_id) return json({ error: 'falta invoice_id' }, 400, cors)
   // Ruta de retorno segura (solo rutas internas que empiezan por "/").
-  const retPath = typeof return_path === 'string' && return_path.startsWith('/') ? return_path : '/invoices'
+  const retPath = typeof return_path === 'string' && return_path.startsWith('/') ? return_path : '/documents'
 
-  const { data: inv, error } = await supabase
-    .from('invoices')
-    .select('id, invoice_number, total, status, clients(name, company, email)')
-    .eq('id', invoice_id)
-    .single()
+  // Las facturas actuales viven en commercial_documents (document_type='invoice').
+  // Buscamos ahí primero y, si no, en la tabla legacy 'invoices'.
+  const SEL = 'id, invoice_number, total, status, clients(name, company, email)'
+  let inv: { id: string; invoice_number: string; total: number; status: string; clients?: { email?: string } } | null = null
+  {
+    const r = await supabase.from('commercial_documents').select(SEL)
+      .eq('id', invoice_id).eq('document_type', 'invoice').maybeSingle()
+    if (r.data) inv = r.data as typeof inv
+  }
+  if (!inv) {
+    const r = await supabase.from('invoices').select(SEL).eq('id', invoice_id).maybeSingle()
+    if (r.data) inv = r.data as typeof inv
+  }
 
-  if (error || !inv) return json({ error: 'factura no encontrada' }, 404, cors)
+  if (!inv) return json({ error: 'factura no encontrada' }, 404, cors)
   if (inv.status === 'paid') return json({ error: 'la factura ya está pagada' }, 400, cors)
   if (!(Number(inv.total) > 0)) return json({ error: 'importe no válido' }, 400, cors)
 

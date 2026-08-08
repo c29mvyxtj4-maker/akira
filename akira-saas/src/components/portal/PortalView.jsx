@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import {
   LogOut, FolderKanban, MessageSquare,
   FileText, Check, Clock, Send,
-  Download, Receipt, Eye,
+  Download, Receipt, Eye, LayoutDashboard, CheckCircle2,
 } from 'lucide-react'
 
 const STATUS_CFG = {
@@ -13,6 +13,75 @@ const STATUS_CFG = {
   review:    { label: 'Revision',   color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' },
   completed: { label: 'Completado', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
   cancelled: { label: 'Cancelado',  color: '#e63946', bg: 'rgba(230,57,70,0.1)' },
+}
+
+// Etapas de un proyecto, en orden, para el "stepper" de progreso del cliente.
+const STAGE_STEPS = [
+  { key: 'preproduction',  label: 'Preproducción' },
+  { key: 'production',     label: 'Producción' },
+  { key: 'postproduction', label: 'Postproducción' },
+  { key: 'delivery',       label: 'Entrega' },
+]
+function stageIndex(project) {
+  if (project.status === 'completed' || project.stage === 'closed') return STAGE_STEPS.length
+  const i = STAGE_STEPS.findIndex((s) => s.key === project.stage)
+  return i === -1 ? 0 : i
+}
+
+// Anillo de progreso (SVG, fondo transparente) para el "Resumen".
+function ProgressRing({ value, size = 116, stroke = 10 }) {
+  const r = (size - stroke) / 2
+  const c = 2 * Math.PI * r
+  const pct = Math.max(0, Math.min(100, value))
+  return (
+    <svg width={size} height={size} style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--bg-4)" strokeWidth={stroke} opacity="0.5" />
+      <motion.circle
+        cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--brand)" strokeWidth={stroke} strokeLinecap="round"
+        strokeDasharray={c}
+        initial={{ strokeDashoffset: c }}
+        animate={{ strokeDashoffset: c - (c * pct) / 100 }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      />
+    </svg>
+  )
+}
+
+// Stepper horizontal de etapas de un proyecto.
+function StageStepper({ project }) {
+  const current = stageIndex(project)
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', marginTop: '14px' }}>
+      {STAGE_STEPS.map((s, i) => {
+        const done = i < current
+        const active = i === current
+        const on = done || active
+        return (
+          <div key={s.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+            {i > 0 && (
+              <div style={{ position: 'absolute', top: '11px', left: '-50%', width: '100%', height: '2px', background: done || active ? 'var(--brand)' : 'var(--bg-4)', zIndex: 0 }} />
+            )}
+            <div style={{ position: 'relative', zIndex: 1, width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: done ? 'var(--brand)' : active ? 'var(--brand-dim)' : 'var(--bg-3)',
+              border: '2px solid ' + (on ? 'var(--brand)' : 'var(--border)'), color: done ? '#fff' : active ? 'var(--brand)' : 'var(--text-5)' }}>
+              {done ? <Check style={{ width: '13px', height: '13px' }} /> : <span style={{ fontSize: '11px', fontWeight: 800 }}>{i + 1}</span>}
+            </div>
+            <span style={{ fontSize: '10px', fontWeight: active ? 700 : 500, color: on ? 'var(--text-2)' : 'var(--text-5)', marginTop: '6px', textAlign: 'center', lineHeight: 1.2 }}>{s.label}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function StatTile({ label, value, sub, accent }) {
+  return (
+    <div style={{ flex: 1, minWidth: '128px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '14px', padding: '14px 16px' }}>
+      <p style={{ fontSize: '22px', fontWeight: 800, color: accent || 'var(--text-1)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{value}</p>
+      <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-2)', marginTop: '8px' }}>{label}</p>
+      {sub && <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '1px' }}>{sub}</p>}
+    </div>
+  )
 }
 const APPROVAL_CFG = {
   pending:  { label: 'Pendiente', color: '#f59e0b' },
@@ -59,7 +128,7 @@ function darken(hex, amount) {
  */
 export default function PortalView({ data, branding = {}, user = null, mode = 'client', onExit }) {
   const isPreview = mode === 'preview'
-  const [tab, setTab]         = useState('projects')
+  const [tab, setTab]         = useState('overview')
   const [msgInput, setMsgInput] = useState('')
   const [sending, setSending]   = useState(false)
   const [messages, setMessages] = useState(data?.messages || [])
@@ -140,7 +209,20 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
   const files    = (data && data.files)    || []
   const invoices = (data && data.invoices) || []
 
+  // Métricas para el "Resumen".
+  const activeProjects = projects.filter((p) => p.status !== 'completed' && p.status !== 'cancelled')
+  const globalProgress = projects.length
+    ? Math.round(projects.reduce((s, p) => s + (Number(p.progress) || 0), 0) / projects.length)
+    : 0
+  const pendingInvoices = invoices.filter((i) => i.status === 'sent')
+  const pendingInvoiceTotal = pendingInvoices.reduce((s, i) => s + (Number(i.total) || 0), 0)
+  const pendingApprovals = approvals.filter((a) => a.status === 'pending').length
+  const nextDue = activeProjects
+    .filter((p) => p.due_date)
+    .sort((a, b) => new Date(a.due_date) - new Date(b.due_date))[0]
+
   const TABS = [
+    { id: 'overview',  label: 'Resumen',      icon: LayoutDashboard, count: 0 },
     { id: 'projects',  label: 'Proyectos',    icon: FolderKanban, count: projects.length },
     { id: 'invoices',  label: 'Facturas',     icon: Receipt,      count: invoices.filter((i) => i.status === 'sent').length },
     { id: 'messages',  label: 'Mensajes',     icon: MessageSquare, count: messages.filter((m) => m.sender_type === 'owner' && !m.read).length },
@@ -222,6 +304,86 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
 
       {/* Contenido */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+        {tab === 'overview' && (
+          <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* Hero con anillo de progreso global */}
+            <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+              style={{ display: 'flex', alignItems: 'center', gap: '18px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '18px', padding: '20px 22px', flexWrap: 'wrap' }}>
+              <div style={{ position: 'relative', width: '116px', height: '116px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ProgressRing value={globalProgress} />
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-1)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{globalProgress}%</span>
+                  <span style={{ fontSize: '10px', color: 'var(--text-4)', marginTop: '2px' }}>global</span>
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <p style={{ fontSize: '19px', fontWeight: 800, color: 'var(--text-1)', letterSpacing: '-0.02em' }}>Hola, {greetName} 👋</p>
+                <p style={{ fontSize: '13px', color: 'var(--text-4)', marginTop: '4px', lineHeight: 1.5 }}>
+                  {activeProjects.length > 0
+                    ? 'Tienes ' + activeProjects.length + (activeProjects.length === 1 ? ' proyecto en curso' : ' proyectos en curso') + '.'
+                    : 'No tienes proyectos activos ahora mismo.'}
+                  {nextDue && ' Próxima entrega el ' + fmtDate(nextDue.due_date) + '.'}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Tiles de métricas */}
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <StatTile label="Proyectos activos" value={activeProjects.length} />
+              <StatTile label="Facturas pendientes" value={pendingInvoices.length}
+                sub={pendingInvoiceTotal > 0 ? pendingInvoiceTotal.toLocaleString('es-ES', { minimumFractionDigits: 0 }) + '€ por cobrar' : 'Todo al día'}
+                accent={pendingInvoices.length > 0 ? 'var(--brand)' : undefined} />
+              <StatTile label="Aprobaciones" value={pendingApprovals} sub={pendingApprovals > 0 ? 'esperan tu revisión' : 'nada pendiente'}
+                accent={pendingApprovals > 0 ? '#f59e0b' : undefined} />
+            </div>
+
+            {/* Progreso por proyecto */}
+            <div>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '4px 2px 10px' }}>Progreso de tus proyectos</p>
+              {activeProjects.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '30px 20px', color: 'var(--text-4)', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '14px' }}>
+                  <CheckCircle2 style={{ width: '30px', height: '30px', margin: '0 auto 10px', opacity: 0.5 }} />
+                  <p style={{ fontSize: '13px' }}>Sin proyectos en curso.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {activeProjects.map((p) => {
+                    const sc = STATUS_CFG[p.status] || STATUS_CFG.pending
+                    return (
+                      <motion.div key={p.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                        style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: '14px', padding: '16px 18px' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+                          <div style={{ minWidth: 0 }}>
+                            <p style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-1)' }}>{p.name}</p>
+                            {p.due_date && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
+                                <Clock style={{ width: '11px', height: '11px', color: 'var(--text-5)' }} />
+                                <span style={{ fontSize: '11px', color: 'var(--text-5)' }}>Entrega: {fmtDate(p.due_date)}</span>
+                              </div>
+                            )}
+                          </div>
+                          <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: 700, background: sc.bg, color: sc.color, flexShrink: 0 }}>{sc.label}</span>
+                        </div>
+                        <div style={{ marginTop: '12px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                            <span style={{ fontSize: '11px', color: 'var(--text-4)' }}>Progreso</span>
+                            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-2)' }}>{p.progress || 0}%</span>
+                          </div>
+                          <div style={{ height: '5px', background: 'var(--bg-4)', borderRadius: '3px', overflow: 'hidden' }}>
+                            <motion.div initial={{ width: 0 }} animate={{ width: (p.progress || 0) + '%' }} transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                              style={{ height: '100%', background: 'var(--gradient-brand)', borderRadius: '3px' }} />
+                          </div>
+                        </div>
+                        <StageStepper project={p} />
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {tab === 'projects' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {projects.length === 0 ? (

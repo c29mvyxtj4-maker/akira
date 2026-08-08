@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg } from '@/lib/activeOrg'
 
 var STALE_DAYS = 7
 
@@ -42,19 +43,19 @@ export function useNotifications() {
     cutoff.setDate(cutoff.getDate() - STALE_DAYS)
 
     Promise.all([
-      supabase
+      scopeToOrg(supabase
         .from('commercial_documents')
         .select('id, invoice_number, due_date, total, status, clients(id, name, company, email)')
         .eq('document_type', 'invoice')
         .eq('archived', false)
         .in('status', ['draft', 'sent'])
-        .lt('due_date', todayStr)
+        .lt('due_date', todayStr))
         .order('due_date', { ascending: true }),
-      supabase
+      scopeToOrg(supabase
         .from('clients')
         .select('id, name, company, email, status, last_contact_at')
         .eq('archived', false)
-        .eq('status', 'active'),
+        .eq('status', 'active')),
     ]).then(function(results) {
       var invRes = results[0]
       var cliRes = results[1]

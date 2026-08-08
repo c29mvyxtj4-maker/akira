@@ -19,6 +19,8 @@ import { CharacterCount }           from '@tiptap/extension-character-count'
 import { Youtube }                  from '@tiptap/extension-youtube'
 import { useEffect, useRef, useState } from 'react'
 import { uploadFile } from '@/services/kb.service'
+import { getPref } from '@/hooks/usePreferences'
+import { SlashCommand } from './SlashCommand'
 
 /* ── Limpieza de JSON para evitar referencias circulares ──── */
 function cleanJSON(node) {
@@ -417,7 +419,8 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
   var editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [1,2,3,4,5,6] } }),
-      Placeholder.configure({ placeholder: 'Empieza a escribir...' }),
+      Placeholder.configure({ placeholder: "Escribe '/' para insertar bloques…" }),
+      SlashCommand,
       Underline,
       TextStyle,
       Color,
@@ -450,7 +453,13 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
       }
     },
     editorProps: {
-      attributes: { class: 'kb-editor-content', spellcheck: 'true' },
+      // Corrector ortográfico según la preferencia (idioma o desactivado).
+      attributes: (function () {
+        var sc = getPref('pref_spellcheck', 'es')
+        var attrs = { class: 'kb-editor-content', spellcheck: sc === 'off' ? 'false' : 'true' }
+        if (sc && sc !== 'off') attrs.lang = sc.split(',')[0]
+        return attrs
+      })(),
     },
   })
 

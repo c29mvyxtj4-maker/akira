@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
 export function useProjects() {
   var [projects,      setProjects]      = useState([])
@@ -45,6 +46,7 @@ export function useProjects() {
     setLoading(true)
     setError(null)
     var q = supabase.from('projects').select('*, clients(id, name, company)').eq('archived', false)
+    q = scopeToOrg(q) // aislar por workspace activo (defensivo)
     if (status   !== 'all') q = q.eq('status',    status)
     if (clientId !== 'all') q = q.eq('client_id', clientId)
     if (priority !== 'all') q = q.eq('priority',  priority)
@@ -121,6 +123,7 @@ export function useProjects() {
         delivery_date:   form.delivery_date   || null,
         notes:           form.notes           || null,
         owner_id:        ownerId,
+        org_id:          getActiveOrgId() || null, // etiquetar al workspace activo
         archived:        false,
       }
       if (!payload.name) throw new Error('El nombre es obligatorio')
@@ -226,6 +229,19 @@ export function useProjects() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
+  function handleUpdateTaskAssignee(projectId, taskId, userId) {
+    if (!projectId || !taskId) return
+    supabase.from('projects').select('tasks').eq('id', projectId).single()
+      .then(function(res) {
+        if (res.error) throw res.error
+        var next = safeTasks(res.data.tasks).map(function(t) {
+          return t.id === taskId ? Object.assign({}, t, { assignee: userId || '' }) : t
+        })
+        return saveTasksToDB(projectId, next)
+      })
+      .catch(function(e) { showToast(e.message, 'error') })
+  }
+
   function handleUpdateProgress(projectId, progress) {
     supabase.from('projects').update({ progress: progress }).eq('id', projectId)
       .then(function(res) {
@@ -262,6 +278,17 @@ export function useProjects() {
       })
   }
 
+  // Guarda el contenido de la "página" (editor tipo Notion) del proyecto.
+  function savePage(projectId, content) {
+    supabase.from('projects').update({ page_content: content }).eq('id', projectId).then(function(res) {
+      if (res.error) { showToast('No se pudo guardar la página', 'error'); return }
+      setDetail(function(prev) {
+        if (!prev || prev.id !== projectId) return prev
+        return Object.assign({}, prev, { page_content: content })
+      })
+    })
+  }
+
   return {
     projects: projects, loading: loading, error: error,
     search: search, setSearch: setSearch,
@@ -279,8 +306,10 @@ export function useProjects() {
     handleSave: handleSave, handleArchive: handleArchive,
     handleAddTask: handleAddTask, handleToggleTask: handleToggleTask,
     handleDeleteTask: handleDeleteTask, handleUpdateTaskPriority: handleUpdateTaskPriority,
+    handleUpdateTaskAssignee: handleUpdateTaskAssignee,
     handleUpdateProgress: handleUpdateProgress,
-    handleUpdateStage: handleUpdateStage, // ← NUEVO
+    handleUpdateStage: handleUpdateStage,
+    savePage: savePage,
     toastMsg: toastMsg,
   }
 }

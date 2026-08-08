@@ -10,6 +10,8 @@ import ResetPassword from '@/pages/auth/ResetPassword'
 
 // Layout
 import AppShell from '@/components/layout/AppShell'
+import { LayoutWrapper } from '@/components/layout/LayoutWrapper'
+import '@/styles/layout.css'
 
 // Components
 import KeyboardShortcutsModal from '@/components/ui/KeyboardShortcutsModal'
@@ -35,6 +37,12 @@ const Offers        = lazy(() => import('@/pages/Offers'))
 const Documents     = lazy(() => import('@/pages/Documents'))
 const TimeTracking  = lazy(() => import('@/pages/TimeTracking'))
 const AIOperatives  = lazy(() => import('@/pages/AIOperatives'))
+const Inicio        = lazy(() => import('@/pages/Inicio')) // PRUEBA: home experimental
+const Mensajes      = lazy(() => import('@/pages/Mensajes'))
+const InboxPage     = lazy(() => import('@/pages/InboxPage'))
+const LandingPage   = lazy(() => import('@/pages/LandingPage'))
+const Automation    = lazy(() => import('@/pages/Automation')) // v2.0 Automation workflows
+const YouTube       = lazy(() => import('@/pages/YouTube')) // YouTube project management
 
 function ComingSoon({ name }) {
   return (
@@ -56,12 +64,12 @@ function AppLoadingScreen() {
       <div className="flex flex-col items-center gap-4">
         <img src="/icons/icon.svg" alt="AKIRA" className="w-10 h-10 rounded-xl" />
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce"
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 akira-loader-dot"
                style={{ animationDelay: '0ms' }} />
-          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce"
-               style={{ animationDelay: '150ms' }} />
-          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-bounce"
-               style={{ animationDelay: '300ms' }} />
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 akira-loader-dot"
+               style={{ animationDelay: '160ms' }} />
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500 akira-loader-dot"
+               style={{ animationDelay: '320ms' }} />
         </div>
         <span className="text-text-4 text-sm">Iniciando AKIRA…</span>
       </div>
@@ -96,32 +104,44 @@ export default function App() {
         {/* Públicas */}
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.RESET} element={<ResetPassword />} />
+        <Route path="/landing" element={<LandingPage />} />
 
         {/* Privadas */}
         <Route
           path="/"
           element={
             <PrivateRoute>
-              <AppShell />
+              <LayoutWrapper>
+                <AppShell />
+              </LayoutWrapper>
             </PrivateRoute>
           }
         >
-          <Route index                  element={<Dashboard />} />
+          {/* Inicio es ahora la pantalla principal */}
+          <Route index                  element={<Navigate to="/inicio" replace />} />
+          <Route path="inicio"          element={<Inicio />} />
+          <Route path="mensajes"        element={<Mensajes />} />
+          <Route path="inbox"           element={<InboxPage />} />
+          <Route path="dashboard"       element={<Dashboard />} />
           <Route path="clients/*"       element={<Clients />} />
           <Route path="projects/*"      element={<Projects />} />
           <Route path="services/*"      element={<Services />} />
           <Route path="subscriptions/*" element={<Subscriptions />} />
           <Route path="finance/*"       element={<Finance />} />
-          <Route path="invoices/*"      element={<Invoices />} />
+          {/* Facturas + Presupuestos unificados en commercial_documents (Documents).
+             Las rutas antiguas redirigen aquí. */}
+          <Route path="invoices/*"      element={<Documents />} />
+          <Route path="documents/*"     element={<Navigate to="/invoices" replace />} />
+          <Route path="quotes/*"        element={<Navigate to="/invoices" replace />} />
           <Route path="time/*"          element={<TimeTracking />} />
           <Route path="operatives/*"    element={<AIOperatives />} />
-          <Route path="quotes/*"        element={<Quotes />} />
           <Route path="calendar/*"      element={<Calendar />} />
           <Route path="knowledge/*"     element={<Knowledge />} />
           <Route path="brain/*"         element={<Brain />} />
+          <Route path="automation/*"    element={<Automation />} />
+          <Route path="youtube/*"       element={<YouTube />} />
           <Route path="settings/*"      element={<Settings />} />
           <Route path="offers/*"        element={<Offers />} />
-          <Route path="documents/*"     element={<Documents />} />
         </Route>
 
         {/* Portal de clientes — rutas públicas */}

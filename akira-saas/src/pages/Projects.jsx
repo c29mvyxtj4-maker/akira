@@ -6,6 +6,10 @@ import {
   Calendar, DollarSign, TrendingUp, Flag,
 } from 'lucide-react'
 import { useProjects } from '@/hooks/useProjects'
+import { useOrg } from '@/context/OrgContext'
+import { getProjectMembers, addProjectMember, removeProjectMember, getOrgTeam } from '@/services/projectMembers.service'
+import { createMention } from '@/services/mentions.service'
+import { DUR, EASE, SPRING } from '@/config/motion'
 import { PROJECT_STATUS_MAP, PROJECT_STAGE_MAP, PROJECT_PRIORITY_MAP } from '@/services/projects.service'
 import { getProjectTemplates } from '@/services/templates.service'
 import {
@@ -14,7 +18,8 @@ import {
 } from '@/services/time.service'
 import { supabase } from '@/lib/supabase'
 import KanbanBoard from '@/components/projects/KanbanBoard'
-import AskAkiraButton from '@/components/akira/AskAkiraButton'
+import ProjectPage from '@/components/projects/ProjectPage'
+import TaskTemplateSelector from '@/components/projects/TaskTemplateSelector'
 import PageHeader      from '@/components/layout/PageHeader'
 import Modal           from '@/components/ui/Modal'
 import Badge           from '@/components/ui/Badge'
@@ -25,6 +30,7 @@ import { SkeletonCard } from '@/components/ui/Skeleton'
 import clsx            from 'clsx'
 import ProjectSummaryCard from '@/components/projects/ProjectSummaryCard'
 import ProjectFilesTab from '@/components/projects/ProjectFilesTab'
+import { applyTemplate } from '@/services/taskTemplates.service'
 
 function fmtDate(d) {
   if (!d) return '--'
@@ -55,7 +61,7 @@ function ProjectKpis({ projects }) {
         { l: 'Tareas',      v: done + '/' + total, c: '#e63946' },
       ].map(function(x, i) {
         return (
-          <motion.div key={x.l} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="surface-card p-2.5">
+          <motion.div key={x.l} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: DUR.slow, ease: EASE.out }} className="surface-card p-2.5">
             <p className="text-sm font-black leading-none" style={{ color: x.c }}>{x.v}</p>
             <p className="text-2xs text-text-4 mt-0.5">{x.l}</p>
           </motion.div>
@@ -74,7 +80,7 @@ function StageBar({ stage }) {
         var c = PROJECT_STAGE_MAP[s]
         return (
           <div key={s} className="h-0.5 flex-1 rounded-full"
-            style={{ background: c ? c.color : '#374151', opacity: i <= idx ? 1 : 0.2 }}
+            style={{ background: c ? c.color : 'var(--bg-5)', opacity: i <= idx ? 1 : 0.2 }}
           />
         )
       })}
@@ -92,9 +98,12 @@ function ProjectCard({ project, isSelected, onClick }) {
     <motion.button
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: DUR.slow, ease: EASE.out }}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
       onClick={onClick}
       className={clsx(
-        'w-full text-left px-3 py-3 rounded-lg border transition-all duration-150',
+        'w-full text-left px-3 py-3 rounded-lg border transition-colors duration-150',
         isSelected ? 'bg-brand-500/10 border-brand-500/30' : 'bg-transparent border-transparent hover:bg-surface-3 hover:border-border'
       )}
     >
@@ -116,10 +125,25 @@ function ProjectCard({ project, isSelected, onClick }) {
   )
 }
 
-function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange }) {
+function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, onAssigneeChange }) {
   var [showPrio, setShowPrio] = useState(null)
+  var [showAssign, setShowAssign] = useState(null)
+  var [members, setMembers] = useState([])
   var inputRef = useRef(null)
   var prioRef  = useRef('medium')
+
+  // Miembros del proyecto para poder asignarles tareas (Fase 1).
+  useEffect(function() {
+    if (!project || !project.id) return
+    getProjectMembers(project.id).then(setMembers).catch(function() {})
+  }, [project && project.id])
+
+  function memberFor(userId) {
+    if (!userId) return null
+    for (var i = 0; i < members.length; i++) { if (members[i].user_id === userId) return members[i] }
+    return null
+  }
+  function initialOf(m) { return ((m && m.profile && m.profile.full_name) ? m.profile.full_name[0] : '?').toUpperCase() }
 
   var tasks   = project && Array.isArray(project.tasks) ? project.tasks : []
   var pending = tasks.filter(function(t) { return !t.done })
@@ -191,6 +215,35 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange })
           )}
         </div>
 
+        {onAssigneeChange && (
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <button type="button" title="Asignar responsable"
+              onClick={function() { setShowAssign(showAssign === t.id ? null : t.id) }}
+              style={{ width: '22px', height: '22px', borderRadius: '50%', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700,
+                border: memberFor(t.assignee) ? 'none' : '1px dashed var(--text-5)',
+                background: memberFor(t.assignee) ? 'var(--gradient-brand)' : 'transparent',
+                color: memberFor(t.assignee) ? '#fff' : 'var(--text-5)' }}
+            >{memberFor(t.assignee) ? initialOf(memberFor(t.assignee)) : '+'}</button>
+            {showAssign === t.id && (
+              <div style={{ position: 'absolute', right: 0, top: '26px', zIndex: 100, background: '#1e1e2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '4px', minWidth: '150px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+                <button type="button" onClick={function() { onAssigneeChange(project.id, t.id, ''); setShowAssign(null) }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '6px 10px', borderRadius: '6px', border: 'none', background: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: '12px' }}>Sin asignar</button>
+                {members.length === 0 ? (
+                  <p style={{ padding: '6px 10px', fontSize: '11px', color: '#64748b' }}>Añade miembros en la pestaña Equipo</p>
+                ) : members.map(function(m) {
+                  return (
+                    <button key={m.id} type="button" onClick={function() { onAssigneeChange(project.id, t.id, m.user_id); createMention({ target_user: m.user_id, org_id: project.org_id, type: 'task_assigned', source_type: 'task', project_id: project.id, text: 'Te han asignado la tarea "' + t.text + '" en ' + (project.name || 'un proyecto') }).catch(function() {}); setShowAssign(null) }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', padding: '6px 10px', borderRadius: '6px', border: 'none', background: 'none', cursor: 'pointer', color: '#cbd5e1', fontSize: '12px' }}>
+                      <span style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'var(--gradient-brand)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, flexShrink: 0 }}>{initialOf(m)}</span>
+                      {(m.profile && m.profile.full_name) || 'Sin nombre'}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         <button type="button"
           onClick={function() { onDelete(project.id, t.id) }}
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', fontSize: '18px', lineHeight: 1, padding: '0 2px', flexShrink: 0 }}
@@ -199,8 +252,21 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange })
     )
   }
 
+  function handleApplyTemplate(templateKey) {
+    var tasks = applyTemplate(templateKey)
+    tasks.forEach(function(task) {
+      onAddTask(project.id, task.title, task.priority || 'medium')
+    })
+  }
+
   return (
     <div style={{ padding: '0' }}>
+      {/* Template Selector */}
+      <div style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <TaskTemplateSelector onApplyTemplate={handleApplyTemplate} />
+      </div>
+
+      {/* Manual Task Entry */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
         <input
           ref={inputRef}
@@ -461,7 +527,93 @@ function ProgressBar({ progress, onUpdate, projectId }) {
   )
 }
 
-function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateProgress, onBack }) {
+/* ── Fase 1: equipo del proyecto (vincular personas) ─────── */
+function TeamPanel({ project }) {
+  var { org } = useOrg()
+  var [members, setMembers] = useState([])
+  var [team, setTeam] = useState([])
+  var [loading, setLoading] = useState(true)
+  var [busy, setBusy] = useState(false)
+
+  function load() {
+    setLoading(true)
+    Promise.all([
+      getProjectMembers(project.id),
+      org ? getOrgTeam(org.id) : Promise.resolve([]),
+    ]).then(function (r) { setMembers(r[0]); setTeam(r[1]) })
+      .catch(function () {})
+      .finally(function () { setLoading(false) })
+  }
+  useEffect(function () { load() }, [project.id, org && org.id])
+
+  var memberIds = {}
+  members.forEach(function (m) { memberIds[m.user_id] = true })
+  var addable = team.filter(function (t) { return !memberIds[t.user_id] })
+
+  function nameOf(p) { return (p && p.full_name) || 'Sin nombre' }
+  function initialOf(p) { return ((p && p.full_name) ? p.full_name[0] : '?').toUpperCase() }
+
+  function handleAdd(userId) {
+    setBusy(true)
+    addProjectMember(project.id, userId).then(function () {
+      createMention({ target_user: userId, org_id: project.org_id, type: 'project_added', source_type: 'project', source_id: project.id, project_id: project.id, text: 'Te han añadido al proyecto "' + (project.name || '') + '"' }).catch(function () {})
+      return load()
+    }).catch(function (e) { window.alert('No se pudo añadir: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+  }
+  function handleRemove(id) {
+    setBusy(true)
+    removeProjectMember(id).then(load).catch(function (e) { window.alert('No se pudo quitar: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+  }
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-xs font-semibold text-text-4 uppercase tracking-wide mb-2">Miembros del proyecto</p>
+        {loading ? (
+          <p className="text-sm text-text-4">Cargando…</p>
+        ) : members.length === 0 ? (
+          <p className="text-sm text-text-4">Aún no hay nadie asignado a este proyecto. Añade a alguien de tu equipo abajo.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {members.map(function (m) {
+              return (
+                <div key={m.id} className="flex items-center gap-3 p-2.5 rounded-lg border border-border bg-surface-2">
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--gradient-brand)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '13px', flexShrink: 0 }}>{initialOf(m.profile)}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-text-1 truncate">{nameOf(m.profile)}</p>
+                    <p className="text-2xs text-text-4">{m.role || 'member'}</p>
+                  </div>
+                  <button type="button" disabled={busy} onClick={function () { handleRemove(m.id) }} className="text-xs text-status-danger hover:underline">Quitar</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <p className="text-xs font-semibold text-text-4 uppercase tracking-wide mb-2">Añadir del equipo</p>
+        {loading ? null : addable.length === 0 ? (
+          <p className="text-sm text-text-4">No hay más gente en tu organización para añadir. Invita a más personas desde Ajustes.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {addable.map(function (t) {
+              return (
+                <div key={t.user_id} className="flex items-center gap-3 p-2.5 rounded-lg border border-border">
+                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--bg-4)', color: 'var(--text-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '12px', flexShrink: 0 }}>{initialOf(t.profile)}</div>
+                  <span className="text-sm text-text-1 flex-1 min-w-0 truncate">{nameOf(t.profile)}</span>
+                  <button type="button" disabled={busy} onClick={function () { handleAdd(t.user_id) }} className="btn-base bg-brand-500 hover:bg-brand-600 text-white text-xs h-8 px-3">Añadir</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateTaskAssignee, onUpdateProgress, onBack, onSavePage }) {
   var [tab, setTab] = useState('overview')
 
   if (loading) return <div className="flex-1 flex items-center justify-center"><PageSpinner label="Cargando..." /></div>
@@ -493,7 +645,9 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
 
   var TABS = [
     { id: 'overview', label: 'Resumen' },
+    { id: 'page',     label: 'Página' },
     { id: 'tasks',    label: 'Tareas (' + tasks.length + ')' },
+    { id: 'team',     label: 'Equipo' },
     { id: 'files',    label: 'Archivos' },
     { id: 'time',     label: 'Tiempo' },
     { id: 'dates',    label: 'Fechas' },
@@ -614,7 +768,16 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
             onToggle={onToggleTask}
             onDelete={onDeleteTask}
             onPriorityChange={onUpdateTaskPriority}
+            onAssigneeChange={onUpdateTaskAssignee}
           />
+        </div>
+
+        <div style={{ display: tab === 'page' ? 'block' : 'none' }}>
+          {tab === 'page' && <ProjectPage project={project} onSave={onSavePage} />}
+        </div>
+
+        <div style={{ display: tab === 'team' ? 'block' : 'none' }}>
+          {tab === 'team' && <TeamPanel project={project} />}
         </div>
 
         <div style={{ display: tab === 'files' ? 'block' : 'none' }}>
@@ -690,8 +853,6 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
 
       </div>
 
-      {/* Boton contextual de Akira — NUEVO, colocado aqui, ya con "project" en su ambito correcto */}
-      <AskAkiraButton contextLabel={project.name} contextText={akiraContext} />
     </div>
   )
 }
@@ -835,15 +996,15 @@ export default function Projects() {
   var [showFilters, setShowFilters] = useState(false)
   var [viewMode, setViewMode] = useState('list')
   var SI = {
-    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-    color: '#f1f5f9', borderRadius: '8px', fontSize: '12px', padding: '6px 10px',
+    background: 'var(--bg-3)', border: '1px solid var(--border)',
+    color: 'var(--text-1)', borderRadius: 'var(--radius-md)', fontSize: '12px', padding: '6px 10px',
     outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box', cursor: 'pointer',
   }
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <PageHeader
-        title="Proyectos"
+        title="🎯 PROYECTOS [TOPBAR v0.3.0 DEPLOYED]"
         description={hook.projects.length + ' proyecto' + (hook.projects.length !== 1 ? 's' : '')}
         actions={
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -893,7 +1054,7 @@ export default function Projects() {
 
             <AnimatePresence>
               {showFilters && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: DUR.slow, ease: EASE.out }} className="overflow-hidden">
                   <div className="space-y-2 pt-1">
                     <select value={hook.status}   onChange={function(e) { hook.setStatus(e.target.value) }}   style={SI}><option value="all">Todos los estados</option>{Object.entries(PROJECT_STATUS_MAP).map(function(e) { return <option key={e[0]} value={e[0]}>{e[1].label}</option> })}</select>
                     <select value={hook.stage}    onChange={function(e) { hook.setStage(e.target.value) }}    style={SI}><option value="all">Todas las etapas</option>{Object.entries(PROJECT_STAGE_MAP).map(function(e) { return <option key={e[0]} value={e[0]}>{e[1].label}</option> })}</select>
@@ -953,8 +1114,10 @@ export default function Projects() {
             onToggleTask={hook.handleToggleTask}
             onDeleteTask={hook.handleDeleteTask}
             onUpdateTaskPriority={hook.handleUpdateTaskPriority}
+            onUpdateTaskAssignee={hook.handleUpdateTaskAssignee}
             onUpdateProgress={hook.handleUpdateProgress}
             onBack={function() { hook.setSelectedId(null) }}
+            onSavePage={hook.savePage}
           />
         </div>
       </div>
@@ -966,9 +1129,16 @@ export default function Projects() {
 
       <AnimatePresence>
         {hook.toastMsg && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-            style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, padding: '10px 18px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, color: '#fff', background: hook.toastMsg.type === 'error' ? 'rgba(239,68,68,0.9)' : 'rgba(34,197,94,0.9)' }}
-          >{hook.toastMsg.msg}</motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1, transition: SPRING.default }}
+            exit={{ opacity: 0, y: 8, scale: 0.97, transition: { duration: DUR.fast, ease: EASE.in } }}
+            role="status"
+            style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, padding: '10px 16px', borderRadius: 'var(--radius-lg)', fontSize: '13px', fontWeight: 600, color: 'var(--text-1)', background: 'var(--bg-2)', border: '1px solid ' + (hook.toastMsg.type === 'error' ? 'var(--brand-border)' : 'rgba(34,197,94,0.3)'), boxShadow: 'var(--shadow-modal)', display: 'flex', alignItems: 'center', gap: '10px', backdropFilter: 'blur(12px)' }}
+          >
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0, background: hook.toastMsg.type === 'error' ? 'var(--brand)' : '#22c55e', boxShadow: '0 0 6px ' + (hook.toastMsg.type === 'error' ? 'var(--brand)' : '#22c55e') }} />
+            {hook.toastMsg.msg}
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronLeft, ChevronRight, Plus, X,
@@ -9,20 +9,35 @@ import { useCalendar } from '@/hooks/useCalendar'
 import PageHeader from '@/components/layout/PageHeader'
 import Button from '@/components/ui/Button'
 import Modal from '@/components/ui/Modal'
+import { getPref } from '@/hooks/usePreferences'
 import clsx from 'clsx'
 
-var DAYS   = ['LUN','MAR','MIE','JUE','VIE','SAB','DOM']
+// Respeta la preferencia "Comenzar la semana el lunes".
+function weekStartsMonday() { return getPref('pref_week_monday', true) !== false }
+var DAYS_MON = ['LUN','MAR','MIE','JUE','VIE','SAB','DOM']
+var DAYS_SUN = ['DOM','LUN','MAR','MIE','JUE','VIE','SAB']
+function daysArr() { return weekStartsMonday() ? DAYS_MON : DAYS_SUN }
 var MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
-var EVENT_COLORS = {
-  meeting:     { bg: 'rgba(230,57,70,0.15)',  border: 'rgba(230,57,70,0.4)',  text: '#e63946',  dot: '#e63946' },
-  deadline:    { bg: 'rgba(180,30,40,0.15)',  border: 'rgba(180,30,40,0.4)',  text: '#cc2936',  dot: '#cc2936' },
-  delivery:    { bg: 'rgba(255,100,100,0.12)', border: 'rgba(255,100,100,0.3)', text: '#ff6464', dot: '#ff6464' },
-  billing:     { bg: 'rgba(200,50,60,0.12)',  border: 'rgba(200,50,60,0.3)',  text: '#e05060',  dot: '#e05060' },
-  other:       { bg: 'rgba(230,57,70,0.08)',  border: 'rgba(230,57,70,0.2)',  text: '#e63946',  dot: '#e63946' },
-  project_due: { bg: 'rgba(180,30,40,0.12)',  border: 'rgba(180,30,40,0.3)',  text: '#cc2936',  dot: '#cc2936' },
-  sub_billing: { bg: 'rgba(200,50,60,0.1)',   border: 'rgba(200,50,60,0.25)', text: '#e05060',  dot: '#e05060' },
+// Categorías de evento (una sola fuente): etiqueta + color distintivo para
+// poder categorizar los eventos por color en todas las vistas.
+var CATEGORIES = {
+  meeting:  { label: 'Reunión',      color: '#e63946' },
+  call:     { label: 'Llamada',      color: '#3b82f6' },
+  deadline: { label: 'Deadline',     color: '#f59e0b' },
+  delivery: { label: 'Entrega',      color: '#22c55e' },
+  personal: { label: 'Personal',     color: '#a855f7' },
+  reminder: { label: 'Recordatorio', color: '#ec4899' },
+  other:    { label: 'Otro',         color: '#64748b' },
 }
+function catStyle(color) {
+  return { color: color, bg: color + '22', border: color + '55', text: color, dot: color }
+}
+// Estilos derivados por categoría; los tipos desconocidos caen en 'other'.
+var EVENT_COLORS = Object.keys(CATEGORIES).reduce(function(acc, k) {
+  acc[k] = catStyle(CATEGORIES[k].color)
+  return acc
+}, {})
 
 var STATUS_CFG = {
   pending:   { icon: Circle,      color: 'rgba(255,255,255,0.4)', label: 'Pendiente' },
@@ -30,9 +45,10 @@ var STATUS_CFG = {
   cancelled: { icon: X,           color: 'rgba(255,255,255,0.25)', label: 'Cancelado' },
 }
 
-var WEEK_HOUR_START = 7
-var WEEK_HOUR_END   = 22
-var ROW_HEIGHT       = 52
+var WEEK_HOUR_START = 0      // vista de semana: todas las horas del día
+var WEEK_HOUR_END   = 23
+var ROW_HEIGHT       = 48
+var WEEK_SCROLL_TO_HOUR = 7  // al abrir, desplaza hasta la mañana
 
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate()
@@ -40,7 +56,7 @@ function getDaysInMonth(year, month) {
 
 function getFirstDayOfMonth(year, month) {
   var day = new Date(year, month, 1).getDay()
-  return day === 0 ? 6 : day - 1
+  return weekStartsMonday() ? (day === 0 ? 6 : day - 1) : day
 }
 
 function fmtTime(t) {
@@ -60,10 +76,11 @@ function toDateStr(d) {
   return y + '-' + m + '-' + day
 }
 
+// Inicio de la semana (lunes o domingo según preferencia).
 function getMonday(date) {
   var d = new Date(date)
   var day = d.getDay()
-  var diff = day === 0 ? -6 : 1 - day
+  var diff = weekStartsMonday() ? (day === 0 ? -6 : 1 - day) : -day
   d.setDate(d.getDate() + diff)
   d.setHours(0, 0, 0, 0)
   return d
@@ -75,17 +92,73 @@ function timeToMinutes(t) {
   return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10)
 }
 
+/* Reparte eventos solapados en columnas lado a lado (estilo Notion/Google):
+   agrupa los que se pisan en un "clúster" y a cada uno le asigna una columna;
+   todos los de un clúster comparten el mismo nº de columnas para repartir el
+   ancho por igual. Devuelve [{ event, start, end, col, cols }]. */
+function layoutDayEvents(timedEvents) {
+  var items = timedEvents.map(function(e) {
+    var s = timeToMinutes(e.start_time)
+    if (s == null) return null
+    var en = timeToMinutes(e.end_time)
+    if (en == null || en <= s) en = s + 30
+    return { event: e, start: s, end: en, col: 0 }
+  }).filter(Boolean).sort(function(a, b) {
+    return a.start - b.start || a.end - b.end
+  })
+
+  var out = []
+  var cluster = []       // items del clúster actual
+  var colEnds = []       // fin del último evento de cada columna
+  var clusterEnd = -1
+
+  function flush() {
+    var cols = colEnds.length || 1
+    cluster.forEach(function(it) {
+      out.push({ event: it.event, start: it.start, end: it.end, col: it.col, cols: cols })
+    })
+    cluster = []; colEnds = []; clusterEnd = -1
+  }
+
+  items.forEach(function(it) {
+    // si no se solapa con nada del clúster abierto, cerramos el clúster
+    if (cluster.length && it.start >= clusterEnd) flush()
+    var placed = -1
+    for (var c = 0; c < colEnds.length; c++) {
+      if (colEnds[c] <= it.start) { placed = c; break }
+    }
+    if (placed === -1) { placed = colEnds.length; colEnds.push(it.end) }
+    else { colEnds[placed] = it.end }
+    it.col = placed
+    cluster.push(it)
+    clusterEnd = Math.max(clusterEnd, it.end)
+  })
+  flush()
+  return out
+}
+
+function hhmmLabel(m) {
+  return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0')
+}
+// Minuto (desde medianoche) ajustado a 15' según la Y del cursor dentro de una
+// columna de día, descontando dónde agarró el usuario el evento.
+function dropMinutesFrom(clientY, rectTop, grabMin, dur) {
+  var minutes = ((clientY - rectTop) / ROW_HEIGHT) * 60 - grabMin
+  minutes = Math.round(minutes / 15) * 15
+  return Math.max(0, Math.min(24 * 60 - dur, minutes)) + WEEK_HOUR_START * 60
+}
+
 /* ── Chip de evento en el calendario (vista mes) ──────────── */
 function EventChip({ event, onClick }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
   return (
     <button type="button" onClick={function(e) { e.stopPropagation(); onClick(event) }}
-      style={{ display: 'flex', alignItems: 'center', gap: '4px', width: '100%', padding: '2px 5px', borderRadius: '4px', background: cfg.bg, border: '1px solid ' + cfg.border, cursor: 'pointer', marginBottom: '2px', textAlign: 'left', transition: 'all 0.1s' }}
+      title={event.title}
+      style={{ display: 'flex', alignItems: 'center', gap: '4px', width: '100%', minWidth: 0, maxWidth: '100%', overflow: 'hidden', padding: '2px 5px', borderRadius: '4px', background: cfg.bg, border: '1px solid ' + cfg.border, borderLeft: '2px solid ' + cfg.dot, cursor: 'pointer', marginBottom: '2px', textAlign: 'left', transition: 'all 0.1s' }}
       onMouseEnter={function(e) { e.currentTarget.style.filter = 'brightness(1.2)' }}
       onMouseLeave={function(e) { e.currentTarget.style.filter = 'none' }}
     >
-      <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: cfg.dot, flexShrink: 0 }} />
-      <span style={{ fontSize: '10px', fontWeight: 600, color: cfg.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+      <span style={{ fontSize: '10px', fontWeight: 600, color: cfg.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
         {event.start_time ? fmtTime(event.start_time) + ' ' : ''}{event.title}
       </span>
     </button>
@@ -93,30 +166,67 @@ function EventChip({ event, onClick }) {
 }
 
 /* ── Bloque de evento en la vista semanal ─────────────────── */
-function WeekEventBlock({ event, onClick }) {
+/* Bloque-guía que se pinta en el destino mientras arrastras: contorno de
+   marca + la hora a la que caerá el evento (como en apps de calendario). */
+function DropGhost({ startMin, dur, label }) {
+  var top = ((startMin - WEEK_HOUR_START * 60) / 60) * ROW_HEIGHT
+  var height = Math.max((dur / 60) * ROW_HEIGHT, 20)
+  return (
+    <div style={{
+      position: 'absolute', left: '2px', right: '2px', top: top + 'px', height: height + 'px',
+      border: '2px solid var(--brand)', background: 'var(--brand-dim)', borderRadius: '6px',
+      zIndex: 6, pointerEvents: 'none', padding: '2px 6px', overflow: 'hidden',
+      boxShadow: '0 4px 14px rgba(230,57,70,0.35)',
+    }}>
+      <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--brand)', display: 'block', lineHeight: 1.2 }}>{hhmmLabel(startMin)}</span>
+      {height > 30 && (
+        <span style={{ fontSize: '9px', fontWeight: 600, color: 'var(--brand)', opacity: 0.85, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+      )}
+    </div>
+  )
+}
+
+function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, onDragPointerDown }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
-  var startMin = timeToMinutes(event.start_time) || (WEEK_HOUR_START * 60)
-  var endMin   = timeToMinutes(event.end_time)   || (startMin + 30)
-  if (endMin <= startMin) endMin = startMin + 30
 
   var top    = ((startMin - WEEK_HOUR_START * 60) / 60) * ROW_HEIGHT
-  var height = Math.max(((endMin - startMin) / 60) * ROW_HEIGHT, 22)
+  var height = Math.max(((endMin - startMin) / 60) * ROW_HEIGHT, 20)
+
+  // Reparto horizontal cuando hay solapes (estilo Notion): cada columna ocupa
+  // 1/cols del ancho, con un pequeño hueco entre eventos contiguos.
+  var gap = 3
+  var widthCalc = 'calc((100% - 4px) / ' + cols + ' - ' + gap + 'px)'
+  var leftCalc  = 'calc(2px + (100% - 4px) * ' + col + ' / ' + cols + ')'
+  var compact = height < 34
+
+  // Arrastre con pointer events (funciona con ratón Y dedo, a diferencia de
+  // HTML5 drag). El padre distingue tap (editar) de arrastre (mover).
+  function onPointerDown(e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    var rect = e.currentTarget.getBoundingClientRect()
+    var grabMin = ((e.clientY - rect.top) / ROW_HEIGHT) * 60
+    onDragPointerDown(e, event, grabMin, endMin - startMin, e.currentTarget)
+  }
 
   return (
-    <button type="button" onClick={function(e) { e.stopPropagation(); onClick(event) }}
+    <button type="button"
+      onClick={function(e) { e.stopPropagation(); if (!canDrag) onClick(event) }}
+      onPointerDown={canDrag ? onPointerDown : undefined}
+      title={(canDrag ? 'Arrastra para mover · ' : '') + event.title + ' · ' + fmtTime(event.start_time) + (event.end_time ? '–' + fmtTime(event.end_time) : '')}
       style={{
-        position: 'absolute', left: '2px', right: '2px', top: top + 'px', height: height + 'px',
-        background: cfg.bg, border: '1px solid ' + cfg.border, borderRadius: '5px',
-        padding: '3px 6px', textAlign: 'left', cursor: 'pointer', overflow: 'hidden', zIndex: 2,
-        transition: 'filter 0.1s',
+        position: 'absolute', left: leftCalc, width: widthCalc, top: top + 'px', height: height + 'px',
+        background: cfg.bg, border: '1px solid ' + cfg.border, borderLeft: '3px solid ' + cfg.dot,
+        borderRadius: '5px', padding: compact ? '1px 5px' : '3px 6px',
+        textAlign: 'left', cursor: canDrag ? 'grab' : 'pointer', overflow: 'hidden', zIndex: 2,
+        transition: 'filter 0.1s', touchAction: canDrag ? 'none' : undefined,
       }}
-      onMouseEnter={function(e) { e.currentTarget.style.filter = 'brightness(1.25)' }}
-      onMouseLeave={function(e) { e.currentTarget.style.filter = 'none' }}
+      onMouseEnter={function(e) { e.currentTarget.style.filter = 'brightness(1.25)'; e.currentTarget.style.zIndex = '5' }}
+      onMouseLeave={function(e) { e.currentTarget.style.filter = 'none'; e.currentTarget.style.zIndex = '2' }}
     >
-      <span style={{ fontSize: '10px', fontWeight: 700, color: cfg.text, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: '10px', fontWeight: 700, color: cfg.text, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.25 }}>
         {event.title}
       </span>
-      {height > 32 && (
+      {!compact && (
         <span style={{ fontSize: '9px', color: cfg.text, opacity: 0.8, display: 'block' }}>
           {fmtTime(event.start_time)}{event.end_time ? '–' + fmtTime(event.end_time) : ''}
         </span>
@@ -319,7 +429,49 @@ function AgendaPanel({ events, onEventClick, isMobile, onBack }) {
 }
 
 /* ── Vista semanal ─────────────────────────────────────────── */
-function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
+function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent }) {
+  var [dropHint, setDropHint] = useState(null)
+
+  // Arrastre táctil/ratón: sigue el dedo por las 7 columnas usando
+  // elementFromPoint, pinta el bloque-guía y, al soltar, mueve el evento.
+  function beginDrag(e, event, grabMin, dur, blockEl) {
+    e.stopPropagation()
+    var startX = e.clientX, startY = e.clientY
+    var moved = false
+    var target = { date: null, min: null }
+    function colFromPoint(x, y) {
+      var el = document.elementFromPoint(x, y)
+      var col = el && el.closest ? el.closest('[data-dayidx]') : null
+      if (!col) return null
+      return { el: col, idx: Number(col.getAttribute('data-dayidx')), date: col.getAttribute('data-date') }
+    }
+    function onMove(ev) {
+      if (!moved) {
+        if (Math.abs(ev.clientX - startX) < 6 && Math.abs(ev.clientY - startY) < 6) return
+        moved = true
+        if (blockEl) blockEl.style.opacity = '0.3'
+      }
+      ev.preventDefault()
+      var col = colFromPoint(ev.clientX, ev.clientY)
+      if (!col) return
+      var rect = col.el.getBoundingClientRect()
+      var startMin = dropMinutesFrom(ev.clientY, rect.top, grabMin, dur)
+      target.date = col.date; target.min = startMin
+      setDropHint({ dayIndex: col.idx, startMin: startMin, dur: dur, label: event.title })
+    }
+    function onUp() {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+      if (blockEl) blockEl.style.opacity = ''
+      setDropHint(null)
+      if (!moved) { onEventClick(event); return } // tap = editar
+      if (target.date != null && target.min != null && onMoveEvent) onMoveEvent(event.id, target.date, target.min)
+    }
+    window.addEventListener('pointermove', onMove, { passive: false })
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
+  }
   var hours = []
   for (var h = WEEK_HOUR_START; h <= WEEK_HOUR_END; h++) hours.push(h)
 
@@ -335,6 +487,16 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
     return events.filter(function(e) { return e.event_date === dateStr })
   }
 
+  // Al montar, desplaza la cuadrícula hasta la mañana (no arrancar en 00:00).
+  var scrollRef = useRef(null)
+  useEffect(function() {
+    if (scrollRef.current) scrollRef.current.scrollTop = WEEK_SCROLL_TO_HOUR * ROW_HEIGHT
+  }, [])
+
+  // Línea de "ahora" para el día de hoy.
+  var now = new Date()
+  var nowTop = ((now.getHours() * 60 + now.getMinutes()) - WEEK_HOUR_START * 60) / 60 * ROW_HEIGHT
+
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
@@ -345,7 +507,7 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
           var isToday = dateStr === todayStr
           return (
             <div key={i} style={{ padding: '10px 2px', textAlign: 'center', borderLeft: '1px solid rgba(255,255,255,0.04)' }}>
-              <p style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '2px' }}>{DAYS[i]}</p>
+              <p style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '2px' }}>{daysArr()[i]}</p>
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: '24px', height: '24px', borderRadius: '50%',
@@ -380,7 +542,7 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
         </div>
       )}
 
-      <div style={{ flex: 1, overflow: 'auto' }}>
+      <div ref={scrollRef} style={{ flex: 1, overflow: 'auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '40px repeat(7, minmax(64px, 1fr))', position: 'relative', minWidth: '520px' }}>
 
           <div>
@@ -395,17 +557,36 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick }) {
 
           {days.map(function(d, i) {
             var dateStr = toDateStr(d)
+            var isToday = dateStr === todayStr
             var timedEvents = eventsForDay(dateStr).filter(function(e) { return e.start_time })
+            var laid = layoutDayEvents(timedEvents)
             return (
               <div key={i}
+                data-dayidx={i}
+                data-date={dateStr}
                 onClick={function() { onSlotClick(dateStr) }}
                 style={{ position: 'relative', borderLeft: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer' }}
               >
                 {hours.map(function(h, hi) {
                   return <div key={h} style={{ height: ROW_HEIGHT + 'px', borderTop: hi === 0 ? 'none' : '1px solid rgba(255,255,255,0.03)' }} />
                 })}
-                {timedEvents.map(function(e) {
-                  return <WeekEventBlock key={e.id} event={e} onClick={onEventClick} />
+                {isToday && nowTop >= 0 && (
+                  <div style={{ position: 'absolute', left: 0, right: 0, top: nowTop + 'px', borderTop: '2px solid #e63946', zIndex: 4, pointerEvents: 'none' }}>
+                    <div style={{ position: 'absolute', left: '-3px', top: '-4px', width: '7px', height: '7px', borderRadius: '50%', background: '#e63946', boxShadow: '0 0 6px rgba(230,57,70,0.7)' }} />
+                  </div>
+                )}
+                {dropHint && dropHint.dayIndex === i && (
+                  <DropGhost startMin={dropHint.startMin} dur={dropHint.dur} label={dropHint.label} />
+                )}
+                {laid.map(function(item) {
+                  var canDrag = !(item.event.is_auto || (typeof item.event.id === 'string' && item.event.id.indexOf('auto') === 0))
+                  return (
+                    <WeekEventBlock key={item.event.id} event={item.event}
+                      startMin={item.start} endMin={item.end} col={item.col} cols={item.cols}
+                      canDrag={canDrag}
+                      onDragPointerDown={beginDrag}
+                      onClick={onEventClick} />
+                  )
                 })}
               </div>
             )
@@ -435,7 +616,6 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
   }
 
   var INP = { background: 'var(--bg-3)', border: '1px solid var(--border)', color: 'var(--text-1)', borderRadius: '8px', padding: '8px 12px', fontSize: '13px', fontFamily: 'inherit', outline: 'none', width: '100%', boxSizing: 'border-box' }
-  var TYPES = ['meeting','deadline','delivery','billing','other']
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -445,16 +625,30 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
         <input value={form.title} onChange={set('title')} placeholder="Nombre del evento" style={INP} autoFocus />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-        <div>
-          <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Fecha *</label>
-          <input type="date" value={form.event_date} onChange={set('event_date')} style={INP} />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Tipo</label>
-          <select value={form.event_type} onChange={set('event_type')} style={Object.assign({}, INP, { cursor: 'pointer' })}>
-            {TYPES.map(function(t) { return <option key={t} value={t}>{t}</option> })}
-          </select>
+      <div>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Fecha *</label>
+        <input type="date" value={form.event_date} onChange={set('event_date')} style={INP} />
+      </div>
+
+      <div>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Categoría</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          {Object.keys(CATEGORIES).map(function(key) {
+            var c = CATEGORIES[key]
+            var active = form.event_type === key
+            return (
+              <button key={key} type="button"
+                onClick={function() { setForm(function(f) { return Object.assign({}, f, { event_type: key }) }) }}
+                aria-pressed={active}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', borderRadius: '8px',
+                  border: '1px solid ' + (active ? c.color : 'var(--border)'),
+                  background: active ? c.color + '22' : 'transparent',
+                  color: active ? c.color : 'var(--text-3)', cursor: 'pointer', fontSize: '12px', fontWeight: 600, transition: 'all 0.12s' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: c.color, flexShrink: 0 }} />
+                {c.label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -504,11 +698,121 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
 /* ═══════════════════════════════════════════════════════════
    PAGINA PRINCIPAL
 ═══════════════════════════════════════════════════════════ */
+/* ── Vista de día (al entrar en un día desde el mes) ───────── */
+function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate }) {
+  var hours = []
+  for (var h = WEEK_HOUR_START; h <= WEEK_HOUR_END; h++) hours.push(h)
+
+  var dayEvents = events.filter(function(e) { return e.event_date === dateStr })
+  var timed  = dayEvents.filter(function(e) { return e.start_time })
+  var allday = dayEvents.filter(function(e) { return !e.start_time })
+  var laid = layoutDayEvents(timed)
+
+  var scrollRef = useRef(null)
+  useEffect(function() { if (scrollRef.current) scrollRef.current.scrollTop = WEEK_SCROLL_TO_HOUR * ROW_HEIGHT }, [])
+
+  var now = new Date()
+  var isToday = toDateStr(now) === dateStr
+  var nowTop = ((now.getHours() * 60 + now.getMinutes()) - WEEK_HOUR_START * 60) / 60 * ROW_HEIGHT
+  var label = new Date(dateStr + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
+
+  var [dropHint, setDropHint] = useState(null)
+  var colRef = useRef(null)
+  function beginDrag(e, event, grabMin, dur, blockEl) {
+    e.stopPropagation()
+    var startX = e.clientX, startY = e.clientY
+    var moved = false
+    var targetMin = null
+    function onMove(ev) {
+      if (!moved) {
+        if (Math.abs(ev.clientX - startX) < 6 && Math.abs(ev.clientY - startY) < 6) return
+        moved = true
+        if (blockEl) blockEl.style.opacity = '0.3'
+      }
+      ev.preventDefault()
+      if (!colRef.current) return
+      var rect = colRef.current.getBoundingClientRect()
+      var startMin = dropMinutesFrom(ev.clientY, rect.top, grabMin, dur)
+      targetMin = startMin
+      setDropHint({ startMin: startMin, dur: dur, label: event.title })
+    }
+    function onUp() {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+      if (blockEl) blockEl.style.opacity = ''
+      setDropHint(null)
+      if (!moved) { onEventClick(event); return }
+      if (targetMin != null && onMoveEvent) onMoveEvent(event.id, dateStr, targetMin)
+    }
+    window.addEventListener('pointermove', onMove, { passive: false })
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
+  }
+
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '10px 14px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+        <button type="button" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: 'var(--text-3)', fontSize: '13px', cursor: 'pointer' }}>
+          <ChevronLeft style={{ width: '15px', height: '15px' }} /> Mes
+        </button>
+        <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)', textTransform: 'capitalize' }}>{label}</span>
+        <button type="button" onClick={onCreate} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 12px', borderRadius: '8px', border: 'none', background: 'var(--gradient-brand)', color: '#fff', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
+          <Plus style={{ width: '13px', height: '13px' }} /> Nuevo
+        </button>
+      </div>
+
+      {allday.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px 14px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+          {allday.map(function(e) {
+            var cfg = EVENT_COLORS[e.event_type] || EVENT_COLORS.other
+            return (
+              <button key={e.id} type="button" onClick={function() { onEventClick(e) }}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', background: cfg.bg, border: '1px solid ' + cfg.border, color: cfg.text, fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: cfg.dot }} /> {e.title}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      <div ref={scrollRef} style={{ flex: 1, overflow: 'auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr', position: 'relative' }}>
+          <div>
+            {hours.map(function(h) {
+              return <div key={h} style={{ height: ROW_HEIGHT + 'px', textAlign: 'right', paddingRight: '6px', fontSize: '10px', color: 'var(--text-5)', position: 'relative', top: '-6px' }}>{String(h).padStart(2, '0')}:00</div>
+            })}
+          </div>
+          <div ref={colRef} onClick={onCreate}
+            style={{ position: 'relative', borderLeft: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer' }}>
+            {hours.map(function(h, hi) {
+              return <div key={h} style={{ height: ROW_HEIGHT + 'px', borderTop: hi === 0 ? 'none' : '1px solid rgba(255,255,255,0.03)' }} />
+            })}
+            {isToday && nowTop >= 0 && (
+              <div style={{ position: 'absolute', left: 0, right: 0, top: nowTop + 'px', borderTop: '2px solid #e63946', zIndex: 4, pointerEvents: 'none' }}>
+                <div style={{ position: 'absolute', left: '-3px', top: '-4px', width: '7px', height: '7px', borderRadius: '50%', background: '#e63946', boxShadow: '0 0 6px rgba(230,57,70,0.7)' }} />
+              </div>
+            )}
+            {dropHint && (
+              <DropGhost startMin={dropHint.startMin} dur={dropHint.dur} label={dropHint.label} />
+            )}
+            {laid.map(function(item) {
+              var canDrag = !(item.event.is_auto || (typeof item.event.id === 'string' && item.event.id.indexOf('auto') === 0))
+              return <WeekEventBlock key={item.event.id} event={item.event} startMin={item.start} endMin={item.end} col={item.col} cols={item.cols} canDrag={canDrag} onDragPointerDown={beginDrag} onClick={onEventClick} />
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Calendar() {
   var hook = useCalendar()
   var [selectedEvent, setSelectedEvent] = useState(null)
   var [viewMode, setViewMode] = useState('month')
   var [weekStart, setWeekStart] = useState(function() { return getMonday(new Date()) })
+  var [dayView, setDayView] = useState(null) // fecha (YYYY-MM-DD) al entrar en un día desde el mes
 
   // Navegación móvil: 'calendar' | 'agenda' | 'detail'
   var [mobileStep, setMobileStep] = useState('calendar')
@@ -538,12 +842,41 @@ export default function Calendar() {
   function handleDayClick(day) {
     var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0')
     setSelectedEvent(null)
-    hook.openModal && hook.openModal(dateStr)
+    setDayView(dateStr) // entrar en el día para ver sus eventos
+  }
+
+  function isAutoEvent(event) {
+    return event.is_auto || event._readonly || (typeof event.id === 'string' && event.id.indexOf('auto') === 0)
   }
 
   function handleEventClick(event) {
-    setSelectedEvent(event)
-    if (isMobile) setMobileStep('detail')
+    // Click en un evento manual = editar directamente. Los automáticos
+    // (deadlines de proyecto, cobros) no son editables: se muestran en detalle.
+    if (isAutoEvent(event)) {
+      setSelectedEvent(event)
+      if (isMobile) setMobileStep('detail')
+    } else {
+      hook.openEditModal(event)
+    }
+  }
+
+  // Mover un evento (arrastrando en la vista de semana/día) a otro día/hora,
+  // conservando su duración. Sin tocar la fecha a mano.
+  function moveEvent(eventId, newDateStr, newStartMin) {
+    var ev = (hook.events || []).find(function(e) { return e.id === eventId })
+    if (!ev || isAutoEvent(ev)) return
+    var s0 = timeToMinutes(ev.start_time)
+    var e0 = timeToMinutes(ev.end_time)
+    var dur = (s0 != null && e0 != null && e0 > s0) ? (e0 - s0) : 30
+    var ns = Math.max(0, Math.min(24 * 60 - dur, newStartMin))
+    var ne = ns + dur
+    function hhmm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0') }
+    hook.handleUpdate(eventId, {
+      title: ev.title, event_type: ev.event_type, status: ev.status,
+      event_date: newDateStr, start_time: hhmm(ns), end_time: hhmm(ne),
+      description: ev.description, location: ev.location,
+      client_id: ev.client_id, project_id: ev.project_id,
+    })
   }
 
   function handleEditClick(event) {
@@ -600,7 +933,7 @@ export default function Calendar() {
 
             {/* Navegacion */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, flexWrap: 'wrap' }}>
-              <button type="button" onClick={viewMode === 'week' ? prevWeek : hook.prevMonth}
+              <button type="button" onClick={function() { setDayView(null); viewMode === 'week' ? prevWeek() : hook.prevMonth() }}
                 style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
               ><ChevronLeft style={{ width: '15px', height: '15px' }} /></button>
 
@@ -608,11 +941,11 @@ export default function Calendar() {
                 {viewMode === 'week' ? weekLabel : MONTHS[month] + ' ' + year}
               </h2>
 
-              <button type="button" onClick={viewMode === 'week' ? nextWeek : hook.nextMonth}
+              <button type="button" onClick={function() { setDayView(null); viewMode === 'week' ? nextWeek() : hook.nextMonth() }}
                 style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
               ><ChevronRight style={{ width: '15px', height: '15px' }} /></button>
 
-              <button type="button" onClick={function() { viewMode === 'week' ? goToTodayWeek() : hook.goToToday() }}
+              <button type="button" onClick={function() { setDayView(null); viewMode === 'week' ? goToTodayWeek() : hook.goToToday() }}
                 style={{ padding: '4px 12px', borderRadius: '8px', background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.25)', color: '#e63946', fontSize: '11px', fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}
               >Hoy</button>
 
@@ -620,7 +953,7 @@ export default function Calendar() {
                 {[{ id: 'month', label: 'Mes' }, { id: 'week', label: 'Semana' }].map(function(v) {
                   var active = viewMode === v.id
                   return (
-                    <button key={v.id} type="button" onClick={function() { setViewMode(v.id) }}
+                    <button key={v.id} type="button" onClick={function() { setDayView(null); setViewMode(v.id) }}
                       style={{ padding: '4px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', border: 'none', background: active ? 'var(--gradient-brand)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.5)', transition: 'all 0.15s' }}
                     >{v.label}</button>
                   )
@@ -634,11 +967,21 @@ export default function Calendar() {
                 events={hook.events || []}
                 onEventClick={handleEventClick}
                 onSlotClick={function(dateStr) { setSelectedEvent(null); hook.openModal && hook.openModal(dateStr) }}
+                onMoveEvent={moveEvent}
+              />
+            ) : dayView ? (
+              <DayView
+                dateStr={dayView}
+                events={hook.events || []}
+                onBack={function() { setDayView(null) }}
+                onEventClick={handleEventClick}
+                onMoveEvent={moveEvent}
+                onCreate={function() { hook.openModal && hook.openModal(dayView) }}
               />
             ) : (
               <>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
-                  {DAYS.map(function(day) {
+                  {daysArr().map(function(day) {
                     return (
                       <div key={day} style={{ padding: '8px 2px', textAlign: 'center', fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                         {isMobile ? day.slice(0, 1) : day}
@@ -674,6 +1017,8 @@ export default function Calendar() {
                             transition: 'background 0.1s',
                             display: 'flex',
                             flexDirection: 'column',
+                            overflow: 'hidden',
+                            minWidth: 0,
                           }}
                           onMouseEnter={function(e) { if (!isToday) e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
                           onMouseLeave={function(e) { if (!isToday) e.currentTarget.style.background = 'transparent' }}
@@ -692,25 +1037,12 @@ export default function Calendar() {
                             </span>
                           </div>
 
-                          <div style={{ flex: 1, overflow: 'hidden' }}>
-                            {isMobile ? (
-                              dayEvents.length > 0 && (
-                                <div style={{ display: 'flex', gap: '2px', flexWrap: 'wrap' }}>
-                                  {dayEvents.slice(0, 4).map(function(event) {
-                                    var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
-                                    return <div key={event.id} onClick={function(e) { e.stopPropagation(); handleEventClick(event) }} style={{ width: '5px', height: '5px', borderRadius: '50%', background: cfg.dot }} />
-                                  })}
-                                </div>
-                              )
-                            ) : (
-                              <>
-                                {dayEvents.slice(0, 3).map(function(event) {
-                                  return <EventChip key={event.id} event={event} onClick={handleEventClick} />
-                                })}
-                                {dayEvents.length > 3 && (
-                                  <span style={{ fontSize: '9px', color: '#e63946', fontWeight: 600, paddingLeft: '5px' }}>+{dayEvents.length - 3} mas</span>
-                                )}
-                              </>
+                          <div style={{ flex: 1, minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
+                            {dayEvents.slice(0, isMobile ? 2 : 3).map(function(event) {
+                              return <EventChip key={event.id} event={event} onClick={handleEventClick} />
+                            })}
+                            {dayEvents.length > (isMobile ? 2 : 3) && (
+                              <span style={{ display: 'block', fontSize: '9px', color: 'var(--brand)', fontWeight: 600, paddingLeft: '4px' }}>+{dayEvents.length - (isMobile ? 2 : 3)} más</span>
                             )}
                           </div>
                         </div>

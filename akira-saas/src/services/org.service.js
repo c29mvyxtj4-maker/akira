@@ -30,6 +30,23 @@ export async function getMyOrg() {
   return res.data
 }
 
+// Todos los espacios de trabajo del usuario (donde es miembro o dueño).
+export async function getMyWorkspaces() {
+  var ownerId = await uid()
+  var mem = await supabase.from('org_members').select('org_id, role').eq('user_id', ownerId)
+  var roleByOrg = {}
+  var ids = []
+  ;(mem.data || []).forEach(function(m) { roleByOrg[m.org_id] = m.role; ids.push(m.org_id) })
+  var owned = await supabase.from('organizations').select('id').eq('owner_id', ownerId)
+  ;(owned.data || []).forEach(function(o) { if (ids.indexOf(o.id) === -1) ids.push(o.id) })
+  if (ids.length === 0) return []
+  var res = await supabase.from('organizations').select('*').in('id', ids).order('created_at', { ascending: true })
+  if (res.error) throw res.error
+  return (res.data || []).map(function(o) {
+    return Object.assign({}, o, { _role: roleByOrg[o.id] || (o.owner_id === ownerId ? 'owner' : 'member') })
+  })
+}
+
 export async function createOrg(name) {
   var ownerId = await uid()
   var slug    = slugify(name) + '-' + Math.random().toString(36).slice(2, 6)
@@ -42,13 +59,15 @@ export async function createOrg(name) {
   }).select().single()
   if (res.error) throw res.error
 
-  // Añadir al owner como miembro con rol owner
-  await supabase.from('org_members').insert({
+  // Añadir al owner como miembro con rol owner. Si esto falla, la org queda
+  // sin membresía y las RLS de equipo se rompen — así que lo surface-amos.
+  var mres = await supabase.from('org_members').insert({
     org_id:  res.data.id,
     user_id: ownerId,
     role:    'owner',
     joined_at: new Date().toISOString(),
   })
+  if (mres.error) throw mres.error
 
   return res.data
 }

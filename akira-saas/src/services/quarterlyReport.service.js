@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg } from '@/lib/activeOrg'
 
 function quarterRange(year, quarter) {
   var startMonth = (quarter - 1) * 3
@@ -14,21 +15,21 @@ export async function getQuarterlyReport(year, quarter) {
   var range = quarterRange(year, quarter)
 
   var results = await Promise.allSettled([
-    supabase
+    scopeToOrg(supabase
       .from('commercial_documents')
       .select('id, invoice_number, issue_date, subtotal, tax_rate, tax_amount, irpf_rate, irpf_amount, total, client_id, clients(id, name, company)')
       .eq('document_type', 'invoice')
       .eq('archived', false)
       .gte('issue_date', range.start)
-      .lte('issue_date', range.end)
+      .lte('issue_date', range.end))
       .order('issue_date', { ascending: true }),
-    supabase
+    scopeToOrg(supabase
       .from('finance_entries')
       .select('id, description, category, amount, entry_date')
       .eq('type', 'expense')
       .eq('archived', false)
       .gte('entry_date', range.start)
-      .lte('entry_date', range.end)
+      .lte('entry_date', range.end))
       .order('entry_date', { ascending: true }),
   ])
 

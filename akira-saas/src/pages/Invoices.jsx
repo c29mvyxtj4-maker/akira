@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Trash2, FileText, Archive, ChevronLeft,
-  Building2, Wrench, Download,
+  Building2, Wrench, Download, CreditCard, Eye, EyeOff,
 } from 'lucide-react'
 import { exportToCsv } from '@/utils/exportCsv'
 import {
@@ -225,8 +225,9 @@ function InvoicePreview({ invoice, company, onBack }) {
       if (res.error) throw res.error
       var url = res.data && res.data.url
       if (!url) throw new Error((res.data && res.data.error) || 'No se recibió el enlace de pago')
-      try { await navigator.clipboard.writeText(url) } catch (_) { /* sin permiso de portapapeles */ }
-      window.open(url, '_blank')
+      // En móvil, window.open tras un await lo bloquea el navegador. Redirigimos
+      // la pestaña actual a Stripe: funciona en móvil y escritorio.
+      window.location.href = url
     } catch (e) {
       window.alert('No se pudo generar el cobro: ' + (e.message || e))
     } finally {
@@ -244,8 +245,10 @@ function InvoicePreview({ invoice, company, onBack }) {
         <div style={{ display: 'flex', gap: '8px' }}>
           {canCharge && (
             <button type="button" onClick={handleCharge} disabled={charging}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: charging ? 'not-allowed' : 'pointer', opacity: charging ? 0.7 : 1 }}
-            >{charging ? 'Generando enlace...' : 'Cobrar'}</button>
+              onMouseEnter={function (e) { if (!charging) e.currentTarget.style.boxShadow = '0 0 18px 1px rgba(34,197,94,0.4)' }}
+              onMouseLeave={function (e) { e.currentTarget.style.boxShadow = 'none' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: charging ? 'not-allowed' : 'pointer', opacity: charging ? 0.7 : 1, transition: 'box-shadow 0.2s' }}
+            ><CreditCard style={{ width: '15px', height: '15px' }} /> {charging ? 'Generando enlace...' : 'Cobrar'}</button>
           )}
           <button type="button" onClick={handleDownload} disabled={downloading}
             style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'var(--gradient-brand)', border: 'none', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: downloading ? 'not-allowed' : 'pointer', opacity: downloading ? 0.7 : 1 }}
@@ -350,6 +353,7 @@ export default function Invoices() {
   var [editing,    setEditing]    = useState(null)
   var [formLoading, setFormLoading] = useState(false)
   var [previewing, setPreviewing] = useState(null)
+  var [chargingId, setChargingId] = useState(null)
   var [toastMsg,   setToastMsg]   = useState(null)
 
   function showToast(msg, type) {
@@ -452,6 +456,24 @@ export default function Invoices() {
       .catch(function(e) { showToast('No se pudo enviar el email: ' + (e.message || e), 'error') })
   }
 
+  async function handleCharge(inv) {
+    if (chargingId) return
+    setChargingId(inv.id)
+    showToast('Generando enlace de cobro…')
+    try {
+      var res = await supabase.functions.invoke('create-checkout', { body: { invoice_id: inv.id } })
+      if (res.error) throw res.error
+      var url = res.data && res.data.url
+      if (!url) throw new Error((res.data && res.data.error) || 'No se recibió el enlace de pago')
+      // Redirección compatible con móvil (window.open se bloquea tras el await).
+      window.location.href = url
+    } catch (e) {
+      showToast('No se pudo generar el cobro: ' + (e.message || e), 'error')
+    } finally {
+      setChargingId(null)
+    }
+  }
+
   function handleArchive(id) {
     if (!window.confirm('Archivar esta factura?')) return
     archiveInvoice(id)
@@ -527,8 +549,9 @@ export default function Invoices() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  {['Número', 'Cliente', 'Emisión', 'Total', 'Estado', ''].map(function(h) {
-                    return <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
+                  {['Número', 'Cliente', 'Emisión', 'Total', 'Estado', 'Acciones'].map(function(h, hi) {
+                    var isActions = hi === 5
+                    return <th key={h} style={{ padding: '10px 14px', textAlign: isActions ? 'right' : 'left', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap', position: isActions ? 'sticky' : undefined, right: isActions ? 0 : undefined, background: isActions ? 'var(--bg-2)' : undefined }}>{h}</th>
                   })}
                 </tr>
               </thead>
@@ -542,8 +565,21 @@ export default function Invoices() {
                           style={{ background: 'none', border: 'none', color: '#e63946', fontWeight: 700, fontSize: '13px', cursor: 'pointer', padding: 0 }}
                         >{inv.invoice_number}</button>
                       </td>
-                      <td style={{ padding: '12px 14px', fontSize: '13px', color: '#e2e8f0' }}>
-                        {inv.clients ? (inv.clients.company || inv.clients.name) : '--'}
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ fontSize: '13px', color: 'var(--text-2)' }}>
+                          {inv.clients ? (inv.clients.company || inv.clients.name) : '--'}
+                        </div>
+                        {inv.clients && (
+                          (inv.status === 'sent' || inv.status === 'paid') ? (
+                            <div title="El cliente ve esta factura en su portal" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px', fontSize: '10px', fontWeight: 600, color: '#22c55e' }}>
+                              <Eye style={{ width: '11px', height: '11px' }} /> Visible en portal
+                            </div>
+                          ) : (
+                            <div title="En borrador: solo tú la ves. Pásala a Enviada para que el cliente la reciba y la vea en el portal." style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px', fontSize: '10px', fontWeight: 600, color: 'var(--text-5)' }}>
+                              <EyeOff style={{ width: '11px', height: '11px' }} /> Solo tú (borrador)
+                            </div>
+                          )
+                        )}
                       </td>
                       <td style={{ padding: '12px 14px', fontSize: '12px', color: '#94a3b8' }}>{fmtDate(inv.issue_date)}</td>
                       <td style={{ padding: '12px 14px', fontSize: '14px', fontWeight: 700, color: '#f1f5f9' }}>{fmtCur(inv.total)}</td>
@@ -554,8 +590,17 @@ export default function Invoices() {
                           {Object.entries(INVOICE_STATUS).map(function(e) { return <option key={e[0]} value={e[0]}>{e[1].label}</option> })}
                         </select>
                       </td>
-                      <td style={{ padding: '12px 14px' }}>
-                        <div style={{ display: 'flex', gap: '4px' }}>
+                      <td style={{ padding: '12px 14px', position: 'sticky', right: 0, background: 'var(--bg-2)', boxShadow: '-10px 0 12px -8px rgba(0,0,0,0.55)' }}>
+                        <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
+                          {inv.status !== 'paid' && inv.status !== 'void' && (
+                            <button type="button" onClick={function() { handleCharge(inv) }} disabled={chargingId === inv.id}
+                              title="Generar enlace de cobro"
+                              style={{ display: 'flex', alignItems: 'center', gap: '5px', height: '28px', padding: '0 10px', borderRadius: '6px', border: '1px solid rgba(34,197,94,0.35)', background: 'rgba(34,197,94,0.12)', color: '#22c55e', fontSize: '12px', fontWeight: 700, cursor: chargingId === inv.id ? 'not-allowed' : 'pointer', opacity: chargingId === inv.id ? 0.6 : 1, whiteSpace: 'nowrap' }}
+                            >
+                              <CreditCard style={{ width: '13px', height: '13px' }} />
+                              {chargingId === inv.id ? 'Generando…' : 'Cobrar'}
+                            </button>
+                          )}
                           <button type="button" onClick={function() { openEdit(inv) }}
                             style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', color: '#94a3b8' }}
                           >✎</button>

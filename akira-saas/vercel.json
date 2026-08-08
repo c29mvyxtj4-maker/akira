@@ -1,11 +1,14 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "buildCommand": "npm install --legacy-peer-deps && npm run build",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "vite",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "regions": ["sfo1"],
   "rewrites": [
     {
-      "source": "/((?!assets/|manifest.webmanifest|sw.js|icons/|favicon.ico|robots.txt).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]

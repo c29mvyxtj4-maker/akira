@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,50 +8,52 @@
    TOKENS CSS — DARK MODE (default)
 ════════════════════════════════════════════════════════════ */
 :root {
-  /* Warm-monochrome minimalist canvas + surfaces */
-  --bg-base:      #f7f6f3;   /* warm bone app canvas */
-  --bg-1:         #fbfbfa;   /* sidebar / rails */
-  --bg-2:         #ffffff;   /* cards, modals, popovers */
-  --bg-3:         #f9f9f8;   /* subtle raised surface */
-  --bg-4:         #f2f2f0;   /* hover fill */
-  --bg-5:         #ebebe8;   /* pressed / strong fill */
+  /* Apple dark — elevated iOS/macOS grays over true black */
+  --bg-base:      #000000;
+  --bg-1:         #0a0a0a;   /* sidebar / rails */
+  --bg-2:         #1c1c1e;   /* cards, sheets, popovers */
+  --bg-3:         #2c2c2e;   /* raised surface */
+  --bg-4:         #3a3a3c;   /* hover fill */
+  --bg-5:         #48484a;   /* pressed / strong fill */
 
-  /* Red kept only as a scarce, muted semantic accent */
-  --brand:        #9f2f2d;
-  --brand-hover:  #7f2422;
-  --brand-dim:    #fdebec;                 /* pale-red pastel background */
-  --brand-border: rgba(159,47,45,0.22);
+  /* AKIRA brand red — single source of truth. Matches tailwind brand-500
+     (#e63946) and the ~47 screens that already use it, so the whole app
+     renders one red instead of two. */
+  --brand:        #e63946;
+  --brand-hover:  #ff5a66;
+  --brand-dim:    rgba(230,57,70,0.15);
+  --brand-border: rgba(230,57,70,0.5);
 
-  --text-1: #1a1a18;   /* charcoal — never pure black */
-  --text-2: #2f3437;
-  --text-3: #6b6b64;
-  --text-4: #8a8a82;   /* muted gray */
-  --text-5: #b3b3ab;
+  --text-1: #f5f5f7;   /* primary label */
+  --text-2: #d1d1d6;
+  --text-3: #98989d;   /* secondary label */
+  --text-4: #6c6c70;
+  --text-5: #48484a;
 
-  --border:       #eaeaea;
-  --border-brand: rgba(159,47,45,0.22);
+  --border:       rgba(255,255,255,0.10);
+  --border-brand: rgba(230,57,70,0.5);
 
-  /* Shadows practically non-existent (opacity < 0.05) */
-  --shadow-card:  0 1px 2px rgba(0,0,0,0.03);
-  --shadow-modal: 0 12px 40px rgba(0,0,0,0.08), 0 0 0 1px #eaeaea;
-  --shadow-brand: none;
+  /* Soft, layered depth */
+  --shadow-card:  0 1px 3px rgba(0,0,0,0.4);
+  --shadow-modal: 0 20px 60px rgba(0,0,0,0.6);
+  --shadow-brand: 0 4px 16px rgba(230,57,70,0.25);
 
-  /* Gradients flattened to solids per minimalist protocol */
-  --gradient-bg:      #f7f6f3;
-  --gradient-brand:   #111111;             /* primary CTA — solid charcoal */
-  --gradient-card:    #ffffff;
-  --gradient-sidebar: #fbfbfa;
-  --gradient-glow:    none;
+  --gradient-bg:      #000000;
+  --gradient-brand:   linear-gradient(135deg, #e63946, #cc2936);
+  --gradient-card:    #1c1c1e;
+  --gradient-sidebar: #0a0a0a;
+  --gradient-glow:    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(230,57,70,0.08) 0%, transparent 100%);
 
-  /* Editorial type stack */
-  --font-sans:  'Helvetica Neue', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-serif: 'Newsreader', 'Playfair Display', Georgia, serif;
-  --font-mono:  'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  /* System font (SF Pro on Apple), SF Mono for data */
+  --font-sans:  system-ui, -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
+  --font-serif: 'New York', Georgia, serif;
+  --font-mono:  'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
 
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  /* Generous Apple rounding */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 
   /* Escala tipografica — 6 pasos, sin excepciones ── NUEVO */
   --text-xs:   11px;
@@ -69,6 +71,15 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
+
+  /* Motion — mismos tokens que src/config/motion.js (mantener en sincronía) */
+  --dur-fast:    140ms;
+  --dur-base:    200ms;
+  --dur-slow:    280ms;
+  --dur-page:    320ms;
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
   --safe-top:    env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -117,6 +128,13 @@
 ════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Apple response — instant, physical press feedback on tap-down */
+button, .btn, [role="button"] { transition: transform 120ms cubic-bezier(0.2, 0, 0, 1); }
+button:active, .btn:active, [role="button"]:active { transform: scale(0.97); }
+@media (prefers-reduced-motion: reduce) {
+  button:active, .btn:active, [role="button"]:active { transform: none; }
+}
+
 html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 body {
@@ -132,8 +150,8 @@ body {
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.14); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
 .light ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
 .light ::-webkit-scrollbar-thumb:hover { background: rgba(230,57,70,0.3); }
@@ -202,10 +220,65 @@ body {
 .bg-glow {
   position: fixed;
   inset: 0;
-  background: var(--gradient-glow);
+  /* Glow superior (marca) + glow inferior tenue (tono Silk) para que la franja
+     de la barra inferior no sea negro plano, sino un dégradé oscuro y suave. */
+  background:
+    var(--gradient-glow),
+    radial-gradient(ellipse 120% 42% at 50% 100%, rgba(90,22,22,0.5) 0%, rgba(40,12,12,0.24) 32%, transparent 66%);
   pointer-events: none;
   z-index: 0;
 }
+.light .bg-glow {
+  background:
+    var(--gradient-glow),
+    radial-gradient(ellipse 120% 42% at 50% 100%, rgba(230,57,70,0.06) 0%, transparent 60%);
+}
+
+/* ── Dashboard: static container panel + responsive grids ── */
+.dash-panel {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  overflow: hidden;
+}
+.light .dash-panel { background: rgba(0,0,0,0.02); }
+
+.dash-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.dash-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+}
+/* KPIs 4 → 2 → 1, gráfico + panel lateral apilan en pantallas estrechas */
+@media (max-width: 1024px) {
+  .dash-kpi-grid  { grid-template-columns: repeat(2, 1fr); }
+  .dash-main-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .dash-kpi-grid  { grid-template-columns: 1fr; }
+}
+
+/* Fila clicable accesible (Próximas entregas) */
+.dash-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.12s;
+}
+.dash-row:hover,
+.dash-row:focus-visible { border-color: var(--brand-border); }
 
 /* ════════════════════════════════════════════════════════════
    LAYOUT
@@ -232,7 +305,9 @@ body {
    SIDEBAR
 ════════════════════════════════════════════════════════════ */
 .sidebar {
-  background: var(--gradient-sidebar);
+  background: rgba(12,12,14,0.72);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -314,13 +389,13 @@ body {
 
 .nav-item:hover {
   color: var(--text-2);
-  background: rgba(255,255,255,0.04);
+  background: var(--bg-4);
 }
 
 .nav-item.active {
-  color: #fff;
-  background: rgba(230,57,70,0.12);
-  border-color: rgba(230,57,70,0.2);
+  color: var(--brand);
+  background: var(--brand-dim);
+  border-color: var(--brand-border);
   font-weight: 600;
 }
 
@@ -359,9 +434,9 @@ body {
   justify-content: space-between;
   padding: 0 20px;
   border-bottom: 1px solid var(--border);
-  background: rgba(6,6,8,0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(28,28,30,0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   flex-shrink: 0;
   position: relative;
   z-index: 10;
@@ -371,14 +446,101 @@ body {
   background: rgba(248,248,251,0.85);
 }
 
+/* Topbar auto-ocultable (solo desktop con puntero fino): overlay que se
+   esconde por defecto y se revela al acercar el cursor al borde superior
+   o al enfocar con teclado (focus-within). En móvil no se aplica. */
+.topbar--auto {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.topbar--auto.topbar--hidden {
+  transform: translateY(-100%);
+}
+.topbar--auto:focus-within {
+  transform: translateY(0);
+}
+
+/* Zona sensible + tirador en el borde superior que revela la topbar */
+.topbar-peek {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  z-index: 29;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.topbar-peek::after {
+  content: '';
+  margin-top: 3px;
+  width: 44px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--text-5);
+  opacity: 0.5;
+  transform: scaleX(0.86);
+  transition: opacity 0.15s, background 0.15s, transform 0.15s;
+}
+.topbar-peek:hover::after {
+  opacity: 1;
+  transform: scaleX(1.18);
+  background: var(--brand);
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar--auto { transition: none; }
+}
+
+/* Loader de arranque: pulso suave escalonado (sustituye al bounce).
+   Anima solo transform+opacity (compositado en GPU). */
+@keyframes akira-loader {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.7); }
+  40%           { opacity: 1;    transform: scale(1); }
+}
+.akira-loader-dot {
+  animation: akira-loader 1.2s var(--ease-in-out) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .akira-loader-dot { animation: none; opacity: 0.6; }
+}
+
 /* ════════════════════════════════════════════════════════════
    PAGE HEADER
 ════════════════════════════════════════════════════════════ */
+/* Preferencia "Reducir movimiento": neutraliza animaciones y transiciones. */
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Preferencia "Contraste alto": sube el contraste de texto y bordes. */
+.high-contrast {
+  --text-2: #f4f4f6;
+  --text-3: #e6e6ea;
+  --text-4: #cfcfd6;
+  --border: rgba(255,255,255,0.28);
+}
+.high-contrast.light {
+  --text-2: #101014;
+  --text-3: #22222a;
+  --text-4: #333340;
+  --border: rgba(0,0,0,0.32);
+}
+
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-4) var(--space-5) var(--space-3);
+  /* El padding superior incluye el área segura (notch iPhone). En móviles sin
+     notch --safe-top es 0, así que no cambia nada. */
+  padding: calc(var(--space-4) + var(--safe-top)) var(--space-5) var(--space-3);
   border-bottom: 1px solid var(--border);
   background: rgba(6,6,8,0.4);
   flex-shrink: 0;
@@ -425,9 +587,14 @@ body {
   border-color: transparent;
   box-shadow: 0 2px 8px rgba(230,57,70,0.3);
 }
+/* Brillo de marca en los bordes (inspirado en BorderGlow, pero solo CSS):
+   un halo suave que se intensifica al pasar el ratón. */
 .btn-primary:hover {
-  box-shadow: 0 4px 16px rgba(230,57,70,0.4);
   transform: translateY(-1px);
+  box-shadow:
+    0 4px 16px rgba(230,57,70,0.45),
+    0 0 0 1px var(--brand-border),
+    0 0 22px 2px rgba(230,57,70,0.38);
 }
 
 .btn-secondary {
@@ -503,6 +670,10 @@ body {
   overflow-y: auto;
   flex: 1;
 }
+
+/* Con un modal abierto, ocultamos el dock flotante para que no tape los
+   botones de acción del formulario. */
+body[data-modal-open] .app-dock { display: none !important; }
 
 /* ════════════════════════════════════════════════════════════
    BADGES / STATUS
@@ -611,7 +782,7 @@ body {
   padding: 32px 48px 80px;
   max-width: 860px;
   margin: 0 auto;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-mono);
   font-size: 15px;
   line-height: 1.8;
   color: var(--text-3);
@@ -644,7 +815,7 @@ body {
 .kb-editor-content ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 0.5rem; }
 .kb-editor-content ul[data-type="taskList"] li > label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--brand); cursor: pointer; }
 .kb-editor-content ul[data-type="taskList"] li[data-checked="true"] > div { text-decoration: line-through; opacity: 0.5; }
-.kb-editor-content blockquote { border-left: 3px solid var(--brand); padding: 0.5rem 0 0.5rem 1.25rem; margin: 1rem 0; color: var(--text-3); font-style: italic; background: rgba(230,57,70,0.04); border-radius: 0 8px 8px 0; }
+.kb-editor-content blockquote { border-left: 3px solid var(--brand); padding: 0.5rem 0 0.5rem 1.25rem; margin: 1rem 0; color: var(--text-3); font-style: italic; background: var(--brand-dim); border-radius: 0; }
 .kb-editor-content pre { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0; overflow-x: auto; }
 .kb-editor-content pre code { background: transparent; color: #fca5a5; padding: 0; font-size: 0.875rem; }
 .kb-editor-content hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
@@ -723,12 +894,25 @@ body {
     grid-template-columns: 1fr !important;
   }
 
- .modal-overlay {
-    padding-bottom: max(20px, var(--safe-bottom)) !important;
+ /* Modal como hoja a pantalla completa en móvil: sin recortes arriba/abajo,
+     con áreas seguras (notch y barra inferior) y sin línea/borde negro. */
+  .modal-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
   }
-
-  .app-main {
-    padding-bottom: var(--safe-bottom) !important;
+  .modal-box {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  .modal-header {
+    padding-top: calc(16px + var(--safe-top)) !important;
+  }
+  .modal-body {
+    padding-bottom: calc(24px + var(--safe-bottom)) !important;
   }
 
   .topbar-kpis {
@@ -740,4 +924,21 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  /* Cabecera de página: título arriba, acciones apiladas debajo a lo ancho,
+     para que los botones no se amontonen ni desborden en móvil. */
+  .page-header {
+    padding: var(--space-3) var(--space-4) !important;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .page-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .page-title { font-size: var(--text-md); }
+
+  /* Las tablas anchas hacen scroll dentro de su tarjeta, no rompen la página. */
+  .surface-card { max-width: 100%; }
+  table { min-width: max-content; }
 }

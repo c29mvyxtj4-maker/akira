@@ -1,65 +1,76 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
-import { getMyOrg, ensureOrg, getOrgMembers } from '@/services/org.service'
+import { ensureOrg, getOrgMembers, getMyWorkspaces, createOrg } from '@/services/org.service'
 
+var LS_KEY = 'akira-active-org'
 var OrgContext = createContext(null)
 
 export function OrgProvider({ children }) {
-  var { user, profile, isAuthenticated } = useAuth()
-  var [org,     setOrg]     = useState(null)
-  var [members, setMembers] = useState([])
-  var [myRole,  setMyRole]  = useState('owner')
-  var [loading, setLoading] = useState(true)
+  var { user, isAuthenticated } = useAuth()
+  var [org,        setOrg]        = useState(null)
+  var [workspaces, setWorkspaces] = useState([])
+  var [members,    setMembers]    = useState([])
+  var [myRole,     setMyRole]     = useState('owner')
+  var [loading,    setLoading]    = useState(true)
+
+  function loadMembers(orgId, ownerId) {
+    return getOrgMembers(orgId).then(function(m) {
+      setMembers(m)
+      var me = m.find(function(x) { return x.user_id === ownerId })
+      setMyRole(me ? me.role : 'owner')
+    })
+  }
 
   useEffect(function() {
-    if (!isAuthenticated || !user) {
-      setLoading(false)
-      return
-    }
-
+    if (!isAuthenticated || !user) { setLoading(false); return }
     setLoading(true)
-
-    getMyOrg()
-      .then(function(existingOrg) {
-        if (existingOrg) {
-          setOrg(existingOrg)
-          return getOrgMembers(existingOrg.id)
-            .then(function(membersData) {
-              setMembers(membersData)
-              var me = membersData.find(function(m) { return m.user_id === user.id })
-              if (me) setMyRole(me.role)
-            })
-        } else {
-          var name = 'Mi Workspace'
-          return ensureOrg(name)
-            .then(function(newOrg) {
-              setOrg(newOrg)
-              return getOrgMembers(newOrg.id)
-            })
-            .then(function(membersData) {
-              setMembers(membersData)
-              setMyRole('owner')
-            })
+    getMyWorkspaces()
+      .then(function(list) {
+        if (!list || list.length === 0) {
+          return ensureOrg('Mi Workspace').then(function(newOrg) {
+            setWorkspaces([newOrg]); setOrg(newOrg); return loadMembers(newOrg.id, user.id)
+          })
         }
+        setWorkspaces(list)
+        var savedId = null
+        try { savedId = localStorage.getItem(LS_KEY) } catch (_) { /* noop */ }
+        var active = list.find(function(o) { return o.id === savedId }) || list[0]
+        setOrg(active)
+        // Persistir SIEMPRE el workspace activo, para que los servicios (que leen
+        // localStorage vía getActiveOrgId) puedan filtrar por él desde el arranque.
+        try { if (active) localStorage.setItem(LS_KEY, active.id) } catch (_) { /* noop */ }
+        return loadMembers(active.id, user.id)
       })
-      .catch(function(e) {
-        console.error('[OrgContext] error:', e)
-      })
-      .finally(function() {
-        setLoading(false)
-      })
+      .catch(function(e) { console.error('[OrgContext]', e) })
+      .finally(function() { setLoading(false) })
   }, [isAuthenticated, user && user.id])
 
+  function switchWorkspace(orgId) {
+    var target = workspaces.find(function(o) { return o.id === orgId })
+    if (!target || (org && org.id === orgId)) return
+    try { localStorage.setItem(LS_KEY, orgId) } catch (_) { /* noop */ }
+    // Recargamos para que TODAS las lecturas (hooks/servicios) se rehagan con el
+    // nuevo workspace. Es infrecuente y evita re-cablear cada hook.
+    try { window.location.reload() } catch (_) { setOrg(target) }
+  }
+
+  function createWorkspace(name) {
+    return createOrg(name || 'Nuevo espacio').then(function(newOrg) {
+      try { localStorage.setItem(LS_KEY, newOrg.id) } catch (_) { /* noop */ }
+      try { window.location.reload() } catch (_) { setWorkspaces(function(prev) { return prev.concat([newOrg]) }); setOrg(newOrg) }
+      return newOrg
+    })
+  }
+
   function refreshOrg() {
-    if (!org) return
-    getOrgMembers(org.id)
-      .then(function(data) { setMembers(data) })
-      .catch(function(e) { console.error(e) })
+    if (!org || !user) return
+    loadMembers(org.id, user.id).catch(function(e) { console.error(e) })
   }
 
   return (
     <OrgContext.Provider value={{
       org:        org,
+      workspaces: workspaces,
       members:    members,
       myRole:     myRole,
       loading:    loading,
@@ -70,6 +81,8 @@ export function OrgProvider({ children }) {
       refreshOrg: refreshOrg,
       setOrg:     setOrg,
       setMembers: setMembers,
+      switchWorkspace: switchWorkspace,
+      createWorkspace: createWorkspace,
     }}>
       {children}
     </OrgContext.Provider>

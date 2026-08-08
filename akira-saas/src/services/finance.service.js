@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
 export var FINANCE_TYPES = {
   income:   { label: 'Ingreso',   color: '#22c55e', sign: 1 },
@@ -44,6 +45,7 @@ export async function getFinanceEntries(filters) {
     .select('*, clients(id, name, company), projects(id, name)')
     .eq('archived', false)
     .order('entry_date', { ascending: false })
+  q = scopeToOrg(q) // aislar por workspace activo (defensivo)
 
   if (type     !== 'all') q = q.eq('type',       type)
   if (status   !== 'all') q = q.eq('status',     status)
@@ -71,6 +73,7 @@ export async function createFinanceEntry(form) {
     project_id:  form.project_id   || null,
     notes:       form.notes       || null,
     owner_id:    ownerId,
+    org_id:      getActiveOrgId() || null,
     archived:    false,
   }).select('*, clients(id, name, company), projects(id, name)').single()
   if (res.error) throw res.error
@@ -106,7 +109,7 @@ export async function getFinanceKpis() {
   var prevStart  = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split('T')[0]
   var prevEnd    = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split('T')[0]
 
-  var res = await supabase.from('finance_entries').select('type, amount, status, entry_date').eq('archived', false)
+  var res = await scopeToOrg(supabase.from('finance_entries').select('type, amount, status, entry_date').eq('archived', false))
   if (res.error) throw res.error
   var rows = res.data || []
 
@@ -156,10 +159,10 @@ export async function getFinanceKpis() {
 }
 
 export async function getClientRanking() {
-  var res = await supabase
+  var res = await scopeToOrg(supabase
     .from('finance_entries')
     .select('type, amount, status, client_id, clients(id, name, company)')
-    .eq('archived', false)
+    .eq('archived', false))
     .not('client_id', 'is', null)
   if (res.error) return []
 

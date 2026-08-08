@@ -13,8 +13,8 @@ function DangerZoneTab() {
 
   function handleRequestDeletion() {
     var subject = 'Solicitud de eliminacion de cuenta AKIRA'
-    var body = 'Hola, quiero solicitar la eliminacion completa de mi cuenta y todos mis datos de AKIRA OS.'
-    window.location.href = 'mailto:soporte@akira-os.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body)
+    var body = 'Hola, quiero solicitar la eliminacion completa de mi cuenta y todos mis datos de AKIRA OS (derecho de supresion, RGPD).'
+    window.location.href = 'mailto:marcroson7@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body)
   }
 
   return (
@@ -43,7 +43,7 @@ function DangerZoneTab() {
       <Section title="Eliminar mi cuenta" description="Borra tu cuenta y todos tus datos de forma permanente">
         <p style={{ fontSize: '12px', color: 'var(--text-4)', lineHeight: 1.6 }}>
           Por seguridad, eliminar una cuenta del todo (incluido tu acceso de login) requiere una revision manual — no se puede hacer con un solo clic desde aqui.
-          Al pulsar el boton, se abrira tu correo con una solicitud ya redactada; te confirmaremos la eliminacion en cuanto la procesemos.
+          Al pulsar el boton, se abrira tu correo con una solicitud ya redactada; procesaremos la eliminacion de todos tus datos en un plazo maximo de 30 dias (derecho de supresion, RGPD). Antes, puedes descargar una copia en Ajustes → Importar y exportar.
         </p>
         {confirming === 'delete' ? (
           <div style={{ display: 'flex', gap: '8px' }}>

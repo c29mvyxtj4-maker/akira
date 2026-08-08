@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Trash2, FileText, FileSignature, Archive, ChevronLeft, Building2, ArrowRightCircle, Wrench } from 'lucide-react'
+import { Plus, Trash2, FileText, FileSignature, Archive, ChevronLeft, Building2, ArrowRightCircle, Wrench, CreditCard } from 'lucide-react'
 import {
   getDocuments, getDocumentById, createQuote, createInvoiceDirect, updateDocument,
   updateDocumentStatus, archiveDocument, convertToInvoice,
@@ -164,10 +164,30 @@ function DocumentPreview({ doc, company, onBack, onConvert, converting }) {
   var items = Array.isArray(doc.items) ? doc.items : []
   var client = doc.clients
   var [downloading, setDownloading] = useState(false)
+  var [charging, setCharging] = useState(false)
+  // Solo facturas no pagadas/anuladas se pueden cobrar.
+  var canCharge = !isQuote && doc.status !== 'paid' && doc.status !== 'void'
 
   function handleDownload() {
     setDownloading(true)
     downloadDocumentPdf(doc, company).catch(function(e) { window.alert('Error al generar el PDF: ' + e.message) }).finally(function() { setDownloading(false) })
+  }
+
+  async function handleCharge() {
+    setCharging(true)
+    try {
+      var res = await supabase.functions.invoke('create-checkout', { body: { invoice_id: doc.id, return_path: '/documents' } })
+      if (res.error) throw res.error
+      var url = res.data && res.data.url
+      if (!url) throw new Error((res.data && res.data.error) || 'No se recibió el enlace de pago')
+      // En móvil, window.open tras un await lo bloquea el navegador (se pierde el
+      // gesto). Redirigimos la pestaña actual a Stripe: funciona en todos lados.
+      window.location.href = url
+    } catch (e) {
+      window.alert('No se pudo generar el cobro: ' + (e.message || e))
+    } finally {
+      setCharging(false)
+    }
   }
 
   return (
@@ -175,6 +195,12 @@ function DocumentPreview({ doc, company, onBack, onConvert, converting }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
         <button type="button" onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: 'var(--text-3)', fontSize: '13px', cursor: 'pointer' }}><ChevronLeft style={{ width: '15px', height: '15px' }} /> Volver a documentos</button>
         <div style={{ display: 'flex', gap: '8px' }}>
+          {canCharge && (
+            <button type="button" onClick={handleCharge} disabled={charging}
+              onMouseEnter={function (e) { if (!charging) e.currentTarget.style.boxShadow = '0 0 18px 1px rgba(34,197,94,0.4)' }}
+              onMouseLeave={function (e) { e.currentTarget.style.boxShadow = 'none' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: charging ? 'not-allowed' : 'pointer', opacity: charging ? 0.7 : 1, transition: 'box-shadow 0.2s' }}><CreditCard style={{ width: '15px', height: '15px' }} /> {charging ? 'Generando enlace...' : 'Cobrar'}</button>
+          )}
           {isQuote && doc.status === 'accepted' && (
             <button type="button" onClick={onConvert} disabled={converting} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: '#22c55e', border: 'none', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: converting ? 'not-allowed' : 'pointer' }}><ArrowRightCircle style={{ width: '15px', height: '15px' }} /> {converting ? 'Convirtiendo...' : 'Convertir en factura'}</button>
           )}
@@ -342,7 +368,7 @@ export default function Documents() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <PageHeader
-        title="Documentos"
+        title={tab === 'quote' ? 'Presupuestos' : 'Facturas'}
         description={documents.length + ' documento' + (documents.length !== 1 ? 's' : '')}
         actions={<Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>{tab === 'quote' ? 'Nuevo presupuesto' : 'Nueva factura'}</Button>}
       />

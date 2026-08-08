@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
+import { scopeToOrg } from '@/lib/activeOrg'
 
 const AppContext = createContext(null)
 
@@ -42,11 +43,11 @@ export function AppProvider({ children }) {
     setError(null)
 
     Promise.allSettled([
-      supabase.from('clients').select('*').eq('archived', false).order('created_at', { ascending: false }),
-      supabase.from('projects').select('*, clients(id,name)').eq('archived', false).order('due_date', { ascending: true, nullsFirst: false }),
-      supabase.from('services').select('*').eq('archived', false),
-      supabase.from('subscriptions').select('*').eq('archived', false),
-      supabase.from('finance_entries').select('*').eq('archived', false).order('entry_date', { ascending: false }).limit(200),
+      scopeToOrg(supabase.from('clients').select('*').eq('archived', false)).order('created_at', { ascending: false }),
+      scopeToOrg(supabase.from('projects').select('*, clients(id,name)').eq('archived', false)).order('due_date', { ascending: true, nullsFirst: false }),
+      scopeToOrg(supabase.from('services').select('*').eq('archived', false)),
+      scopeToOrg(supabase.from('subscriptions').select('*').eq('archived', false)),
+      scopeToOrg(supabase.from('finance_entries').select('*').eq('archived', false)).order('entry_date', { ascending: false }).limit(200),
     ]).then(function(results) {
       function safe(r) {
         if (r.status === 'rejected') return []

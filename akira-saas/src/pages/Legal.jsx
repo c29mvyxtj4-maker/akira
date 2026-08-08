@@ -9,6 +9,12 @@ import { ChevronLeft } from 'lucide-react'
  * entre [CORCHETES] por tus datos reales. No es asesoramiento legal:
  * conviene que un profesional la valide antes de un lanzamiento serio.
  */
+// Datos del responsable. Rellenados con lo conocido; revisa/sustituye lo que
+// falte entre [CORCHETES] antes de un lanzamiento serio.
+var CONTROLLER = 'Marc Rosón Martí'
+var CONTACT_EMAIL = 'marcroson7@gmail.com'
+var UPDATED = '31 de julio de 2026'
+
 export default function Legal() {
   var navigate = useNavigate()
   var [tab, setTab] = useState('privacy')
@@ -30,12 +36,12 @@ export default function Legal() {
 
         <h1 style={h1}>Información legal</h1>
         <p style={{ fontSize: '13px', color: 'var(--text-4, #888)', margin: '0 0 20px' }}>
-          Última actualización: [FECHA]
+          Última actualización: {UPDATED}
         </p>
 
         {/* Pestañas */}
-        <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--border, #2a2a31)', marginBottom: '20px' }}>
-          {[['privacy', 'Política de Privacidad'], ['terms', 'Términos del Servicio']].map(function(t) {
+        <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--border, #2a2a31)', marginBottom: '20px', flexWrap: 'wrap' }}>
+          {[['privacy', 'Política de Privacidad'], ['terms', 'Términos del Servicio'], ['notice', 'Aviso Legal']].map(function(t) {
             var active = tab === t[0]
             return (
               <button key={t[0]} type="button" onClick={function() { setTab(t[0]) }}
@@ -57,8 +63,8 @@ export default function Legal() {
 
             <h2 style={h2}>1. Responsable del tratamiento</h2>
             <p style={p}>
-              [NOMBRE DE TU EMPRESA / TU NOMBRE], con domicilio en [DIRECCIÓN] y correo de contacto
-              <strong> [EMAIL DE CONTACTO]</strong>, es el responsable del tratamiento de tus datos.
+              {CONTROLLER}, con NIF [NIF] y domicilio en [DIRECCIÓN], y correo de contacto
+              <strong> {CONTACT_EMAIL}</strong>, es el responsable del tratamiento de tus datos.
             </p>
 
             <h2 style={h2}>2. Datos que tratamos</h2>
@@ -96,7 +102,8 @@ export default function Legal() {
             <h2 style={h2}>6. Tus derechos (RGPD)</h2>
             <p style={p}>
               Tienes derecho a acceder, rectificar, suprimir, limitar u oponerte al tratamiento, y a la
-              portabilidad de tus datos. Para ejercerlos, escríbenos a <strong>[EMAIL DE CONTACTO]</strong>.
+              portabilidad de tus datos. Puedes exportar todos tus datos desde <strong>Ajustes → Importar y exportar</strong>,
+              y para el resto de derechos escríbenos a <strong>{CONTACT_EMAIL}</strong> (responderemos en un plazo máximo de 30 días).
               También puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).
             </p>
 
@@ -147,11 +154,52 @@ export default function Legal() {
             <h2 style={h2}>7. Cambios y baja</h2>
             <p style={p}>
               Podemos actualizar estos términos y el servicio. Puedes darte de baja cuando quieras solicitando la
-              eliminación de tu cuenta en <strong>[EMAIL DE CONTACTO]</strong>.
+              eliminación de tu cuenta desde <strong>Ajustes → Zona de peligro</strong> o escribiendo a <strong>{CONTACT_EMAIL}</strong>.
             </p>
             <h2 style={h2}>8. Ley aplicable</h2>
             <p style={p}>
               Estos términos se rigen por la legislación española.
+            </p>
+          </div>
+        )}
+
+        {tab === 'notice' && (
+          <div>
+            <p style={p}>
+              En cumplimiento del artículo 10 de la Ley 34/2002 de Servicios de la Sociedad de la
+              Información y de Comercio Electrónico (LSSI-CE), se facilita la siguiente información:
+            </p>
+
+            <h2 style={h2}>1. Titular</h2>
+            <ul>
+              <li style={li}>• <strong>Titular:</strong> {CONTROLLER}</li>
+              <li style={li}>• <strong>NIF:</strong> [NIF]</li>
+              <li style={li}>• <strong>Domicilio:</strong> [DIRECCIÓN]</li>
+              <li style={li}>• <strong>Correo:</strong> {CONTACT_EMAIL}</li>
+            </ul>
+
+            <h2 style={h2}>2. Objeto</h2>
+            <p style={p}>
+              AKIRA OS es una aplicación web de gestión de negocio (clientes, proyectos, finanzas y
+              facturación) dirigida a profesionales y pequeñas empresas. Actualmente se ofrece en fase beta.
+            </p>
+
+            <h2 style={h2}>3. Propiedad intelectual</h2>
+            <p style={p}>
+              El software, la marca y los contenidos de la plataforma pertenecen a su titular. Los datos que
+              tú introduces siguen siendo tuyos; puedes exportarlos o eliminarlos cuando quieras.
+            </p>
+
+            <h2 style={h2}>4. Responsabilidad</h2>
+            <p style={p}>
+              El titular no se hace responsable del uso que hagas del servicio ni de la licitud de los datos
+              que introduces sobre terceros (p. ej. tus clientes), de los que eres tú el responsable.
+            </p>
+
+            <h2 style={h2}>5. Legislación y jurisdicción</h2>
+            <p style={p}>
+              Este aviso se rige por la legislación española. Para cualquier controversia serán competentes
+              los juzgados y tribunales del domicilio del titular, salvo que la ley disponga otra cosa.
             </p>
           </div>
         )}

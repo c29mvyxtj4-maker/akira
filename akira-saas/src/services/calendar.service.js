@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
 export var EVENT_TYPES = {
   meeting:  { label: 'Reunion',    color: '#6366f1', emoji: '📅' },
@@ -30,6 +31,7 @@ export async function getCalendarEvents(dateFrom, dateTo) {
     .select('*, clients(id, name), projects(id, name)')
     .eq('archived', false)
     .order('start_at', { ascending: true })
+  q = scopeToOrg(q) // aislar por workspace activo (defensivo)
 
   if (dateFrom) q = q.gte('start_at', dateFrom)
   if (dateTo)   q = q.lte('start_at', dateTo)
@@ -58,6 +60,7 @@ export async function createCalendarEvent(form) {
     client_id:   form.client_id   || null,
     project_id:  form.project_id  || null,
     owner_id:    ownerId,
+    org_id:      getActiveOrgId() || null,
     archived:    false,
   }).select('*, clients(id, name), projects(id, name)').single()
   if (res.error) throw res.error
@@ -93,9 +96,9 @@ export async function getAutoEvents(dateFrom, dateTo) {
 
   // Deadlines de proyectos activos
   try {
-    var rp = await supabase
+    var rp = await scopeToOrg(supabase
       .from('projects')
-      .select('id, name, due_date, status, clients(id, name)')
+      .select('id, name, due_date, status, clients(id, name)'))
       .eq('archived', false)
       .not('due_date', 'is', null)
     if (!rp.error) {
@@ -124,9 +127,9 @@ export async function getAutoEvents(dateFrom, dateTo) {
 
   // Proximos cobros de suscripciones activas
   try {
-    var rs = await supabase
+    var rs = await scopeToOrg(supabase
       .from('subscriptions')
-      .select('id, name, next_billing, status, clients(id, name)')
+      .select('id, name, next_billing, status, clients(id, name)'))
       .eq('archived', false)
       .eq('status', 'active')
       .not('next_billing', 'is', null)

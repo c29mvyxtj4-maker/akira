@@ -22,14 +22,7 @@ export default function AppShell() {
     <div className="app-shell">
       <div className="bg-glow" />
 
-      {!isInicio && (
-        <>
-          <div style={{padding: '8px', background: '#2d2d2d', borderBottom: '2px solid #e63946', fontSize: '11px', color: '#999', textAlign: 'center'}}>
-            TOPBAR SYSTEM v0.3.0 ACTIVE
-          </div>
-          <Topbar />
-        </>
-      )}
+      {!isInicio && <Topbar />}
 
       <main className="app-main" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
         <motion.div

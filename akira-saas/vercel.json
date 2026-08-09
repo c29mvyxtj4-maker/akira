@@ -4,5 +4,11 @@
   "framework": "vite",
   "outputDirectory": "dist",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/((?!assets).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

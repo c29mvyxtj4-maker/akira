@@ -118,15 +118,19 @@ export default function SearchModal({ isOpen, onClose }) {
             onClick={(e) => e.stopPropagation()}
             style={{
               background: 'var(--bg-1)',
-              borderRadius: '12px',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+              borderRadius: '16px',
+              boxShadow: '0 25px 80px rgba(0,0,0,0.4)',
               width: '90%',
-              maxWidth: '700px',
-              maxHeight: '70vh',
+              maxWidth: '800px',
+              maxHeight: '75vh',
               overflow: 'hidden',
               zIndex: 501,
               display: 'flex',
               flexDirection: 'column',
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
             }}
           >
             {/* Search Input */}

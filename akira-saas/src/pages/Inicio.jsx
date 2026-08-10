@@ -153,10 +153,10 @@ export default function Inicio() {
             marginBottom: '28px',
           }}
         >
-          {/* Avatar Button */}
+          {/* Avatar Button - Square Red */}
           <button
             onClick={openMenu}
-            style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--brand-500), #8b5cf6)', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '16px', transition: 'all 0.2s ease', flexShrink: 0 }}
+            style={{ width: '42px', height: '42px', borderRadius: '6px', background: '#e63946', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '16px', transition: 'all 0.2s ease', flexShrink: 0 }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
             title={user?.email}
@@ -167,16 +167,13 @@ export default function Inicio() {
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            style={{ width: '42px', height: '42px', borderRadius: '8px', border: '1px solid var(--surface-2)', background: 'var(--surface-1)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease', flexShrink: 0 }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-2)'; e.currentTarget.style.color = 'var(--text-1)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-1)'; e.currentTarget.style.color = 'var(--text-2)' }}
+            style={{ width: '42px', height: '42px', borderRadius: '8px', border: 'none', background: 'var(--surface-2)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease', flexShrink: 0 }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-3)'; e.currentTarget.style.color = 'var(--text-1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-2)'; e.currentTarget.style.color = 'var(--text-2)' }}
             title="Buscar (Ctrl+K)"
           >
             <Search style={{ width: '18px', height: '18px' }} />
           </button>
-
-          {/* Spacer */}
-          <div style={{ flex: 1 }} />
 
           {/* Icon Pills */}
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -192,9 +189,9 @@ export default function Inicio() {
                   style={{
                     width: '42px',
                     height: '42px',
-                    borderRadius: '50%',
-                    border: '1px solid var(--surface-2)',
-                    background: 'var(--surface-1)',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'var(--surface-2)',
                     color: 'var(--text-2)',
                     cursor: 'pointer',
                     display: 'flex',
@@ -204,11 +201,11 @@ export default function Inicio() {
                     transition: 'all 0.2s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'var(--surface-2)'
+                    e.currentTarget.style.background = 'var(--surface-3)'
                     e.currentTarget.style.color = 'var(--text-1)'
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'var(--surface-1)'
+                    e.currentTarget.style.background = 'var(--surface-2)'
                     e.currentTarget.style.color = 'var(--text-2)'
                   }}
                 >

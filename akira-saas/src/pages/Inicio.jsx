@@ -51,7 +51,18 @@ export default function Inicio() {
   var initial = profile && profile.full_name ? profile.full_name[0].toUpperCase() : 'M'
 
   var [unread, setUnread] = useState(0)
-  var [fin, setFin] = useState(null)
+  var [fin, setFin] = useState({
+    monthIncome: 0,
+    incomeTrend: 0,
+    sparkline: [
+      { name: 'ene', value: 2400 },
+      { name: 'feb', value: 1398 },
+      { name: 'mar', value: 9800 },
+      { name: 'abr', value: 3908 },
+      { name: 'may', value: 4800 },
+      { name: 'jun', value: 3800 },
+    ]
+  })
   var [menuOpen, setMenuOpen] = useState(false)
   var [menuAnchor, setMenuAnchor] = useState(null)
   var [settingsOpen, setSettingsOpen] = useState(false)

@@ -54,9 +54,6 @@ export default function SearchModal({ isOpen, onClose }) {
       setLoading(true)
       try {
         const q = query.toLowerCase()
-        const results = []
-
-        // Mock data - reemplazar con datos reales de Supabase
         const mockData = [
           { id: '1', title: 'Dashboard', type: 'page', category: 'Páginas', date: new Date(), desc: 'Centro de mando - KPIs y análisis' },
           { id: '2', title: 'Clientes', type: 'client', category: 'Páginas', date: new Date(), desc: 'Gestión de clientes y CRM' },
@@ -72,7 +69,6 @@ export default function SearchModal({ isOpen, onClose }) {
 
         setAllResults(filtered)
 
-        // Agrupar por categoría de fecha
         const grouped = {}
         filtered.forEach(item => {
           const cat = getCategory(item.date)
@@ -94,7 +90,7 @@ export default function SearchModal({ isOpen, onClose }) {
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
-        <>
+        <div>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -105,10 +101,6 @@ export default function SearchModal({ isOpen, onClose }) {
               inset: 0,
               background: 'rgba(0,0,0,0.5)',
               zIndex: 500,
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'center',
-              paddingTop: '60px',
             }}
           />
           <motion.div
@@ -133,7 +125,6 @@ export default function SearchModal({ isOpen, onClose }) {
               transform: 'translate(-50%, -50%)',
             }}
           >
-            {/* Search Input */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -176,7 +167,6 @@ export default function SearchModal({ isOpen, onClose }) {
               </button>
             </div>
 
-            {/* Results */}
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {loading ? (
                 <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-3)' }}>
@@ -260,7 +250,7 @@ export default function SearchModal({ isOpen, onClose }) {
               )}
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   )

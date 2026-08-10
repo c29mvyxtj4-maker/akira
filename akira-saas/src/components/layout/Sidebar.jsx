@@ -1,224 +1,791 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Home, MessageCircle, Video, Inbox, Search } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import {
+  Home,
+  MessageCircle,
+  FileText,
+  Mail,
+  Search,
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  Settings,
+  Calendar,
+  Users,
+  BookOpen,
+  CheckSquare,
+  ArrowUp,
+  Zap,
+  UserPlus,
+  LogOut,
+  Clock,
+  Star,
+} from 'lucide-react'
 import { ROUTES } from '@/config/constants'
+import { getUpcomingEvents, getRecentPages, getFavorites, getUserWorkspaces } from '@/services/sidebar.service'
 
-export default function Sidebar() {
+export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings }) {
   const navigate = useNavigate()
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
+  const location = useLocation()
+  const [expandedSections, setExpandedSections] = useState({
+    reuniones: true,
+    recientes: true,
+    favoritos: true,
+    equipo: false,
+    privado: true,
+  })
+  const [showAccountMenu, setShowAccountMenu] = useState(false)
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
+  const accountButtonRef = useRef(null)
 
-  const navItems = [
+  // Estado para datos dinámicos
+  const [upcomingEvents, setUpcomingEvents] = useState([])
+  const [recentPages, setRecentPages] = useState([])
+  const [favorites, setFavorites] = useState([])
+  const [workspaces, setWorkspaces] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true)
+      const [events, pages, favs, workspaces_data] = await Promise.all([
+        getUpcomingEvents(),
+        getRecentPages(),
+        getFavorites(),
+        getUserWorkspaces(),
+      ])
+      setUpcomingEvents(events)
+      setRecentPages(pages)
+      setFavorites(favs)
+      setWorkspaces(workspaces_data)
+      setLoading(false)
+    }
+    loadData()
+  }, [])
+
+  const mainNavItems = [
     { icon: Home, label: 'Inicio', route: ROUTES.HOME },
     { icon: MessageCircle, label: 'Chat', route: '/brain' },
-    { icon: Video, label: 'Reuniones', route: '/calendar' },
-    { icon: Inbox, label: 'Bandeja', route: '/inbox' },
+    { icon: FileText, label: 'Documentos', route: '/documents' },
+    { icon: Mail, label: 'Correo', route: '/messages' },
+    { icon: Search, label: 'Búsqueda', route: '/search' },
   ]
+
+  const sections = {
+    reuniones: {
+      label: 'Reuniones',
+      items: upcomingEvents.length > 0
+        ? [
+            ...upcomingEvents.slice(0, 3).map(event => ({
+              icon: Calendar,
+              label: event.title || 'Sin título',
+              route: '/calendar',
+            })),
+            { icon: ChevronRight, label: 'Ver todo', arrow: true, route: '/calendar' },
+          ]
+        : [
+            { icon: Calendar, label: 'No hay próximos eventos', disabled: true },
+            { icon: ChevronRight, label: 'Ver todo', arrow: true, route: '/calendar' },
+          ],
+    },
+    recientes: {
+      label: 'Recientes',
+      items: recentPages.length > 0
+        ? [
+            ...recentPages.slice(0, 9).map(page => ({
+              icon: Clock,
+              label: page.page_name || 'Sin nombre',
+              route: page.page_route,
+            })),
+            { icon: Plus, label: 'Más', dots: true, route: '/activity' },
+          ]
+        : [
+            { icon: Clock, label: 'Sin elementos recientes', disabled: true },
+          ],
+    },
+    favoritos: {
+      label: 'Favoritos',
+      items: favorites.length > 0
+        ? favorites.map(fav => ({
+            icon: Star,
+            label: fav.item_name || 'Sin nombre',
+            route: fav.item_route,
+          }))
+        : [
+            { icon: Star, label: 'Sin favoritos aún', disabled: true },
+          ],
+    },
+    equipo: {
+      label: 'Espacios de equipo',
+      items: [],
+    },
+    privado: {
+      label: 'Privado',
+      items: workspaces.length > 0
+        ? workspaces.map(ws => ({
+            icon: Users,
+            label: ws.name || 'Sin nombre',
+            route: '/workspace/' + ws.id,
+          }))
+        : [
+            { icon: Users, label: 'Sin workspaces', disabled: true },
+          ],
+    },
+  }
+
+  const toggleSection = (section) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }))
+  }
+
+  const isActive = (route) => location.pathname === route
 
   return (
     <motion.div
-      animate={{ width: isCollapsed ? '80px' : '260px' }}
+      animate={{ width: isCollapsed ? '0px' : '280px' }}
       transition={{ duration: 0.3 }}
       style={{
-        background: 'var(--surface-0)',
-        borderRight: '1px solid var(--surface-2)',
+        background: 'var(--bg-1)',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        borderRight: '1px solid var(--border)',
         overflow: 'hidden',
         position: 'relative',
         zIndex: 50,
-      }}
-    >
+      }}>
       {/* Header */}
       <div style={{
         padding: '12px 8px',
-        borderBottom: '1px solid var(--surface-2)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '8px',
+        borderBottom: '1px solid var(--border)',
+        flexShrink: 0,
       }}>
-        {/* Navigation Buttons */}
-        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => window.history.back()}
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '6px',
-              border: '1px solid var(--surface-2)',
-              background: 'transparent',
-              color: 'var(--text-2)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--surface-1)'
-              e.currentTarget.style.color = 'var(--text-1)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent'
-              e.currentTarget.style.color = 'var(--text-2)'
-            }}
-            title="Atrás"
-          >
-            <ChevronLeft style={{ width: '18px', height: '18px' }} />
-          </motion.button>
+        <motion.button
+          ref={accountButtonRef}
+          whileHover={{ scale: 1.02 }}
+          onClick={() => setShowAccountMenu(!showAccountMenu)}
+          style={{
+            width: '100%',
+            border: '1px solid var(--border)',
+            background: 'var(--bg-2)',
+            padding: '10px 8px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            transition: 'all var(--dur-fast)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--bg-3)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'var(--bg-2)'
+          }}
+        >
+          <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-1)' }}>M</div>
+          <div style={{
+            fontSize: '12px',
+            fontWeight: 600,
+            color: 'var(--text-1)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            flex: 1,
+          }}>
+            Marc Rosón Martí's ...
+          </div>
+          <ChevronDown size={14} style={{ color: 'var(--text-3)' }} />
+        </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => window.history.forward()}
+        {/* Account Menu Dropdown */}
+        {showAccountMenu && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.15 }}
             style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '6px',
-              border: '1px solid var(--surface-2)',
-              background: 'transparent',
-              color: 'var(--text-2)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.2s ease',
+              position: 'fixed',
+              top: accountButtonRef.current?.getBoundingClientRect().bottom + 8,
+              left: accountButtonRef.current?.getBoundingClientRect().left,
+              width: '280px',
+              background: 'var(--bg-1)',
+              border: '1px solid var(--border)',
+              borderRadius: '12px',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+              zIndex: 1000,
+              overflow: 'hidden',
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--surface-1)'
-              e.currentTarget.style.color = 'var(--text-1)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent'
-              e.currentTarget.style.color = 'var(--text-2)'
-            }}
-            title="Adelante"
+            onMouseLeave={() => setShowAccountMenu(false)}
           >
-            <ChevronRight style={{ width: '18px', height: '18px' }} />
-          </motion.button>
-        </div>
+            {/* Header Info */}
+            <div style={{
+              padding: '16px',
+              borderBottom: '1px solid var(--border)',
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '8px',
+              }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '6px',
+                  background: 'var(--brand)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                }}>
+                  M
+                </div>
+                <div>
+                  <div style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: 'var(--text-1)',
+                  }}>
+                    Marc Rosón Martí's Notion
+                  </div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: 'var(--text-3)',
+                  }}>
+                    Plan gratuito · 1 miembro
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        {/* Collapse Button */}
+            {/* Menu Items */}
+            <div style={{
+              padding: '8px',
+            }}>
+              {/* Configuración */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                onClick={() => {
+                  if (onOpenSettings) onOpenSettings()
+                  setShowAccountMenu(false)
+                }}
+                style={{
+                  width: '100%',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--text-1)',
+                  padding: '10px 12px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: '6px',
+                  transition: 'all var(--dur-fast)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-2)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                }}
+              >
+                <Settings size={16} />
+                Configuración
+              </motion.button>
+
+              {/* Invitar a miembros */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                onClick={() => {
+                  alert('Invitar a miembros - Funcionalidad en desarrollo')
+                  setShowAccountMenu(false)
+                }}
+                style={{
+                  width: '100%',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--text-1)',
+                  padding: '10px 12px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: '6px',
+                  transition: 'all var(--dur-fast)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-2)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                }}
+              >
+                <UserPlus size={16} />
+                Invitar a miembros
+              </motion.button>
+
+              {/* Añadir cuenta */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                onClick={() => {
+                  alert('Añadir cuenta - Funcionalidad en desarrollo')
+                  setShowAccountMenu(false)
+                }}
+                style={{
+                  width: '100%',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--text-1)',
+                  padding: '10px 12px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: '6px',
+                  transition: 'all var(--dur-fast)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-2)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                }}
+              >
+                <Plus size={16} />
+                Añadir cuenta
+              </motion.button>
+            </div>
+
+            {/* Divider */}
+            <div style={{
+              height: '1px',
+              background: 'var(--border)',
+              margin: '8px 0',
+            }} />
+
+            {/* Email and Workspaces */}
+            <div style={{
+              padding: '8px',
+            }}>
+              {/* Email */}
+              <div style={{
+                padding: '8px 12px',
+                fontSize: '12px',
+                color: 'var(--text-3)',
+              }}>
+                marcroson7@gmail.com
+              </div>
+
+              {/* Current Workspace */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                onClick={() => {
+                  alert('Workspace actual: Marc Rosón Martí\'s Notion')
+                  setShowAccountMenu(false)
+                }}
+                style={{
+                  width: '100%',
+                  border: 'none',
+                  background: 'var(--bg-2)',
+                  color: 'var(--text-1)',
+                  padding: '10px 12px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: '6px',
+                  transition: 'all var(--dur-fast)',
+                  marginBottom: '4px',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-3)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-2)'
+                }}
+              >
+                <div style={{
+                  width: '16px',
+                  height: '16px',
+                  borderRadius: '4px',
+                  background: 'var(--brand)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                }}>
+                  M
+                </div>
+                Marc Rosón Martí's Notion
+                <span style={{ marginLeft: 'auto', fontSize: '16px' }}>✓</span>
+              </motion.button>
+
+              {/* Other Workspace */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                onClick={() => {
+                  alert('Cambiar a workspace: BECARIOS')
+                  setShowAccountMenu(false)
+                }}
+                style={{
+                  width: '100%',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--text-1)',
+                  padding: '10px 12px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: '6px',
+                  transition: 'all var(--dur-fast)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-2)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                }}
+              >
+                <div style={{
+                  width: '16px',
+                  height: '16px',
+                  borderRadius: '4px',
+                  background: 'var(--text-3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                }}>
+                  B
+                </div>
+                BECARIOS
+              </motion.button>
+
+              {/* Nuevo espacio de trabajo */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                onClick={() => {
+                  alert('Crear nuevo espacio de trabajo')
+                  setShowAccountMenu(false)
+                }}
+                style={{
+                  width: '100%',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--brand)',
+                  padding: '10px 12px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: '6px',
+                  transition: 'all var(--dur-fast)',
+                  marginTop: '4px',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-2)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                }}
+              >
+                <Plus size={16} />
+                Nuevo espacio de trabajo
+              </motion.button>
+            </div>
+
+            {/* Divider */}
+            <div style={{
+              height: '1px',
+              background: 'var(--border)',
+              margin: '8px 0',
+            }} />
+
+            {/* Cerrar sesión */}
+            <div style={{
+              padding: '8px',
+            }}>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                onClick={() => {
+                  alert('Cerrando sesión...')
+                  setShowAccountMenu(false)
+                }}
+                style={{
+                  width: '100%',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'var(--text-1)',
+                  padding: '10px 12px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  borderRadius: '6px',
+                  transition: 'all var(--dur-fast)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-2)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent'
+                }}
+              >
+                <LogOut size={16} />
+                Cerrar sesión
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Main Navigation */}
+      <div style={{
+        display: 'flex',
+        gap: '4px',
+        padding: '8px 8px',
+        flexShrink: 0,
+      }}>
+        {mainNavItems.map((item) => {
+          const Icon = item.icon
+          const active = isActive(item.route)
+
+          return (
+            <motion.button
+              key={item.route}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate(item.route)}
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '8px',
+                border: 'none',
+                background: active ? 'var(--brand)' : 'transparent',
+                color: active ? 'white' : 'var(--text-3)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all var(--dur-fast)',
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => {
+                if (!active) {
+                  e.currentTarget.style.background = 'var(--bg-2)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!active) {
+                  e.currentTarget.style.background = 'transparent'
+                }
+              }}
+              title={item.label}
+            >
+              <Icon size={20} />
+            </motion.button>
+          )
+        })}
+      </div>
+
+      {/* Sections (Scrollable) */}
+      <div style={{
+        flex: 1,
+        overflow: 'auto',
+        borderTop: '1px solid var(--border)',
+      }}>
+        {Object.entries(sections).map(([key, section]) => (
+          <div key={key} style={{ marginBottom: '16px' }}>
+            {/* Section Header */}
+            <motion.button
+              onClick={() => toggleSection(key)}
+              style={{
+                width: '100%',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--text-3)',
+                padding: '8px 12px',
+                fontSize: '11px',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--text-2)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--text-3)'
+              }}
+            >
+              {expandedSections[key] ? (
+                <ChevronDown size={14} />
+              ) : (
+                <ChevronRight size={14} />
+              )}
+              {section.label}
+            </motion.button>
+
+            {/* Section Items */}
+            {expandedSections[key] && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                transition={{ duration: 0.2 }}
+              >
+                {section.items.map((item, idx) => {
+                  const Icon = item.icon
+
+                  return (
+                    <motion.button
+                      key={idx}
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => {
+                        if (!item.disabled && item.route) {
+                          navigate(item.route)
+                        }
+                      }}
+                      style={{
+                        width: '100%',
+                        border: 'none',
+                        background: 'transparent',
+                        color: item.disabled ? 'var(--text-4)' : 'var(--text-2)',
+                        padding: '6px 12px',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: item.disabled ? 'default' : 'pointer',
+                        textAlign: 'left',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        fontWeight: item.highlight ? 600 : 400,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!item.disabled) {
+                          e.currentTarget.style.background = 'var(--bg-2)'
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent'
+                      }}
+                    >
+                      <Icon size={16} style={{ flexShrink: 0 }} />
+                      <span style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {item.label}
+                      </span>
+                      {item.dots && <span style={{ marginLeft: 'auto' }}>...</span>}
+                      {item.arrow && <ChevronRight size={14} style={{ marginLeft: 'auto' }} />}
+                    </motion.button>
+                  )
+                })}
+              </motion.div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        padding: '12px 8px',
+        borderTop: '1px solid var(--border)',
+        flexShrink: 0,
+        gap: '8px',
+        display: 'flex',
+      }}>
         <motion.button
           whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsCollapsed(!isCollapsed)}
           style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '6px',
-            border: '1px solid var(--surface-2)',
+            flex: 1,
+            border: '1px solid var(--border)',
             background: 'transparent',
             color: 'var(--text-2)',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            fontSize: '12px',
+            fontWeight: 500,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            transition: 'all 0.2s ease',
-            marginLeft: 'auto',
+            gap: '6px',
+            transition: 'all var(--dur-fast)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--surface-1)'
-            e.currentTarget.style.color = 'var(--text-1)'
+            e.currentTarget.style.background = 'var(--bg-2)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = 'var(--text-2)'
           }}
-          title={isCollapsed ? 'Mostrar sidebar' : 'Ocultar sidebar'}
         >
-          <ChevronLeft style={{
-            width: '18px',
-            height: '18px',
-            transform: isCollapsed ? 'scaleX(-1)' : 'scaleX(1)',
-            transition: 'transform 0.3s ease',
-          }} />
+          <Plus size={14} />
+          Nuevo chat
         </motion.button>
-      </div>
-
-      {/* Search Bar */}
-      {!isCollapsed && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
           style={{
-            padding: '12px 8px',
-            borderBottom: '1px solid var(--surface-2)',
-          }}
-        >
-          <div style={{
+            width: '36px',
+            height: '36px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--text-3)',
+            borderRadius: '8px',
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            padding: '8px 10px',
-            borderRadius: '6px',
-            border: '1px solid var(--surface-2)',
-            background: 'var(--surface-1)',
-          }}>
-            <Search style={{ width: '16px', height: '16px', color: 'var(--text-3)' }} />
-            <input
-              type="text"
-              placeholder="Buscar..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                flex: 1,
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--text-1)',
-                fontSize: '13px',
-                outline: 'none',
-              }}
-            />
-          </div>
-        </motion.div>
-      )}
-
-      {/* Navigation Items */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '4px',
-        padding: '12px 8px',
-        overflowY: 'auto',
-      }}>
-        {navItems.map((item, idx) => (
-          <motion.button
-            key={idx}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => navigate(item.route)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: '6px',
-              border: 'none',
-              background: 'transparent',
-              color: 'var(--text-1)',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 500,
-              transition: 'all 0.2s ease',
-              justifyContent: isCollapsed ? 'center' : 'flex-start',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-1)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-            title={isCollapsed ? item.label : ''}
-          >
-            <item.icon style={{ width: '18px', height: '18px', flexShrink: 0 }} />
-            {!isCollapsed && <span>{item.label}</span>}
-          </motion.button>
-        ))}
+            justifyContent: 'center',
+            transition: 'all var(--dur-fast)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--bg-2)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent'
+          }}
+        >
+          <Settings size={18} />
+        </motion.button>
       </div>
     </motion.div>
   )

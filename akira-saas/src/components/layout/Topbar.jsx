@@ -1,257 +1,269 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X, Plus } from 'lucide-react'
-import { useAuth } from '@/context/AuthContext'
+import { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { ChevronLeft, ChevronRight, PanelLeft, Plus, FileText, Users, Briefcase } from 'lucide-react'
+import { motion } from 'framer-motion'
 
-const CATEGORIES = [
-  { label: 'Clientes', icon: '👥', route: '/clients' },
-  { label: 'Proyectos', icon: '📋', route: '/projects' },
-  { label: 'Finanzas', icon: '💰', route: '/finance' },
-  { label: 'Facturas', icon: '📄', route: '/invoices' },
-  { label: 'Calendario', icon: '📅', route: '/calendar' },
-  { label: 'Knowledge', icon: '📚', route: '/knowledge' },
-  { label: 'Mensajes', icon: '💬', route: '/brain' },
-  { label: 'YouTube', icon: '🎬', route: '/youtube' },
-]
-
-export default function Topbar() {
-  const navigate = useNavigate()
+/**
+ * TopBar — Barra superior con estructura Notion-like
+ * Izq: Menú hamburguesa + Flechas | Centro: Título/Breadcrumb | Der: Botón +
+ */
+export default function TopBar({ onToggleSidebar }) {
   const location = useLocation()
-  const { user } = useAuth()
-  const [openTabs, setOpenTabs] = useState([])
-  const [activeTab, setActiveTab] = useState(null)
-  const [showMenu, setShowMenu] = useState(false)
+  const navigate = useNavigate()
+  const [showAddMenu, setShowAddMenu] = useState(false)
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
+  const [showSettings, setShowSettings] = useState(false)
 
-  const name = user?.user_metadata?.full_name?.split(' ')[0] || 'Usuario'
-  const initial = name?.charAt(0).toUpperCase() || '?'
-
-  useEffect(() => {
-    const currentPath = location.pathname
-    const existingTab = openTabs.find(t => t.route === currentPath)
-
-    if (!existingTab) {
-      const category = CATEGORIES.find(c => c.route === currentPath)
-      if (category) {
-        const newTab = { id: Math.random(), ...category }
-        setOpenTabs(prev => [...prev, newTab])
-        setActiveTab(newTab.id)
-      }
-    } else {
-      setActiveTab(existingTab.id)
+  // Mapeo de rutas a títulos
+  const getTitleFromRoute = () => {
+    const routeTitles = {
+      '/': 'Inicio',
+      '/clients': 'Clientes',
+      '/projects': 'Proyectos',
+      '/finance': 'Finanzas',
+      '/invoices': 'Facturas',
+      '/quotes': 'Cotizaciones',
+      '/calendar': 'Calendario',
+      '/knowledge': 'Biblioteca',
+      '/brain': 'Asistente',
+      '/time': 'Tiempo',
+      '/inbox': 'Bandeja',
     }
-  }, [location.pathname, openTabs])
-
-  const handleAddTab = (category) => {
-    const existingTab = openTabs.find(t => t.route === category.route)
-    if (existingTab) {
-      setActiveTab(existingTab.id)
-      navigate(category.route)
-    } else {
-      const newTab = { id: Math.random(), ...category }
-      setOpenTabs(prev => [...prev, newTab])
-      setActiveTab(newTab.id)
-      navigate(category.route)
-    }
-    setShowMenu(false)
+    return routeTitles[location.pathname] || 'AKIRA'
   }
 
-  const handleCloseTab = (tabId) => {
-    const newTabs = openTabs.filter(t => t.id !== tabId)
-    setOpenTabs(newTabs)
+  const addMenuItems = [
+    { label: 'Nuevo proyecto', icon: Briefcase, route: '/projects' },
+    { label: 'Nuevo cliente', icon: Users, route: '/clients' },
+    { label: 'Nuevo documento', icon: FileText, route: '/knowledge' },
+  ]
 
-    if (activeTab === tabId) {
-      if (newTabs.length > 0) {
-        setActiveTab(newTabs[newTabs.length - 1].id)
-        navigate(newTabs[newTabs.length - 1].route)
-      } else {
-        navigate('/inicio')
-      }
-    }
+  const handleAddClick = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    setMenuPosition({
+      top: rect.bottom + 8,
+      right: window.innerWidth - rect.right,
+    })
+    setShowAddMenu(!showAddMenu)
   }
 
   return (
     <div style={{
-      padding: '14px 20px',
-      borderBottom: '1px solid var(--surface-2)',
-      background: 'var(--surface-0)',
+      height: '56px',
+      borderBottom: '1px solid var(--border)',
+      background: 'var(--bg-1)',
       display: 'flex',
       alignItems: 'center',
-      gap: '16px',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100,
-      backdropFilter: 'blur(8px)',
-      backgroundColor: 'rgba(var(--surface-0-rgb), 0.95)',
+      justifyContent: 'space-between',
+      padding: '0 var(--space-3)',
+      gap: 'var(--space-3)',
+      flexShrink: 0,
+      position: 'relative',
+      zIndex: 40,
     }}>
-      <motion.button
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => navigate('/inicio')}
-        style={{
-          width: '40px',
-          height: '40px',
-          flexShrink: 0,
-          borderRadius: '50%',
-          border: 'none',
-          background: 'var(--brand-500)',
-          color: '#fff',
-          fontSize: '16px',
-          fontWeight: 800,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 2px 8px rgba(230, 57, 70, 0.2)',
-        }}
-      >
-        {initial}
-      </motion.button>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, overflowX: 'auto', paddingRight: '8px' }}>
-        {openTabs.map((tab) => (
-          <motion.div
-            key={tab.id}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              setActiveTab(tab.id)
-              navigate(tab.route)
-            }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 14px',
-              borderRadius: '8px',
-              border: 'none',
-              background: activeTab === tab.id ? 'var(--brand-500)' : 'var(--surface-1)',
-              color: activeTab === tab.id ? '#fff' : 'var(--text-1)',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: activeTab === tab.id ? 600 : 500,
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <span style={{ fontSize: '16px' }}>{tab.icon}</span>
-            <span>{tab.label}</span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                handleCloseTab(tab.id)
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                background: 'none',
-                border: 'none',
-                color: 'inherit',
-                cursor: 'pointer',
-                padding: '2px 4px',
-                borderRadius: '3px',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.1)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-            >
-              <X style={{ width: '16px', height: '16px' }} />
-            </button>
-          </motion.div>
-        ))}
-      </div>
-
-      <div style={{ position: 'relative' }}>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowMenu(!showMenu)}
+      {/* Left: Menu + Navigation Arrows */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--space-2)',
+        flexShrink: 0,
+      }}>
+        {/* Collapse Sidebar Button */}
+        <button
+          onClick={onToggleSidebar}
           style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--text-3)',
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '38px',
-            height: '38px',
-            padding: 0,
-            borderRadius: '8px',
-            border: '1.5px dashed var(--surface-2)',
-            background: 'var(--surface-1)',
-            color: 'var(--text-2)',
-            cursor: 'pointer',
-            flexShrink: 0,
-            transition: 'all 0.2s ease',
+            transition: 'all var(--dur-fast)',
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--surface-2)'
-            e.currentTarget.style.color = 'var(--text-1)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'var(--surface-1)'
-            e.currentTarget.style.color = 'var(--text-2)'
-          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-2)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          title="Contraer/Expandir sidebar"
         >
-          <Plus style={{ width: '18px', height: '18px' }} />
+          <PanelLeft size={20} />
+        </button>
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={() => window.history.back()}
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--text-3)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all var(--dur-fast)',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-2)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          title="Atrás"
+        >
+          <ChevronLeft size={18} />
+        </button>
+        <button
+          onClick={() => window.history.forward()}
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--text-3)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all var(--dur-fast)',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-2)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          title="Adelante"
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
+
+      {/* Center: Título + Icono */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 'var(--space-2)',
+        minWidth: 0,
+      }}>
+        <div style={{
+          width: '24px',
+          height: '24px',
+          borderRadius: '6px',
+          background: 'var(--brand)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '12px',
+          fontWeight: 700,
+          color: 'white',
+          flexShrink: 0,
+        }}>
+          📎
+        </div>
+        <span style={{
+          fontSize: '16px',
+          fontWeight: 600,
+          color: 'var(--text-1)',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}>
+          {getTitleFromRoute()}
+        </span>
+      </div>
+
+      {/* Right: Add Button */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--space-2)',
+        flexShrink: 0,
+        position: 'relative',
+      }}>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleAddClick}
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            border: 'none',
+            background: 'transparent',
+            color: 'var(--text-3)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all var(--dur-fast)',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-2)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+          title="Añadir"
+        >
+          <Plus size={20} />
         </motion.button>
 
-        <AnimatePresence>
-          {showMenu && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              style={{
-                position: 'absolute',
-                top: '100%',
-                right: 0,
-                marginTop: '10px',
-                background: 'var(--surface-0)',
-                border: '1px solid var(--surface-2)',
-                borderRadius: '12px',
-                padding: '10px',
-                minWidth: '200px',
-                zIndex: 1000,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              {CATEGORIES.map((cat) => (
+        {/* Add Menu Dropdown */}
+        {showAddMenu && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.15 }}
+            style={{
+              position: 'fixed',
+              top: `${menuPosition.top}px`,
+              right: `${menuPosition.right}px`,
+              background: 'var(--bg-1)',
+              border: '1px solid var(--border)',
+              borderRadius: '12px',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+              zIndex: 1000,
+              minWidth: '200px',
+              overflow: 'hidden',
+            }}
+            onMouseLeave={() => setShowAddMenu(false)}
+          >
+            {addMenuItems.map((item, idx) => {
+              const Icon = item.icon
+              return (
                 <motion.button
-                  key={cat.route}
+                  key={idx}
                   whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleAddTab(cat)}
+                  onClick={() => {
+                    navigate(item.route)
+                    setShowAddMenu(false)
+                  }}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
                     width: '100%',
-                    padding: '10px 12px',
-                    borderRadius: '6px',
                     border: 'none',
                     background: 'transparent',
                     color: 'var(--text-1)',
-                    cursor: 'pointer',
-                    fontSize: '14px',
+                    padding: '10px 12px',
+                    fontSize: '13px',
                     fontWeight: 500,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
                     textAlign: 'left',
-                    transition: 'all 0.15s ease',
+                    borderBottom: idx < addMenuItems.length - 1 ? '1px solid var(--border)' : 'none',
+                    transition: 'all var(--dur-fast)',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'var(--surface-1)'
-                    e.currentTarget.style.color = 'var(--brand-500)'
+                    e.currentTarget.style.background = 'var(--bg-2)'
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = 'transparent'
-                    e.currentTarget.style.color = 'var(--text-1)'
                   }}
                 >
-                  <span style={{ fontSize: '18px' }}>{cat.icon}</span>
-                  <span>{cat.label}</span>
+                  <Icon size={16} />
+                  {item.label}
                 </motion.button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+              )
+            })}
+          </motion.div>
+        )}
       </div>
     </div>
   )

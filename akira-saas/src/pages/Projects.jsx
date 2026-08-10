@@ -1004,7 +1004,7 @@ export default function Projects() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <PageHeader
-        title="🎯 PROYECTOS [TOPBAR v0.3.0 DEPLOYED]"
+        title="🎯 Proyectos"
         description={hook.projects.length + ' proyecto' + (hook.projects.length !== 1 ? 's' : '')}
         actions={
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>

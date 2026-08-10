@@ -130,34 +130,7 @@ export default function Inicio() {
       )}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.58) 100%)' }} />
 
-      {/* Top Bar */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '12px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
-          {/* Search Button */}
-          <button
-            onClick={handleSearch}
-            style={{ width: '40px', height: '40px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease' }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-1)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text-2)' }}
-            title="Buscar (Ctrl+K)"
-          >
-            <Search style={{ width: '18px', height: '18px' }} />
-          </button>
-
-          {/* Avatar Button */}
-          <button
-            onClick={openMenu}
-            style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--brand-500), #8b5cf6)', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '16px', transition: 'all 0.2s ease' }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-            title={user?.email}
-          >
-            {initial}
-          </button>
-        </div>
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1, height: '100%', overflowY: 'auto', paddingTop: 'calc(60px + var(--safe-top) + 18px)' }}>
+      <div style={{ position: 'relative', zIndex: 1, height: '100%', overflowY: 'auto', paddingTop: 'calc(var(--safe-top) + 18px)' }}>
       <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 24px calc(112px + var(--safe-bottom))' }}>
 
         {/* Tu negocio de un vistazo */}
@@ -169,7 +142,7 @@ export default function Inicio() {
           <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
         </motion.div>
 
-        {/* Quick Pills - Shortcuts */}
+        {/* Navigation Bar - Avatar, Search, Pills */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -180,6 +153,31 @@ export default function Inicio() {
             marginBottom: '28px',
           }}
         >
+          {/* Avatar Button */}
+          <button
+            onClick={openMenu}
+            style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--brand-500), #8b5cf6)', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '16px', transition: 'all 0.2s ease', flexShrink: 0 }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+            title={user?.email}
+          >
+            {initial}
+          </button>
+
+          {/* Search Button */}
+          <button
+            onClick={handleSearch}
+            style={{ width: '42px', height: '42px', borderRadius: '8px', border: '1px solid var(--surface-2)', background: 'var(--surface-1)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease', flexShrink: 0 }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-2)'; e.currentTarget.style.color = 'var(--text-1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-1)'; e.currentTarget.style.color = 'var(--text-2)' }}
+            title="Buscar (Ctrl+K)"
+          >
+            <Search style={{ width: '18px', height: '18px' }} />
+          </button>
+
+          {/* Spacer */}
+          <div style={{ flex: 1 }} />
+
           {/* Icon Pills */}
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             {PILLS.map(function(pill) {

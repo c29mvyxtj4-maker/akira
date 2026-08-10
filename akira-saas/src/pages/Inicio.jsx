@@ -128,16 +128,10 @@ export default function Inicio() {
           animate={{ opacity: 1, y: 0 }}
           style={{ marginBottom: '20px' }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+          <div style={{ marginBottom: '4px' }}>
             <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
               Hola, {name} 👋
             </h1>
-            <button
-              onClick={() => setShowWidgets(!showWidgets)}
-              style={{ padding: '6px 12px', borderRadius: '6px', background: 'var(--brand-500)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}
-            >
-              {showWidgets ? 'Ocultar widgets' : 'Mostrar widgets'}
-            </button>
           </div>
           <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
         </motion.div>

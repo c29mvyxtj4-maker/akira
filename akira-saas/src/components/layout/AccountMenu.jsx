@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Settings as SettingsIcon, Mail, LogOut, Check, Plus } from 'lucide-react'
+import { Settings as SettingsIcon, Mail, LogOut, Check, Plus, UserPlus } from 'lucide-react'
 
 /*
  * Menú de cuenta/espacio (estilo Notion) que sale al pulsar el avatar. Va en
@@ -17,7 +17,7 @@ function Item({ icon: Icon, label, onClick, danger }) {
   )
 }
 
-export default function AccountMenu({ anchor, orgName, plan, memberCount, initial, email, workspaces, activeOrgId, onSwitch, onCreateWorkspace, onSettings, onInvite, onSignOut, onClose }) {
+export default function AccountMenu({ anchor, orgName, plan, memberCount, initial, email, workspaces, activeOrgId, onSwitch, onCreateWorkspace, onSettings, onInvite, onAddAccount, onSignOut, onClose }) {
   var top = anchor ? anchor.top : 60
   var left = anchor ? anchor.left : 16
   return (
@@ -41,6 +41,7 @@ export default function AccountMenu({ anchor, orgName, plan, memberCount, initia
         <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }} />
         <Item icon={SettingsIcon} label="Configuración" onClick={onSettings} />
         <Item icon={Mail} label="Invitar a miembros" onClick={onInvite} />
+        <Item icon={UserPlus} label="Añadir cuenta" onClick={onAddAccount} />
 
         {email && (
           <>

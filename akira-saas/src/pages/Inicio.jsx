@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import {
   Home, MessageSquare, Calendar as CalendarIcon, Inbox, LayoutDashboard,
   Users, FolderKanban, Wallet, FileText, Clock, BookOpen,
-  ChevronRight, TrendingUp,
+  ChevronRight, TrendingUp, Search, Mail, Bell, Video,
 } from 'lucide-react'
 import { WidgetGrid, useWidgets } from '@/modules/widgets'
 import { useApp } from '@/context/AppContext'
@@ -73,9 +73,9 @@ export default function Inicio() {
   }
 
   var PILLS = [
-    { icon: CalendarIcon,  label: 'Calendario', to: ROUTES.CALENDAR },
-    { icon: MessageSquare, label: 'Mensajes',   to: '/mensajes' },
-    { icon: Inbox,         label: 'Bandeja',    to: '/inbox' },
+    { icon: Mail,          label: 'Mensajes',   to: '/mensajes' },
+    { icon: Bell,          label: 'Menciones',  to: '/inbox' },
+    { icon: Video,         label: 'Reuniones',  to: '/calendar' },
   ]
 
   var KPIS = [
@@ -109,6 +109,16 @@ export default function Inicio() {
   var noReduce = typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   var silkOn = noReduce && getPref('pref_bg_animation', true) !== false && getPref('pref_reduce_motion', false) !== true
 
+  function handleSearch() {
+    var event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, code: 'KeyK' })
+    document.dispatchEvent(event)
+  }
+
+  function handleAddAccount() {
+    window.alert('Sistema de múltiples cuentas - pronto disponible')
+    setMenuOpen(false)
+  }
+
   return (
     <div style={{ height: '100%', position: 'relative', overflow: 'hidden', background: 'var(--bg-base)' }}>
       {silkOn && (
@@ -119,81 +129,57 @@ export default function Inicio() {
         </div>
       )}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.58) 100%)' }} />
-      <div style={{ position: 'relative', zIndex: 1, height: '100%', overflowY: 'auto', paddingTop: 'calc(var(--safe-top) + 18px)' }}>
+
+      {/* Top Bar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '12px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
+          {/* Search Button */}
+          <button
+            onClick={handleSearch}
+            style={{ width: '40px', height: '40px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s ease' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text-2)' }}
+            title="Buscar (Ctrl+K)"
+          >
+            <Search style={{ width: '18px', height: '18px' }} />
+          </button>
+
+          {/* Avatar Button */}
+          <button
+            onClick={openMenu}
+            style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--brand-500), #8b5cf6)', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '16px', transition: 'all 0.2s ease' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+            title={user?.email}
+          >
+            {initial}
+          </button>
+        </div>
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1, height: '100%', overflowY: 'auto', paddingTop: 'calc(60px + var(--safe-top) + 18px)' }}>
       <div style={{ maxWidth: '1080px', margin: '0 auto', padding: '0 24px calc(112px + var(--safe-bottom))' }}>
 
-        {/* Saludo + Widgets Button */}
+        {/* Tu negocio de un vistazo */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          style={{ marginBottom: '20px' }}
+          style={{ marginBottom: '28px' }}
         >
-          <div style={{ marginBottom: '4px' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
-              Hola, {name} 👋
-            </h1>
-          </div>
           <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
         </motion.div>
 
-        {/* Quick Pills - Top Bar (Notion-style) */}
+        {/* Quick Pills - Shortcuts */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
+            gap: '12px',
             marginBottom: '28px',
           }}
         >
-          {/* Avatar */}
-          <div
-            style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '50%',
-              background: 'var(--brand-500)',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: '18px',
-              flexShrink: 0,
-              boxShadow: '0 4px 12px rgba(230, 57, 70, 0.25)',
-            }}
-          >
-            {initial}
-          </div>
-
-          {/* Inicio Tab */}
-          <motion.button
-            onClick={() => navigate(ROUTES.HOME)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              padding: '8px 18px',
-              borderRadius: '20px',
-              border: '2px solid var(--brand-500)',
-              background: 'transparent',
-              color: 'var(--brand-500)',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 600,
-              flexShrink: 0,
-            }}
-          >
-            <Home style={{ width: '16px', height: '16px' }} />
-            Inicio
-          </motion.button>
-
-          {/* Spacer */}
-          <div style={{ flex: 1 }} />
-
           {/* Icon Pills */}
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             {PILLS.map(function(pill) {
@@ -234,24 +220,6 @@ export default function Inicio() {
             })}
           </div>
         </motion.div>
-
-        {/* Widget Grid */}
-        {showWidgets && dashboard && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            style={{ marginBottom: '24px' }}
-          >
-            <WidgetGrid
-              dashboard={dashboard}
-              onUpdateDashboard={saveDashboard}
-              onAddWidget={addWidget}
-              onRemoveWidget={removeWidget}
-              onReorderWidgets={reorderWidgets}
-            />
-          </motion.div>
-        )}
 
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3" style={{ marginTop: '20px' }}>
@@ -359,6 +327,26 @@ export default function Inicio() {
         </p>
       </div>
       </div>
+
+      {menuOpen && (
+        <AccountMenu
+          anchor={menuAnchor || { top: 60, left: window.innerWidth - 300 }}
+          orgName={org?.name || 'Mi espacio'}
+          plan="Pro"
+          memberCount={members?.length || 1}
+          initial={initial}
+          email={user?.email}
+          workspaces={workspaces || []}
+          activeOrgId={org?.id}
+          onSwitch={switchWorkspace}
+          onCreateWorkspace={handleCreateWorkspace}
+          onSettings={() => openSettings('profile')}
+          onInvite={() => openSettings('team')}
+          onAddAccount={handleAddAccount}
+          onSignOut={signOut}
+          onClose={() => setMenuOpen(false)}
+        />
+      )}
 
       {settingsOpen && <SettingsPanel onClose={function() { setSettingsOpen(false) }} initialTab={settingsTab} />}
     </div>

@@ -23,6 +23,7 @@ function fmtEur(n) {
 }
 import AccountMenu from '@/components/layout/AccountMenu'
 import BorderGlow from '@/components/ui/BorderGlow'
+import SearchModal from '@/components/ui/SearchModal'
 import SettingsPanel from '@/pages/Settings'
 
 // Props de BorderGlow afinados para botones pequeños del top bar (tono de marca).
@@ -56,6 +57,7 @@ export default function Inicio() {
   var [settingsOpen, setSettingsOpen] = useState(false)
   var [settingsTab, setSettingsTab] = useState('profile')
   var [showWidgets, setShowWidgets] = useState(false)
+  var [searchOpen, setSearchOpen] = useState(false)
   var { dashboard, addWidget, removeWidget, updateWidget, reorderWidgets, saveDashboard } = useWidgets()
   useEffect(function () { getUnreadMentionCount().then(setUnread).catch(function () {}) }, [])
   useEffect(function () { getFinanceKpis().then(setFin).catch(function () {}) }, [])
@@ -110,9 +112,19 @@ export default function Inicio() {
   var silkOn = noReduce && getPref('pref_bg_animation', true) !== false && getPref('pref_reduce_motion', false) !== true
 
   function handleSearch() {
-    var event = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, code: 'KeyK' })
-    document.dispatchEvent(event)
+    setSearchOpen(true)
   }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   function handleAddAccount() {
     window.alert('Sistema de múltiples cuentas - pronto disponible')
@@ -342,6 +354,8 @@ export default function Inicio() {
           onClose={() => setMenuOpen(false)}
         />
       )}
+
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {settingsOpen && <SettingsPanel onClose={function() { setSettingsOpen(false) }} initialTab={settingsTab} />}
     </div>

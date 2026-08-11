@@ -1,7 +1,7 @@
 import { useState, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import Sidebar from './Sidebar'
-import TopBar from './TopBar'
+import Topbar from './Topbar'
 
 const SettingsPanel = lazy(() => import('@/pages/Settings'))
 
@@ -60,7 +60,7 @@ export default function AppLayout({
       }}>
         {/* TopBar */}
         <div style={{ flexShrink: 0 }}>
-          <TopBar onToggleSidebar={handleToggleSidebar} />
+          <Topbar onToggleSidebar={handleToggleSidebar} />
         </div>
 
         {/* Scrollable content */}

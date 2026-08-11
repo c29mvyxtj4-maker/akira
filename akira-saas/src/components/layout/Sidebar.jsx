@@ -23,7 +23,7 @@ import {
   Star,
 } from 'lucide-react'
 import { ROUTES } from '@/config/constants'
-import { getUpcomingEvents, getRecentPages, getFavorites, getUserWorkspaces } from '@/services/sidebar.service'
+import { getUpcomingEventsFixed, getRecentPages, getFavorites, getUserWorkspaces } from '@/services/sidebar.service'
 
 export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings }) {
   const navigate = useNavigate()
@@ -51,7 +51,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
     const loadData = async () => {
       setLoading(true)
       const [events, pages, favs, workspaces_data] = await Promise.all([
-        getUpcomingEvents(),
+        getUpcomingEventsFixed(),
         getRecentPages(),
         getFavorites(),
         getUserWorkspaces(),

@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 import { ROUTES } from '@/config/constants'
 import { supabase } from '@/lib/supabase'
-import { getRecentPages, getFavorites, getUserWorkspaces } from '@/services/sidebar.service'
+import { getRecentPages, getFavorites, getUserWorkspaces, getRecentClients, getRecentProjects } from '@/services/sidebar.service'
 import { EVENT_TYPES } from '@/services/calendar.service'
 
 export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings }) {
@@ -114,13 +114,15 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
         console.error('[SIDEBAR-INLINE] Exception:', err)
       }
 
-      const [pages, favs, workspaces_data] = await Promise.all([
+      const [pages, favs, workspaces_data, clients, projects] = await Promise.all([
         getRecentPages(),
         getFavorites(),
         getUserWorkspaces(),
+        getRecentClients(),
+        getRecentProjects(),
       ])
 
-      // Combine events and pages into recent items
+      // Combine events, pages, clients and projects into recent items
       const combinedRecent = [
         ...events.map(e => ({
           type: 'event',
@@ -140,6 +142,22 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
           label: p.page_name || 'Sin nombre',
           route: p.page_route,
           timestamp: new Date(p.visited_at).getTime(),
+        })),
+        ...clients.map(c => ({
+          type: 'client',
+          id: c.id,
+          icon: Users,
+          label: c.name || 'Sin nombre',
+          route: `/clients/${c.id}`,
+          timestamp: new Date(c.updated_at).getTime(),
+        })),
+        ...projects.map(pr => ({
+          type: 'project',
+          id: pr.id,
+          icon: CheckSquare,
+          label: pr.name || 'Sin nombre',
+          route: `/projects/${pr.id}`,
+          timestamp: new Date(pr.updated_at).getTime(),
         })),
       ].sort((a, b) => b.timestamp - a.timestamp).slice(0, 9)
 

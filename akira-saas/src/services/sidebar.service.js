@@ -129,3 +129,45 @@ export async function getUserWorkspaces() {
     return []
   }
 }
+
+// Obtener clientes visitados recientemente
+export async function getRecentClients() {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    const { data, error } = await supabase
+      .from('clients')
+      .select('id, name, updated_at')
+      .eq('archived', false)
+      .order('updated_at', { ascending: false })
+      .limit(20)
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('Error fetching recent clients:', error)
+    return []
+  }
+}
+
+// Obtener proyectos visitados recientemente
+export async function getRecentProjects() {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    const { data, error } = await supabase
+      .from('projects')
+      .select('id, name, updated_at')
+      .eq('archived', false)
+      .order('updated_at', { ascending: false })
+      .limit(20)
+
+    if (error) throw error
+    return data || []
+  } catch (error) {
+    console.error('Error fetching recent projects:', error)
+    return []
+  }
+}

@@ -25,6 +25,7 @@ import {
 import { ROUTES } from '@/config/constants'
 import { supabase } from '@/lib/supabase'
 import { getRecentPages, getFavorites, getUserWorkspaces } from '@/services/sidebar.service'
+import { EVENT_TYPES } from '@/services/calendar.service'
 
 export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings }) {
   const navigate = useNavigate()
@@ -139,11 +140,15 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
       label: 'Reuniones',
       items: upcomingEvents.length > 0
         ? [
-            ...upcomingEvents.slice(0, 3).map(event => ({
-              icon: Calendar,
-              label: event.title || 'Sin título',
-              route: '/calendar',
-            })),
+            ...upcomingEvents.slice(0, 3).map(event => {
+              const eventType = EVENT_TYPES[event.type] || EVENT_TYPES.other
+              return {
+                icon: Calendar,
+                label: event.title || 'Sin título',
+                route: '/calendar',
+                color: eventType.color,
+              }
+            }),
             { icon: ChevronRight, label: 'Ver todo', arrow: true, route: '/calendar' },
           ]
         : [
@@ -768,7 +773,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
                         e.currentTarget.style.background = 'transparent'
                       }}
                     >
-                      <Icon size={16} style={{ flexShrink: 0 }} />
+                      <Icon size={16} style={{ flexShrink: 0, color: item.color || 'currentColor' }} />
                       <span style={{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',

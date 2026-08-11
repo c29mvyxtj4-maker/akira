@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
-import SettingsPanel from '@/pages/Settings'
+
+const SettingsPanel = lazy(() => import('@/pages/Settings'))
 
 /**
  * AppLayout — Contenedor principal del sistema modular.
@@ -142,7 +143,11 @@ export default function AppLayout({
       </div>
 
       {/* Settings Panel */}
-      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} initialTab="profile" />}
+      {showSettings && (
+        <Suspense fallback={null}>
+          <SettingsPanel onClose={() => setShowSettings(false)} initialTab="profile" />
+        </Suspense>
+      )}
     </div>
   )
 }

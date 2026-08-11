@@ -4,30 +4,26 @@ import { supabase } from '@/lib/supabase'
 export async function getUpcomingEvents() {
   try {
     const orgId = localStorage.getItem('akira-active-org')
-    if (!orgId) {
-      return []
-    }
+    if (!orgId) return []
 
-    const now = new Date()
-    const isoNow = now.toISOString()
-
-    const query = supabase
+    const { data, error } = await supabase
       .from('calendar_events')
-      .select('id, title, start_at, end_at, type, archived, org_id')
+      .select('*')
       .eq('org_id', orgId)
-      .eq('archived', false)
-      .gte('start_at', isoNow)
-      .order('start_at', { ascending: true })
-      .limit(5)
-
-    const { data, error } = await query
+      .limit(10)
 
     if (error) {
       console.error('Error fetching upcoming events:', error)
       return []
     }
 
-    return data || []
+    if (!data || data.length === 0) return []
+
+    const now = new Date()
+    return data.filter(event => {
+      const eventDate = event.start_at || event.date || event.event_date
+      return eventDate && new Date(eventDate) > now
+    }).slice(0, 5)
   } catch (error) {
     console.error('Error fetching upcoming events:', error)
     return []

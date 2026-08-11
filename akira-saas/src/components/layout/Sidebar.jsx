@@ -47,6 +47,8 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
   const [favorites, setFavorites] = useState([])
   const [workspaces, setWorkspaces] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedEvent, setSelectedEvent] = useState(null)
+  const [showEventModal, setShowEventModal] = useState(false)
 
   // Cargar datos al montar el componente
   useEffect(() => {
@@ -179,6 +181,8 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
                 label: event.title || 'Sin título',
                 route: '/calendar',
                 color: eventType.color,
+                isEvent: true,
+                eventData: event,
               }
             }),
             { icon: ChevronRight, label: 'Ver todo', arrow: true, route: '/calendar' },
@@ -775,8 +779,14 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
                       key={idx}
                       whileHover={{ scale: 1.02 }}
                       onClick={() => {
-                        if (!item.disabled && item.route) {
-                          navigate(item.route)
+                        if (!item.disabled) {
+                          if (item.isEvent) {
+                            // Open event modal
+                            setSelectedEvent(item.eventData)
+                            setShowEventModal(true)
+                          } else if (item.route) {
+                            navigate(item.route)
+                          }
                         }
                       }}
                       style={{
@@ -887,6 +897,62 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
           <Settings size={18} />
         </motion.button>
       </div>
+
+      {/* Event edit modal */}
+      {showEventModal && selectedEvent && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+        }} onClick={() => setShowEventModal(false)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={{
+              background: 'var(--bg-0)',
+              borderRadius: '12px',
+              padding: '24px',
+              maxWidth: '500px',
+              width: '90%',
+              maxHeight: '80vh',
+              overflow: 'auto',
+              border: '1px solid var(--border)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-1)' }}>Editar evento</h2>
+              <button onClick={() => setShowEventModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', fontSize: '24px' }}>×</button>
+            </div>
+            <div style={{ color: 'var(--text-1)' }}>
+              <p><strong>Título:</strong> {selectedEvent.title}</p>
+              <p><strong>Fecha:</strong> {selectedEvent.start_at?.split('T')[0]}</p>
+              <p><strong>Tipo:</strong> {EVENT_TYPES[selectedEvent.type]?.label || selectedEvent.type}</p>
+            </div>
+            <button
+              onClick={() => setShowEventModal(false)}
+              style={{
+                marginTop: '20px',
+                width: '100%',
+                padding: '10px',
+                background: 'var(--brand)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: 500,
+              }}
+            >
+              Ir a editar en calendario
+            </button>
+          </motion.div>
+        </div>
+      )}
     </motion.div>
   )
 }

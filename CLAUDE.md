@@ -25,6 +25,33 @@ This guide provides comprehensive guidance for Claude Code when working with AKI
 
 ---
 
+## ⚠️ CRITICAL: File Import Case-Sensitivity
+
+**IMPORTANT:** When importing files, always match the EXACT filename case. Windows is case-insensitive but Linux/Vercel is case-sensitive.
+
+**Common Mistakes:**
+```javascript
+// ❌ WRONG (file is actually Topbar.jsx, not TopBar.jsx)
+import TopBar from './TopBar'
+
+// ✅ CORRECT
+import Topbar from './Topbar'
+```
+
+**Files that are frequently mistyped:**
+- `Topbar.jsx` — NOT `TopBar.jsx` or `Topbar.jsx` (must be exact)
+- `AppLayout.jsx` — NOT `applayout.jsx` or `AppLayout.JSX`
+- All component files in `src/components/layout/` — verify exact case before importing
+
+**How to check:**
+```bash
+ls -la src/components/layout/ | grep -i [filename]
+```
+
+This prevents Rolldown/Vite build errors on deployment.
+
+---
+
 ## 🎬 YouTube Projects System (AKIRA v2.0 Feature)
 
 **Purpose:** Marc is a content creator. This system automates video production workflow planning.

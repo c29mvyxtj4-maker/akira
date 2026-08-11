@@ -75,7 +75,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
         let query = supabase
           .from('calendar_events')
           .select('*')
-          .isNotNull('start_at')
+          .not('start_at', 'is', null)
           .eq('archived', false)
           .order('start_at', { ascending: true })
           .limit(10)

@@ -51,32 +51,38 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      // Inline fetching to avoid cache issues
+      // Inline fetching to avoid cache issues - DIRECT FROM SIDEBAR.JSX
       const orgId = localStorage.getItem('akira-active-org')
+      console.log('[SIDEBAR-INLINE] Starting event fetch for org:', orgId)
       let events = []
       if (orgId) {
         try {
+          console.log('[SIDEBAR-INLINE] Calling supabase query with org_id:', orgId)
           const { data, error } = await supabase
             .from('calendar_events')
             .select('*')
             .eq('org_id', orgId)
+            .isNotNull('start_at')
+            .order('start_at')
             .limit(10)
 
-          console.log('DEBUG: Raw calendar events from DB:', data, 'Error:', error)
+          console.log('[SIDEBAR-INLINE] Query response:', { dataLength: data?.length, error })
 
           if (!error && data && data.length > 0) {
             const now = new Date()
-            console.log('DEBUG: Current date/time:', now)
+            console.log('[SIDEBAR-INLINE] Filtering', data.length, 'events after', now)
             events = data.filter(event => {
               const eventDate = event.start_at || event.date || event.event_date
               const isAfterNow = eventDate && new Date(eventDate) > now
-              console.log('DEBUG: Event', event.id, '- Date field:', eventDate, '- Is future:', isAfterNow)
+              console.log('[SIDEBAR-INLINE] Event:', event.title, '- start_at:', event.start_at, '- isFuture:', isAfterNow)
               return isAfterNow
             }).slice(0, 5)
-            console.log('DEBUG: Filtered events:', events)
+            console.log('[SIDEBAR-INLINE] Returning', events.length, 'future events')
+          } else if (error) {
+            console.error('[SIDEBAR-INLINE] Query error:', error)
           }
         } catch (err) {
-          console.error('Error fetching events:', err)
+          console.error('[SIDEBAR-INLINE] Exception:', err)
         }
       }
 

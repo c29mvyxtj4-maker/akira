@@ -62,12 +62,18 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
             .eq('org_id', orgId)
             .limit(10)
 
+          console.log('DEBUG: Raw calendar events from DB:', data, 'Error:', error)
+
           if (!error && data && data.length > 0) {
             const now = new Date()
+            console.log('DEBUG: Current date/time:', now)
             events = data.filter(event => {
               const eventDate = event.start_at || event.date || event.event_date
-              return eventDate && new Date(eventDate) > now
+              const isAfterNow = eventDate && new Date(eventDate) > now
+              console.log('DEBUG: Event', event.id, '- Date field:', eventDate, '- Is future:', isAfterNow)
+              return isAfterNow
             }).slice(0, 5)
+            console.log('DEBUG: Filtered events:', events)
           }
         } catch (err) {
           console.error('Error fetching events:', err)

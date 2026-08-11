@@ -1,32 +1,49 @@
 import { supabase } from '@/lib/supabase'
 
-// Obtener próximos eventos del calendario
-// FIXED: Filtering events by start_at date and filtering in JavaScript (v2)
+// Obtener próximos eventos del calendario - COMPLETELY REWRITTEN
+// Using start_at field only (not start_time which doesn't exist)
 export async function getUpcomingEventsFixed() {
   try {
     const orgId = localStorage.getItem('akira-active-org')
-    if (!orgId) return []
-
-    const { data, error } = await supabase
-      .from('calendar_events')
-      .select('*')
-      .eq('org_id', orgId)
-      .limit(10)
-
-    if (error) {
-      console.error('Error fetching upcoming events:', error)
+    console.log('SIDEBAR SERVICE: Fetching events for org:', orgId)
+    if (!orgId) {
+      console.log('SIDEBAR SERVICE: No org ID, returning empty')
       return []
     }
 
-    if (!data || data.length === 0) return []
+    // Query with start_at field (correct field name)
+    const { data, error } = await supabase
+      .from('calendar_events')
+      .select('id, title, start_at, org_id')
+      .eq('org_id', orgId)
+      .isNotNull('start_at')
+      .order('start_at', { ascending: true })
+      .limit(10)
+
+    console.log('SIDEBAR SERVICE: Raw data returned:', { data, error })
+
+    if (error) {
+      console.error('SIDEBAR SERVICE: Query error:', error)
+      return []
+    }
+
+    if (!data || data.length === 0) {
+      console.log('SIDEBAR SERVICE: No data returned')
+      return []
+    }
 
     const now = new Date()
-    return data.filter(event => {
-      const eventDate = event.start_at || event.date || event.event_date
-      return eventDate && new Date(eventDate) > now
-    }).slice(0, 5)
+    const futureEvents = data.filter(event => {
+      const eventDate = new Date(event.start_at)
+      const isFuture = eventDate > now
+      console.log('SIDEBAR SERVICE: Checking event', event.id, '- date:', event.start_at, '- isFuture:', isFuture)
+      return isFuture
+    })
+
+    console.log('SIDEBAR SERVICE: Returning', futureEvents.length, 'future events')
+    return futureEvents.slice(0, 5)
   } catch (error) {
-    console.error('Error fetching upcoming events:', error)
+    console.error('SIDEBAR SERVICE: Exception:', error)
     return []
   }
 }

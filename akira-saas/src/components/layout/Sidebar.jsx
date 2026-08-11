@@ -49,6 +49,20 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
   const [loading, setLoading] = useState(true)
   const [recentItems, setRecentItems] = useState([])
 
+  // Function to add item to recent items
+  const addRecentItem = (type, id) => {
+    const key = `${type}-${id}`
+    const recent = JSON.parse(localStorage.getItem('akira-recent-items') || '[]')
+
+    // Remove if already exists (to move to top)
+    const filtered = recent.filter(item => item !== key)
+
+    // Add to beginning
+    const updated = [key, ...filtered].slice(0, 20) // Keep max 20 items
+
+    localStorage.setItem('akira-recent-items', JSON.stringify(updated))
+  }
+
   // Cargar datos al montar el componente
   useEffect(() => {
     const loadData = async () => {
@@ -122,9 +136,14 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
         getRecentProjects(),
       ])
 
-      // Combine events, pages, clients and projects into recent items
-      const combinedRecent = [
-        ...events.map(e => ({
+      // Get recent items from localStorage (ordered by opening)
+      const recentItemsLS = JSON.parse(localStorage.getItem('akira-recent-items') || '[]')
+
+      // Create a map of all available items
+      const itemsMap = {}
+
+      events.forEach(e => {
+        itemsMap[`event-${e.id}`] = {
           type: 'event',
           id: e.id,
           icon: Calendar,
@@ -133,33 +152,44 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
           data: e,
           isEvent: true,
           eventData: e,
-          timestamp: new Date(e.start_at).getTime(),
-        })),
-        ...pages.map(p => ({
+        }
+      })
+
+      pages.forEach(p => {
+        itemsMap[`page-${p.id}`] = {
           type: 'page',
           id: p.id,
           icon: Clock,
           label: p.page_name || 'Sin nombre',
           route: p.page_route,
-          timestamp: new Date(p.visited_at).getTime(),
-        })),
-        ...clients.map(c => ({
+        }
+      })
+
+      clients.forEach(c => {
+        itemsMap[`client-${c.id}`] = {
           type: 'client',
           id: c.id,
           icon: Users,
           label: c.name || 'Sin nombre',
           route: `/clients/${c.id}`,
-          timestamp: new Date(c.updated_at).getTime(),
-        })),
-        ...projects.map(pr => ({
+        }
+      })
+
+      projects.forEach(pr => {
+        itemsMap[`project-${pr.id}`] = {
           type: 'project',
           id: pr.id,
           icon: CheckSquare,
           label: pr.name || 'Sin nombre',
           route: `/projects/${pr.id}`,
-          timestamp: new Date(pr.updated_at).getTime(),
-        })),
-      ].sort((a, b) => b.timestamp - a.timestamp).slice(0, 9)
+        }
+      })
+
+      // Build combined recent list from localStorage order
+      const combinedRecent = recentItemsLS
+        .map(key => itemsMap[key])
+        .filter(item => item) // Remove items that no longer exist
+        .slice(0, 9)
 
       setUpcomingEvents(events)
       setRecentPages(pages)
@@ -828,8 +858,17 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
                           if (item.isEvent) {
                             // Save event to localStorage and navigate to calendar
                             localStorage.setItem('akira-event-to-edit', JSON.stringify(item.eventData))
+                            addRecentItem('event', item.eventData.id)
                             navigate('/calendar')
                           } else if (item.route) {
+                            // Register other items (clients, projects, pages)
+                            if (item.type === 'client') {
+                              addRecentItem('client', item.id)
+                            } else if (item.type === 'project') {
+                              addRecentItem('project', item.id)
+                            } else if (item.type === 'page') {
+                              addRecentItem('page', item.id)
+                            }
                             navigate(item.route)
                           }
                         }

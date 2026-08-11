@@ -130,7 +130,7 @@ export async function getUserWorkspaces() {
   }
 }
 
-// Obtener clientes visitados recientemente
+// Obtener todos los clientes (para mostrar en recientes por orden de apertura)
 export async function getRecentClients() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -138,20 +138,19 @@ export async function getRecentClients() {
 
     const { data, error } = await supabase
       .from('clients')
-      .select('id, name, updated_at')
+      .select('id, name')
       .eq('archived', false)
-      .order('updated_at', { ascending: false })
-      .limit(20)
+      .order('name')
 
     if (error) throw error
     return data || []
   } catch (error) {
-    console.error('Error fetching recent clients:', error)
+    console.error('Error fetching clients:', error)
     return []
   }
 }
 
-// Obtener proyectos visitados recientemente
+// Obtener todos los proyectos (para mostrar en recientes por orden de apertura)
 export async function getRecentProjects() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -159,15 +158,14 @@ export async function getRecentProjects() {
 
     const { data, error } = await supabase
       .from('projects')
-      .select('id, name, updated_at')
+      .select('id, name')
       .eq('archived', false)
-      .order('updated_at', { ascending: false })
-      .limit(20)
+      .order('name')
 
     if (error) throw error
     return data || []
   } catch (error) {
-    console.error('Error fetching recent projects:', error)
+    console.error('Error fetching projects:', error)
     return []
   }
 }

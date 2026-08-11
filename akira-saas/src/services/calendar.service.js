@@ -48,6 +48,20 @@ export async function getCalendarEvents(dateFrom, dateTo) {
 
 export async function createCalendarEvent(form) {
   var ownerId = await uid()
+
+  // Obtener org_id desde el perfil del usuario, fallback a localStorage
+  var orgId = getActiveOrgId()
+  if (!orgId) {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user && user.user_metadata && user.user_metadata.org_id) {
+        orgId = user.user_metadata.org_id
+      }
+    } catch (e) {
+      console.error('Error fetching org_id from auth:', e)
+    }
+  }
+
   var res = await supabase.from('calendar_events').insert({
     title:       form.title,
     description: form.description || null,
@@ -60,7 +74,7 @@ export async function createCalendarEvent(form) {
     client_id:   form.client_id   || null,
     project_id:  form.project_id  || null,
     owner_id:    ownerId,
-    org_id:      getActiveOrgId() || null,
+    org_id:      orgId || null,
     archived:    false,
   }).select('*, clients(id, name), projects(id, name)').single()
   if (res.error) throw res.error

@@ -55,35 +55,42 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
       const orgId = localStorage.getItem('akira-active-org')
       console.log('[SIDEBAR-INLINE] Starting event fetch for org:', orgId)
       let events = []
-      if (orgId) {
-        try {
-          console.log('[SIDEBAR-INLINE] Calling supabase query with org_id:', orgId)
-          const { data, error } = await supabase
-            .from('calendar_events')
-            .select('*')
-            .eq('org_id', orgId)
-            .isNotNull('start_at')
-            .order('start_at')
-            .limit(10)
+      try {
+        // Query: Get future calendar events
+        // Include events with matching org_id OR org_id = NULL (for legacy/unassigned events)
+        let query = supabase
+          .from('calendar_events')
+          .select('*')
+          .isNotNull('start_at')
+          .eq('archived', false)
+          .order('start_at', { ascending: true })
+          .limit(10)
 
-          console.log('[SIDEBAR-INLINE] Query response:', { dataLength: data?.length, error })
-
-          if (!error && data && data.length > 0) {
-            const now = new Date()
-            console.log('[SIDEBAR-INLINE] Filtering', data.length, 'events after', now)
-            events = data.filter(event => {
-              const eventDate = event.start_at || event.date || event.event_date
-              const isAfterNow = eventDate && new Date(eventDate) > now
-              console.log('[SIDEBAR-INLINE] Event:', event.title, '- start_at:', event.start_at, '- isFuture:', isAfterNow)
-              return isAfterNow
-            }).slice(0, 5)
-            console.log('[SIDEBAR-INLINE] Returning', events.length, 'future events')
-          } else if (error) {
-            console.error('[SIDEBAR-INLINE] Query error:', error)
-          }
-        } catch (err) {
-          console.error('[SIDEBAR-INLINE] Exception:', err)
+        // Add org_id filter only if available
+        if (orgId) {
+          console.log('[SIDEBAR-INLINE] Filtering by org_id:', orgId)
+          query = query.or(`org_id.eq.${orgId},org_id.is.null`)
         }
+
+        const { data, error } = await query
+
+        console.log('[SIDEBAR-INLINE] Query response:', { dataLength: data?.length, error })
+
+        if (!error && data && data.length > 0) {
+          const now = new Date()
+          console.log('[SIDEBAR-INLINE] Filtering', data.length, 'events after', now)
+          events = data.filter(event => {
+            const eventDate = event.start_at || event.date || event.event_date
+            const isAfterNow = eventDate && new Date(eventDate) > now
+            console.log('[SIDEBAR-INLINE] Event:', event.title, '- start_at:', event.start_at, '- isFuture:', isAfterNow)
+            return isAfterNow
+          }).slice(0, 5)
+          console.log('[SIDEBAR-INLINE] Returning', events.length, 'future events')
+        } else if (error) {
+          console.error('[SIDEBAR-INLINE] Query error:', error)
+        }
+      } catch (err) {
+        console.error('[SIDEBAR-INLINE] Exception:', err)
       }
 
       const [pages, favs, workspaces_data] = await Promise.all([

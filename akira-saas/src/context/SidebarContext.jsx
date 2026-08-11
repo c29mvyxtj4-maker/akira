@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback } from 'react'
+import { createContext, useState, useCallback, useContext } from 'react'
 
 export const SidebarContext = createContext()
 
@@ -25,7 +25,7 @@ export function SidebarProvider({ children }) {
 }
 
 export function useSidebar() {
-  const context = React.useContext ? React.useContext(SidebarContext) : null
+  const context = useContext(SidebarContext)
   if (!context) {
     throw new Error('useSidebar must be used within SidebarProvider')
   }

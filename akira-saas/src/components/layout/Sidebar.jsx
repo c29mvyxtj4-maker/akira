@@ -52,7 +52,21 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
     const loadData = async () => {
       setLoading(true)
       // Inline fetching to avoid cache issues - DIRECT FROM SIDEBAR.JSX
-      const orgId = localStorage.getItem('akira-active-org')
+      let orgId = localStorage.getItem('akira-active-org')
+
+      // If no orgId in localStorage yet, try to get from auth user
+      if (!orgId) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser()
+          if (user && user.user_metadata && user.user_metadata.org_id) {
+            orgId = user.user_metadata.org_id
+            console.log('[SIDEBAR-INLINE] Got org_id from auth metadata:', orgId)
+          }
+        } catch (e) {
+          console.error('[SIDEBAR-INLINE] Error getting auth user:', e)
+        }
+      }
+
       console.log('[SIDEBAR-INLINE] Starting event fetch for org:', orgId)
       let events = []
       try {
@@ -66,10 +80,15 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
           .order('start_at', { ascending: true })
           .limit(10)
 
-        // Add org_id filter only if available
+        // Always filter by org_id (matching or NULL for unassigned)
         if (orgId) {
           console.log('[SIDEBAR-INLINE] Filtering by org_id:', orgId)
+          // Include events with this org_id OR org_id = NULL
           query = query.or(`org_id.eq.${orgId},org_id.is.null`)
+        } else {
+          console.log('[SIDEBAR-INLINE] No org_id, showing unassigned events only')
+          // If no org_id, only show unassigned events (org_id = NULL)
+          query = query.isNull('org_id')
         }
 
         const { data, error } = await query

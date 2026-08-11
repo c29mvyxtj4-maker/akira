@@ -3,17 +3,18 @@ import { supabase } from '@/lib/supabase'
 // Obtener próximos eventos (reuniones, llamadas, entregas)
 export async function getUpcomingEvents() {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return []
+    const orgId = localStorage.getItem('akira-active-org')
+    if (!orgId) return []
 
     const now = new Date()
     const { data, error } = await supabase
       .from('calendar_events')
       .select('*')
-      .eq('org_id', user.org_id)
-      .gte('start_time', now.toISOString())
-      .in('category', ['reunion', 'llamada', 'entrega'])
-      .order('start_time', { ascending: true })
+      .eq('org_id', orgId)
+      .eq('archived', false)
+      .gte('start_at', now.toISOString())
+      .in('type', ['meeting', 'call', 'delivery'])
+      .order('start_at', { ascending: true })
       .limit(5)
 
     if (error) throw error

@@ -13,7 +13,6 @@ export async function getUpcomingEvents() {
       .eq('org_id', orgId)
       .eq('archived', false)
       .gte('start_at', now.toISOString())
-      .in('type', ['meeting', 'call', 'delivery'])
       .order('start_at', { ascending: true })
       .limit(5)
 

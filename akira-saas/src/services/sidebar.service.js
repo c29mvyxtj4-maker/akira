@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 
-// Obtener próximos eventos (reuniones, llamadas, entregas)
+// Obtener próximos eventos del calendario
 export async function getUpcomingEvents() {
   try {
     const orgId = localStorage.getItem('akira-active-org')
@@ -16,7 +16,10 @@ export async function getUpcomingEvents() {
       .order('start_at', { ascending: true })
       .limit(5)
 
-    if (error) throw error
+    if (error) {
+      console.error('Error fetching upcoming events:', error)
+      return []
+    }
     return data || []
   } catch (error) {
     console.error('Error fetching upcoming events:', error)

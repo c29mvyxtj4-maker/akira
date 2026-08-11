@@ -23,7 +23,8 @@ import {
   Star,
 } from 'lucide-react'
 import { ROUTES } from '@/config/constants'
-import { getUpcomingEventsFixed, getRecentPages, getFavorites, getUserWorkspaces } from '@/services/sidebar.service'
+import { supabase } from '@/lib/supabase'
+import { getRecentPages, getFavorites, getUserWorkspaces } from '@/services/sidebar.service'
 
 export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings }) {
   const navigate = useNavigate()
@@ -50,8 +51,30 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      const [events, pages, favs, workspaces_data] = await Promise.all([
-        getUpcomingEventsFixed(),
+      // Inline fetching to avoid cache issues
+      const orgId = localStorage.getItem('akira-active-org')
+      let events = []
+      if (orgId) {
+        try {
+          const { data, error } = await supabase
+            .from('calendar_events')
+            .select('*')
+            .eq('org_id', orgId)
+            .limit(10)
+
+          if (!error && data && data.length > 0) {
+            const now = new Date()
+            events = data.filter(event => {
+              const eventDate = event.start_at || event.date || event.event_date
+              return eventDate && new Date(eventDate) > now
+            }).slice(0, 5)
+          }
+        } catch (err) {
+          console.error('Error fetching events:', err)
+        }
+      }
+
+      const [pages, favs, workspaces_data] = await Promise.all([
         getRecentPages(),
         getFavorites(),
         getUserWorkspaces(),

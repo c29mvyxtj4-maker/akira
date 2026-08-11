@@ -13,7 +13,7 @@ export async function getUpcomingEvents() {
       .limit(10)
 
     if (error) {
-      console.error('Error fetching upcoming events:', error)
+      console.error('DEBUG: Error fetching upcoming events. Field might be called start_at or date:', error)
       return []
     }
 

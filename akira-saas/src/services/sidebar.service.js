@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 
 // Obtener próximos eventos del calendario
+// FIXED: Filtering events by start_at date and filtering in JavaScript
 export async function getUpcomingEvents() {
   try {
     const orgId = localStorage.getItem('akira-active-org')

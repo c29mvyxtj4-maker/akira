@@ -123,8 +123,40 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
       setFavorites(favs)
       setWorkspaces(workspaces_data)
       setLoading(false)
+
+      return orgId
     }
-    loadData()
+
+    let subscription = null
+
+    loadData().then((orgId) => {
+      // Subscribe to real-time changes in calendar_events
+      if (orgId) {
+        subscription = supabase
+          .channel(`calendar_events:org_id=eq.${orgId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'calendar_events',
+              filter: `org_id=eq.${orgId}`,
+            },
+            (payload) => {
+              console.log('[SIDEBAR-REALTIME] Calendar event updated:', payload)
+              // Refetch events when changes occur
+              loadData()
+            }
+          )
+          .subscribe()
+      }
+    })
+
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe()
+      }
+    }
   }, [])
 
   const mainNavItems = [

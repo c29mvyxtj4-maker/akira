@@ -47,8 +47,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
   const [favorites, setFavorites] = useState([])
   const [workspaces, setWorkspaces] = useState([])
   const [loading, setLoading] = useState(true)
-  const [selectedEvent, setSelectedEvent] = useState(null)
-  const [showEventModal, setShowEventModal] = useState(false)
+  const [recentItems, setRecentItems] = useState([])
 
   // Cargar datos al montar el componente
   useEffect(() => {
@@ -120,8 +119,33 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
         getFavorites(),
         getUserWorkspaces(),
       ])
+
+      // Combine events and pages into recent items
+      const combinedRecent = [
+        ...events.map(e => ({
+          type: 'event',
+          id: e.id,
+          icon: Calendar,
+          label: e.title || 'Sin título',
+          route: '/calendar',
+          data: e,
+          isEvent: true,
+          eventData: e,
+          timestamp: new Date(e.start_at).getTime(),
+        })),
+        ...pages.map(p => ({
+          type: 'page',
+          id: p.id,
+          icon: Clock,
+          label: p.page_name || 'Sin nombre',
+          route: p.page_route,
+          timestamp: new Date(p.visited_at).getTime(),
+        })),
+      ].sort((a, b) => b.timestamp - a.timestamp).slice(0, 9)
+
       setUpcomingEvents(events)
       setRecentPages(pages)
+      setRecentItems(combinedRecent)
       setFavorites(favs)
       setWorkspaces(workspaces_data)
       setLoading(false)
@@ -194,12 +218,15 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
     },
     recientes: {
       label: 'Recientes',
-      items: recentPages.length > 0
+      items: recentItems.length > 0
         ? [
-            ...recentPages.slice(0, 9).map(page => ({
-              icon: Clock,
-              label: page.page_name || 'Sin nombre',
-              route: page.page_route,
+            ...recentItems.map(item => ({
+              icon: item.icon,
+              label: item.label,
+              route: item.route,
+              isEvent: item.isEvent,
+              eventData: item.eventData,
+              color: item.isEvent ? (EVENT_TYPES[item.eventData?.type]?.color || '#64748b') : undefined,
             })),
             { icon: Plus, label: 'Más', dots: true, route: '/activity' },
           ]
@@ -781,9 +808,9 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
                       onClick={() => {
                         if (!item.disabled) {
                           if (item.isEvent) {
-                            // Open event modal
-                            setSelectedEvent(item.eventData)
-                            setShowEventModal(true)
+                            // Save event to localStorage and navigate to calendar
+                            localStorage.setItem('akira-event-to-edit', JSON.stringify(item.eventData))
+                            navigate('/calendar')
                           } else if (item.route) {
                             navigate(item.route)
                           }
@@ -898,61 +925,6 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
         </motion.button>
       </div>
 
-      {/* Event edit modal */}
-      {showEventModal && selectedEvent && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-        }} onClick={() => setShowEventModal(false)}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={{
-              background: 'var(--bg-0)',
-              borderRadius: '12px',
-              padding: '24px',
-              maxWidth: '500px',
-              width: '90%',
-              maxHeight: '80vh',
-              overflow: 'auto',
-              border: '1px solid var(--border)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-1)' }}>Editar evento</h2>
-              <button onClick={() => setShowEventModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', fontSize: '24px' }}>×</button>
-            </div>
-            <div style={{ color: 'var(--text-1)' }}>
-              <p><strong>Título:</strong> {selectedEvent.title}</p>
-              <p><strong>Fecha:</strong> {selectedEvent.start_at?.split('T')[0]}</p>
-              <p><strong>Tipo:</strong> {EVENT_TYPES[selectedEvent.type]?.label || selectedEvent.type}</p>
-            </div>
-            <button
-              onClick={() => setShowEventModal(false)}
-              style={{
-                marginTop: '20px',
-                width: '100%',
-                padding: '10px',
-                background: 'var(--brand)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 500,
-              }}
-            >
-              Ir a editar en calendario
-            </button>
-          </motion.div>
-        </div>
-      )}
     </motion.div>
   )
 }

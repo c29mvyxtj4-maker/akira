@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { AppLayout } from './AppLayout';
+import AppLayout from './AppLayout';
 
 const PAGE_TITLES = {
   '/inbox': 'Inbox',

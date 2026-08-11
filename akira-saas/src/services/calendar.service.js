@@ -2,13 +2,13 @@ import { supabase } from '@/lib/supabase'
 import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
 export var EVENT_TYPES = {
-  meeting:  { label: 'Reunion',    color: '#6366f1', emoji: '📅' },
+  meeting:  { label: 'Reunion',    color: '#ef4444', emoji: '📅' },
   shoot:    { label: 'Rodaje',     color: '#ef4444', emoji: '🎬' },
   delivery: { label: 'Entrega',    color: '#22c55e', emoji: '📦' },
   call:     { label: 'Llamada',    color: '#3b82f6', emoji: '📞' },
   deadline: { label: 'Deadline',   color: '#f59e0b', emoji: '⏰' },
-  reminder: { label: 'Recordatorio', color: '#a855f7', emoji: '🔔' },
-  personal: { label: 'Personal',   color: '#ec4899', emoji: '👤' },
+  reminder: { label: 'Recordatorio', color: '#ec4899', emoji: '🔔' },
+  personal: { label: 'Personal',   color: '#a855f7', emoji: '👤' },
   other:    { label: 'Otro',       color: '#64748b', emoji: '📌' },
 }
 

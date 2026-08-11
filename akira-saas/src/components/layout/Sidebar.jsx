@@ -773,7 +773,9 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
                         e.currentTarget.style.background = 'transparent'
                       }}
                     >
-                      <Icon size={16} style={{ flexShrink: 0, color: item.color || 'currentColor' }} />
+                      <span style={{ color: item.color || 'inherit', display: 'flex', alignItems: 'center' }}>
+                        <Icon size={16} style={{ flexShrink: 0 }} />
+                      </span>
                       <span style={{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',

@@ -6,6 +6,8 @@ import {
   Calendar, DollarSign, TrendingUp, Flag,
 } from 'lucide-react'
 import { useProjects } from '@/hooks/useProjects'
+import { useAddRecent } from '@/hooks/useAddRecent'
+import { useCurrentItem } from '@/context/CurrentItemContext'
 import { useOrg } from '@/context/OrgContext'
 import { getProjectMembers, addProjectMember, removeProjectMember, getOrgTeam } from '@/services/projectMembers.service'
 import { createMention } from '@/services/mentions.service'
@@ -993,6 +995,8 @@ function ProjectForm({ initial, clients, onSave, onCancel, loading }) {
 
 export default function Projects() {
   var hook = useProjects()
+  var { addRecent } = useAddRecent()
+  var { setCurrentItem } = useCurrentItem()
   var [showFilters, setShowFilters] = useState(false)
   var [viewMode, setViewMode] = useState('list')
   var SI = {
@@ -1094,7 +1098,7 @@ export default function Projects() {
             ) : (
               hook.projects.map(function(p) {
                 return (
-                  <ProjectCard key={p.id} project={p} isSelected={hook.selectedId === p.id} onClick={function() { hook.setSelectedId(p.id) }} />
+                  <ProjectCard key={p.id} project={p} isSelected={hook.selectedId === p.id} onClick={function() { hook.setSelectedId(p.id); addRecent('project', p.id); setCurrentItem({ type: 'project', id: p.id, name: p.name }) }} />
                 )
               })
             )}

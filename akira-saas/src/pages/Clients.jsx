@@ -8,6 +8,8 @@ import {
 } from 'lucide-react'
 import { exportToCsv } from '@/utils/exportCsv'
 import { useClients } from '@/hooks/useClients'
+import { useAddRecent } from '@/hooks/useAddRecent'
+import { useCurrentItem } from '@/context/CurrentItemContext'
 import { CLIENT_NICHES } from '@/services/clients.service'
 import { CLIENT_STATUS, PROJECT_STATUS } from '@/config/constants'
 import { getEmailTemplates, buildTemplateMailto } from '@/services/templates.service'
@@ -540,6 +542,8 @@ export default function Clients() {
     handleArchive, handleAddEntry, handleDeleteEntry,
     toastMsg,
   } = useClients()
+  const { addRecent } = useAddRecent()
+  const { setCurrentItem } = useCurrentItem()
 
   const [showFilters, setShowFilters] = useState(false)
 
@@ -698,7 +702,11 @@ export default function Clients() {
                   key={c.id}
                   client={c}
                   isSelected={selectedId === c.id}
-                  onClick={() => setSelectedId(c.id)}
+                  onClick={() => {
+                    setSelectedId(c.id)
+                    addRecent('client', c.id)
+                    setCurrentItem({ type: 'client', id: c.id, name: c.name })
+                  }}
                 />
               ))
             )}

@@ -26,22 +26,26 @@ export function OrgProvider({ children }) {
     setLoading(true)
     getMyWorkspaces()
       .then(function(list) {
+        console.log('[OrgContext] getMyWorkspaces returned:', list)
         if (!list || list.length === 0) {
+          console.log('[OrgContext] No workspaces found, creating default')
           return ensureOrg('Mi Workspace').then(function(newOrg) {
             setWorkspaces([newOrg]); setOrg(newOrg); return loadMembers(newOrg.id, user.id)
           })
         }
+        console.log('[OrgContext] Setting workspaces:', list)
         setWorkspaces(list)
         var savedId = null
         try { savedId = localStorage.getItem(LS_KEY) } catch (_) { /* noop */ }
         var active = list.find(function(o) { return o.id === savedId }) || list[0]
+        console.log('[OrgContext] Active workspace:', active, 'savedId:', savedId)
         setOrg(active)
         // Persistir SIEMPRE el workspace activo, para que los servicios (que leen
         // localStorage vía getActiveOrgId) puedan filtrar por él desde el arranque.
         try { if (active) localStorage.setItem(LS_KEY, active.id) } catch (_) { /* noop */ }
         return loadMembers(active.id, user.id)
       })
-      .catch(function(e) { console.error('[OrgContext]', e) })
+      .catch(function(e) { console.error('[OrgContext] Error:', e) })
       .finally(function() { setLoading(false) })
   }, [isAuthenticated, user && user.id])
 

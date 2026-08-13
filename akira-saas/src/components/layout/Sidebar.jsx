@@ -26,10 +26,15 @@ import { ROUTES } from '@/config/constants'
 import { supabase } from '@/lib/supabase'
 import { getRecentPages, getFavorites, getUserWorkspaces, getRecentClients, getRecentProjects } from '@/services/sidebar.service'
 import { EVENT_TYPES } from '@/services/calendar.service'
+import AccountMenu from '@/components/layout/AccountMenu'
+import { useAuth } from '@/context/AuthContext'
+import { useOrg } from '@/context/OrgContext'
 
 export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings }) {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user } = useAuth()
+  const { org, workspaces: contextWorkspaces, switchWorkspace } = useOrg()
   const [expandedSections, setExpandedSections] = useState({
     reuniones: true,
     recientes: true,
@@ -379,373 +384,28 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
           <ChevronDown size={14} style={{ color: 'var(--text-3)' }} />
         </motion.button>
 
-        {/* Account Menu Dropdown */}
+        {/* Account Menu - Idéntico al Topbar */}
         {showAccountMenu && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.15 }}
-            style={{
-              position: 'fixed',
-              top: accountButtonRef.current?.getBoundingClientRect().bottom + 8,
-              left: accountButtonRef.current?.getBoundingClientRect().left,
-              width: '280px',
-              background: 'var(--bg-1)',
-              border: '1px solid var(--border)',
-              borderRadius: '12px',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
-              zIndex: 1000,
-              overflow: 'hidden',
-            }}
-            onMouseLeave={() => setShowAccountMenu(false)}
-          >
-            {/* Header Info */}
-            <div style={{
-              padding: '16px',
-              borderBottom: '1px solid var(--border)',
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginBottom: '8px',
-              }}>
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '6px',
-                  background: 'var(--brand)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '14px',
-                  fontWeight: 700,
-                }}>
-                  M
-                </div>
-                <div>
-                  <div style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    color: 'var(--text-1)',
-                  }}>
-                    Marc Rosón Martí's Notion
-                  </div>
-                  <div style={{
-                    fontSize: '12px',
-                    color: 'var(--text-3)',
-                  }}>
-                    Plan gratuito · 1 miembro
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Menu Items */}
-            <div style={{
-              padding: '8px',
-            }}>
-              {/* Configuración */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                onClick={() => {
-                  if (onOpenSettings) onOpenSettings()
-                  setShowAccountMenu(false)
-                }}
-                style={{
-                  width: '100%',
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--text-1)',
-                  padding: '10px 12px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  borderRadius: '6px',
-                  transition: 'all var(--dur-fast)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--bg-2)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                }}
-              >
-                <Settings size={16} />
-                Configuración
-              </motion.button>
-
-              {/* Invitar a miembros */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                onClick={() => {
-                  alert('Invitar a miembros - Funcionalidad en desarrollo')
-                  setShowAccountMenu(false)
-                }}
-                style={{
-                  width: '100%',
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--text-1)',
-                  padding: '10px 12px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  borderRadius: '6px',
-                  transition: 'all var(--dur-fast)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--bg-2)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                }}
-              >
-                <UserPlus size={16} />
-                Invitar a miembros
-              </motion.button>
-
-              {/* Añadir cuenta */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                onClick={() => {
-                  alert('Añadir cuenta - Funcionalidad en desarrollo')
-                  setShowAccountMenu(false)
-                }}
-                style={{
-                  width: '100%',
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--text-1)',
-                  padding: '10px 12px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  borderRadius: '6px',
-                  transition: 'all var(--dur-fast)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--bg-2)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                }}
-              >
-                <Plus size={16} />
-                Añadir cuenta
-              </motion.button>
-            </div>
-
-            {/* Divider */}
-            <div style={{
-              height: '1px',
-              background: 'var(--border)',
-              margin: '8px 0',
-            }} />
-
-            {/* Email and Workspaces */}
-            <div style={{
-              padding: '8px',
-            }}>
-              {/* Email */}
-              <div style={{
-                padding: '8px 12px',
-                fontSize: '12px',
-                color: 'var(--text-3)',
-              }}>
-                marcroson7@gmail.com
-              </div>
-
-              {/* Current Workspace */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                onClick={() => {
-                  alert('Workspace actual: Marc Rosón Martí\'s Notion')
-                  setShowAccountMenu(false)
-                }}
-                style={{
-                  width: '100%',
-                  border: 'none',
-                  background: 'var(--bg-2)',
-                  color: 'var(--text-1)',
-                  padding: '10px 12px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  borderRadius: '6px',
-                  transition: 'all var(--dur-fast)',
-                  marginBottom: '4px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--bg-3)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'var(--bg-2)'
-                }}
-              >
-                <div style={{
-                  width: '16px',
-                  height: '16px',
-                  borderRadius: '4px',
-                  background: 'var(--brand)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                }}>
-                  M
-                </div>
-                Marc Rosón Martí's Notion
-                <span style={{ marginLeft: 'auto', fontSize: '16px' }}>✓</span>
-              </motion.button>
-
-              {/* Other Workspace */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                onClick={() => {
-                  alert('Cambiar a workspace: BECARIOS')
-                  setShowAccountMenu(false)
-                }}
-                style={{
-                  width: '100%',
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--text-1)',
-                  padding: '10px 12px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  borderRadius: '6px',
-                  transition: 'all var(--dur-fast)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--bg-2)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                }}
-              >
-                <div style={{
-                  width: '16px',
-                  height: '16px',
-                  borderRadius: '4px',
-                  background: 'var(--text-3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '10px',
-                  fontWeight: 700,
-                }}>
-                  B
-                </div>
-                BECARIOS
-              </motion.button>
-
-              {/* Nuevo espacio de trabajo */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                onClick={() => {
-                  alert('Crear nuevo espacio de trabajo')
-                  setShowAccountMenu(false)
-                }}
-                style={{
-                  width: '100%',
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--brand)',
-                  padding: '10px 12px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  borderRadius: '6px',
-                  transition: 'all var(--dur-fast)',
-                  marginTop: '4px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--bg-2)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                }}
-              >
-                <Plus size={16} />
-                Nuevo espacio de trabajo
-              </motion.button>
-            </div>
-
-            {/* Divider */}
-            <div style={{
-              height: '1px',
-              background: 'var(--border)',
-              margin: '8px 0',
-            }} />
-
-            {/* Cerrar sesión */}
-            <div style={{
-              padding: '8px',
-            }}>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                onClick={() => {
-                  alert('Cerrando sesión...')
-                  setShowAccountMenu(false)
-                }}
-                style={{
-                  width: '100%',
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--text-1)',
-                  padding: '10px 12px',
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  borderRadius: '6px',
-                  transition: 'all var(--dur-fast)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--bg-2)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                }}
-              >
-                <LogOut size={16} />
-                Cerrar sesión
-              </motion.button>
-            </div>
-          </motion.div>
+          <AccountMenu
+            anchor={accountButtonRef.current ? {
+              top: accountButtonRef.current.getBoundingClientRect().bottom + 8,
+              left: accountButtonRef.current.getBoundingClientRect().left,
+            } : null}
+            orgName={org?.name || 'Mi Workspace'}
+            plan="Pro"
+            memberCount={1}
+            initial={org?.name?.[0]?.toUpperCase() || 'M'}
+            email={user?.email}
+            workspaces={contextWorkspaces || []}
+            activeOrgId={org?.id}
+            onSwitch={switchWorkspace}
+            onCreateWorkspace={() => alert('Crear nuevo espacio de trabajo')}
+            onSettings={onOpenSettings}
+            onInvite={() => alert('Invitar a miembros')}
+            onAddAccount={() => alert('Añadir cuenta')}
+            onSignOut={() => alert('Cerrando sesión...')}
+            onClose={() => setShowAccountMenu(false)}
+          />
         )}
       </div>
 

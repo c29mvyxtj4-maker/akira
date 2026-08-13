@@ -3,6 +3,14 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
+    screens: {
+      xs: '320px',   // Extra pequeño (iPhone SE)
+      sm: '480px',   // Móvil pequeño/mediano
+      md: '768px',   // Tablet pequeño
+      lg: '1024px',  // Tablet grande
+      xl: '1280px',  // Desktop
+      '2xl': '1536px' // Desktop grande
+    },
     extend: {
       colors: {
         /* ── Akira Brand ─────────────────────────────────── */

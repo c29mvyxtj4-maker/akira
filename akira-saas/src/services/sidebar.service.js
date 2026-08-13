@@ -115,17 +115,58 @@ export async function toggleFavorite(type, itemId) {
 export async function getUserWorkspaces() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return []
+    console.log('[getUserWorkspaces] Auth user:', user?.id, user?.email)
+    if (!user) {
+      console.warn('[getUserWorkspaces] No authenticated user')
+      return []
+    }
 
-    const { data, error } = await supabase
-      .from('organization_members')
-      .select('organizations(*)')
-      .eq('user_id', user.id)
+    // Obtener company_settings para este usuario (owner_id = user.id)
+    const { data: companySettings, error: csError } = await supabase
+      .from('company_settings')
+      .select('*')
+      .eq('owner_id', user.id)
+      .maybeSingle()
 
-    if (error) throw error
-    return data?.map(m => m.organizations) || []
+    console.log('[getUserWorkspaces] Company settings query:', { companySettings, csError })
+
+    if (csError && csError.code !== '42703') {  // 42703 = column does not exist, try anyway
+      console.error('[getUserWorkspaces] Company settings error:', csError)
+      return []
+    }
+
+    if (!companySettings) {
+      console.warn('[getUserWorkspaces] No company_settings found for user', user.id)
+      return []
+    }
+
+    // Try to find org_id in company_settings (could be org_id, org_id_explicit, etc)
+    const org_id = companySettings.org_id || companySettings.org_id_explicit
+    if (!org_id) {
+      console.warn('[getUserWorkspaces] No org_id found in company_settings:', Object.keys(companySettings))
+      return []
+    }
+
+    console.log('[getUserWorkspaces] Found org_id:', org_id)
+
+    // Obtener la organización
+    const { data: org, error: orgError } = await supabase
+      .from('organizations')
+      .select('*')
+      .eq('id', org_id)
+      .single()
+
+    console.log('[getUserWorkspaces] Organization query result:', { org, orgError })
+
+    if (orgError) {
+      console.error('[getUserWorkspaces] Error fetching organization:', orgError)
+      return []
+    }
+
+    console.log('[getUserWorkspaces] Returning org:', org)
+    return org ? [org] : []
   } catch (error) {
-    console.error('Error fetching workspaces:', error)
+    console.error('[getUserWorkspaces] Exception:', error)
     return []
   }
 }

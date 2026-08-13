@@ -5,6 +5,7 @@ import { MotionConfig } from 'framer-motion'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { AppProvider }  from './context/AppContext.jsx'
 import { OrgProvider }  from './context/OrgContext.jsx'
+import { CurrentItemProvider } from './context/CurrentItemContext.jsx'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { installPrefsListener } from './lib/applyPrefs'
@@ -35,7 +36,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <AuthProvider>
           <OrgProvider>
             <AppProvider>
-              <App />
+              <CurrentItemProvider>
+                <App />
+              </CurrentItemProvider>
             </AppProvider>
           </OrgProvider>
         </AuthProvider>

@@ -17,6 +17,8 @@ import { getCompanySettings } from '@/services/company.service'
 import { useNavigate } from 'react-router-dom'
 import { WidgetGrid, useWidgets } from '@/modules/widgets'
 import { useGlobalSync } from '@/modules/sync'
+import { KpiCardGrid, DashboardGrid, DashboardPanel } from '@/components/dashboard'
+import { useResponsive } from '@/hooks/useResponsive'
 
 function fmtCur(n) {
   if (!n && n !== 0) return '--'
@@ -286,8 +288,8 @@ export default function Dashboard() {
       {/* CAPA 3 — oportunidades */}
       {data && <OpportunitiesSection clients={data.clients} projects={data.projects} navigate={navigate} />}
 
-      {/* CAPA 2 — como va tu negocio */}
-      <div className="dash-kpi-grid" style={{ marginBottom: '24px' }}>
+      {/* CAPA 2 — como va tu negocio (Responsive: xs:1 md:2 lg:3 xl:4) */}
+      <KpiCardGrid gap="md">
         {loading ? (
           // Show skeleton loading state for KPI cards
           [1, 2, 3, 4].map(function(i) {
@@ -311,17 +313,17 @@ export default function Dashboard() {
             )
           })
         )}
-      </div>
+      </KpiCardGrid>
 
-      {/* Charts, previsión y acciones rapidas */}
-      <div className="dash-main-grid" style={{ marginBottom: '24px' }}>
-        <div className="dash-panel">
+      {/* Charts, previsión y acciones rapidas (Responsive: xs:1 md:1 lg:2) */}
+      <DashboardGrid variant="charts" gap="md" style={{ marginBottom: '24px' }}>
+        <DashboardPanel title="Revenue" className="dashboard-chart-panel">
           <RevenueChart
             revenueSparkline={kpis && kpis.revenueSparkline}
             clientsByStatus={kpis && kpis.clientsByStatus}
             projectsByStatus={kpis && kpis.projectsByStatus}
           />
-        </div>
+        </DashboardPanel>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <ForecastCard />
           <motion.div
@@ -334,7 +336,7 @@ export default function Dashboard() {
             <QuickActions />
           </motion.div>
         </div>
-      </div>
+      </DashboardGrid>
 
       {/* Proximas entregas */}
       <motion.div

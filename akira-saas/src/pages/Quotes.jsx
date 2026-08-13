@@ -9,6 +9,8 @@ import { getCompanySettings } from '@/services/company.service'
 import { getServicesForSelect } from '@/services/subscriptions.service'
 import { downloadQuotePdf } from '@/utils/generateQuotePdf'
 import { supabase } from '@/lib/supabase'
+import { useAddRecent } from '@/hooks/useAddRecent'
+import { useCurrentItem } from '@/context/CurrentItemContext'
 import PageHeader   from '@/components/layout/PageHeader'
 import Button        from '@/components/ui/Button'
 import EmptyState   from '@/components/ui/EmptyState'
@@ -292,6 +294,9 @@ function QuotePreview({ quote, company, onBack, onConvert, converting }) {
 }
 
 export default function Quotes() {
+  var { addRecent } = useAddRecent()
+  var { setCurrentItem } = useCurrentItem()
+
   var [quotes,     setQuotes]     = useState([])
   var [company,    setCompany]    = useState(null)
   var [clients,    setClients]    = useState([])
@@ -376,7 +381,11 @@ export default function Quotes() {
   }
 
   function openPreview(q) {
-    getQuoteById(q.id).then(setPreviewing).catch(function(e) { showToast(e.message, 'error') })
+    getQuoteById(q.id).then(function(data) {
+      setPreviewing(data)
+      addRecent('quote', q.id)
+      setCurrentItem({ type: 'quote', id: q.id, name: q.quote_number || 'Presupuesto ' + q.id })
+    }).catch(function(e) { showToast(e.message, 'error') })
   }
 
   function handleConvert() {

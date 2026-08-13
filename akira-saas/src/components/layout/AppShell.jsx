@@ -1,18 +1,23 @@
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import BottomBar from './BottomBar'
 import Topbar from './Topbar'
 import TopMenu from './TopMenu'
+import { BottomNavigation, BottomNavigationSpacer } from './BottomNavigation'
+import { MoreMenu } from './MoreMenu'
 import InstallBanner from '@/components/pwa/InstallBanner'
 import { PageSpinner } from '@/components/ui/Spinner'
 import { useApp } from '@/context/AppContext'
 import { DUR, EASE } from '@/config/motion'
+import { useResponsive } from '@/hooks/useResponsive'
 
 export default function AppShell() {
   var { toasts, removeToast } = useApp()
   var location = useLocation()
   var isInicio = location.pathname === '/inicio'
+  var [moreMenuOpen, setMoreMenuOpen] = useState(false)
+  var { isMobile, isTablet } = useResponsive()
 
   return (
     <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -39,10 +44,19 @@ export default function AppShell() {
         </motion.div>
       </main>
 
-      <BottomBar />
+      {/* New responsive navigation for mobile/tablet */}
+      {(isMobile || isTablet) && !isInicio ? (
+        <>
+          <BottomNavigation onMoreClick={() => setMoreMenuOpen(true)} />
+          <MoreMenu open={moreMenuOpen} onClose={() => setMoreMenuOpen(false)} />
+        </>
+      ) : (
+        /* Legacy BottomBar for desktop */
+        <BottomBar />
+      )}
 
-      {/* Toast stack */}
-      <div style={{ position: 'fixed', bottom: '96px', right: '20px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {/* Toast stack - responsive positioning */}
+      <div style={{ position: 'fixed', bottom: (isMobile || isTablet) && !isInicio ? 'calc(var(--bottombar-height-with-safe-area) + 16px)' : '96px', right: '20px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <AnimatePresence>
           {toasts && toasts.map(function(toast) {
             var colors = {

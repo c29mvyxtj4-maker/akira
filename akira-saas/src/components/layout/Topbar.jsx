@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, PanelLeft, Plus, FileText, Users, Briefcase } from 'lucide-react'
+import { ChevronLeft, ChevronRight, PanelLeft, Plus, FileText, Users, Briefcase, Star } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useCurrentItem } from '@/context/CurrentItemContext'
+import { useFavorite } from '@/hooks/useFavorite'
 
 /**
  * TopBar — Barra superior con estructura Notion-like
@@ -10,6 +12,8 @@ import { motion } from 'framer-motion'
 export default function TopBar({ onToggleSidebar }) {
   const location = useLocation()
   const navigate = useNavigate()
+  const { currentItem } = useCurrentItem()
+  const { isFavorite, toggleFavorite } = useFavorite(currentItem.type, currentItem.id, currentItem.name)
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const [showSettings, setShowSettings] = useState(false)
@@ -203,6 +207,33 @@ export default function TopBar({ onToggleSidebar }) {
         >
           <Plus size={20} />
         </motion.button>
+
+        {/* Favorite Button */}
+        {currentItem.id && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={toggleFavorite}
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '8px',
+              border: 'none',
+              background: 'transparent',
+              color: isFavorite ? '#9ca3af' : 'var(--text-3)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all var(--dur-fast)',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-2)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            title={isFavorite ? 'Remover de favoritos' : 'Agregar a favoritos'}
+          >
+            <Star size={20} fill={isFavorite ? '#9ca3af' : 'none'} />
+          </motion.button>
+        )}
 
         {/* Add Menu Dropdown */}
         {showAddMenu && (

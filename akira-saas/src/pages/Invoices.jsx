@@ -13,6 +13,8 @@ import { getCompanySettings } from '@/services/company.service'
 import { getServicesForSelect } from '@/services/subscriptions.service'
 import { downloadInvoicePdf } from '@/utils/generateInvoicePdf'
 import { supabase } from '@/lib/supabase'
+import { useAddRecent } from '@/hooks/useAddRecent'
+import { useCurrentItem } from '@/context/CurrentItemContext'
 import PageHeader   from '@/components/layout/PageHeader'
 import Badge        from '@/components/ui/Badge'
 import Button        from '@/components/ui/Button'
@@ -345,6 +347,9 @@ function InvoicePreview({ invoice, company, onBack }) {
    PAGINA PRINCIPAL
 ═══════════════════════════════════════════════════════════ */
 export default function Invoices() {
+  var { addRecent } = useAddRecent()
+  var { setCurrentItem } = useCurrentItem()
+
   var [invoices,   setInvoices]   = useState([])
   var [company,    setCompany]    = useState(null)
   var [clients,    setClients]    = useState([])
@@ -485,7 +490,11 @@ export default function Invoices() {
   }
 
   function openPreview(inv) {
-    getInvoiceById(inv.id).then(setPreviewing).catch(function(e) { showToast(e.message, 'error') })
+    getInvoiceById(inv.id).then(function(data) {
+      setPreviewing(data)
+      addRecent('invoice', inv.id)
+      setCurrentItem({ type: 'invoice', id: inv.id, name: inv.invoice_number || 'Factura ' + inv.id })
+    }).catch(function(e) { showToast(e.message, 'error') })
   }
 
   if (loading) {

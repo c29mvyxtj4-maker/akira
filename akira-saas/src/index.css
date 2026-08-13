@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Responsive design system for mobile & tablet */
+@import './styles/responsive.css';
+
 /* ════════════════════════════════════════════════════════════
    TOKENS CSS — DARK MODE (default)
 ════════════════════════════════════════════════════════════ */
@@ -254,13 +257,58 @@ body {
   grid-template-columns: 1fr 340px;
   gap: 16px;
 }
-/* KPIs 4 → 2 → 1, gráfico + panel lateral apilan en pantallas estrechas */
-@media (max-width: 1024px) {
-  .dash-kpi-grid  { grid-template-columns: repeat(2, 1fr); }
-  .dash-main-grid { grid-template-columns: 1fr; }
+
+/* ─── Responsive Dashboard Grids (mobile-first) ─── */
+
+/* XS & SM (320px - 767px) - Mobile: 1 column, stacked layout */
+@media (max-width: 767px) {
+  .dash-kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .dash-main-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .dash-panel {
+    padding: 12px;
+  }
 }
-@media (max-width: 560px) {
-  .dash-kpi-grid  { grid-template-columns: 1fr; }
+
+/* MD (768px - 1023px) - Tablet: 2 columns */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .dash-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .dash-main-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+/* LG (1024px - 1279px) - Large tablet/small desktop: 3 columns */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .dash-kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .dash-main-grid {
+    grid-template-columns: 1fr 300px;
+    gap: 16px;
+  }
+}
+
+/* XL (1280px+) - Desktop: 4 columns */
+@media (min-width: 1280px) {
+  .dash-kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .dash-main-grid {
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+  }
 }
 
 /* Fila clicable accesible (Próximas entregas) */

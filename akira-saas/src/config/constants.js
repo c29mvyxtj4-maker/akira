@@ -31,6 +31,23 @@ export var BADGE_COLORS = {
   purple:  { bg: 'rgba(168,85,247,0.12)',  text: '#a855f7', border: 'rgba(168,85,247,0.25)' },
 }
 
+export var PLAN_TIERS = {
+  starter:      { label: 'Starter',      color: 'default' },
+  professional: { label: 'Professional', color: 'brand' },
+  enterprise:   { label: 'Enterprise',   color: 'purple' },
+}
+
+// Nombres de feature usados por FeatureGate / billing.service — deben coincidir
+// con feature_limits.feature_name en la migración 20260813000001.
+export var FEATURES = {
+  MAX_PROJECTS:       'max_projects',
+  MAX_USERS:          'max_users',
+  MAX_STORAGE_GB:     'max_storage_gb',
+  AI_OPERATIVES:      'ai_operatives',
+  ADVANCED_ANALYTICS: 'advanced_analytics',
+  INTEGRATIONS:       'integrations',
+}
+
 export var ROUTES = {
   HOME:           '/',
   LOGIN:          '/login',

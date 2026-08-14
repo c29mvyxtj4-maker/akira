@@ -1,7 +1,7 @@
 export default function DocumentsNotion() {
   return (
     <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <h1 style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '20px', color: '#e63946' }}>✨ DOCUMENTOS - LIVE NOW ✨</h1>
+      <h1 style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '20px', color: '#e63946' }}>✨ DOCUMENTOS - LIVE NOW (2026-08-14 22:30 BUILD) ✨</h1>
       <p style={{ fontSize: '18px', color: '#666', marginBottom: '30px', fontWeight: 500 }}>
         🎉 ¡La página de Documentos está FUNCIONANDO!
       </p>

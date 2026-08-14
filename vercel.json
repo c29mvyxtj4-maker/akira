@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
-  "installCommand": "cd akira-saas && npm install --legacy-peer-deps",
-  "outputDirectory": "akira-saas/dist"
-}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Plus, FileText, Trash2, Lock, Users } from 'lucide-react'
-import { AppShell } from '@/components/layout/AppShell'
+import AppShell from '@/components/layout/AppShell'
 import PageHeader from '@/components/layout/PageHeader'
 import Button from '@/components/ui/Button'
 import { PageSpinner } from '@/components/ui/Spinner'

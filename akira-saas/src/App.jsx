@@ -129,7 +129,7 @@ export default function App() {
           {/* Facturas + Presupuestos unificados en commercial_documents (Documents).
              Las rutas antiguas redirigen aquí. */}
           <Route path="invoices/*"      element={<Documents />} />
-          <Route path="documents"       element={<DocumentsNotion />} />
+          <Route path="documents/*"     element={<DocumentsNotion />} />
           <Route path="quotes/*"        element={<Navigate to="/invoices" replace />} />
           <Route path="time/*"          element={<TimeTracking />} />
           <Route path="operatives/*"    element={<AIOperatives />} />

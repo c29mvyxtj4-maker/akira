@@ -3,10 +3,6 @@
   "installCommand": "cd akira-saas && npm install --legacy-peer-deps",
   "outputDirectory": "akira-saas/dist",
   "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "cleanUrls": true,
+  "trailingSlash": false
 }

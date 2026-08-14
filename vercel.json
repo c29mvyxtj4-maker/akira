@@ -1,16 +1,14 @@
 {
-  "monorepo": true,
-  "projects": [
+  "builds": [
     {
-      "src": "akira-saas",
-      "config": {
-        "rewrites": [
-          {
-            "source": "/(.*)",
-            "destination": "/index.html"
-          }
-        ]
-      }
+      "src": "akira-saas/package.json",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "akira-saas/index.html"
     }
   ]
 }

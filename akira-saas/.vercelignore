@@ -1,1 +1,3 @@
-# Empty file - forces Vercel to always rebuild
+# Force Vercel to always rebuild
+# This file being modified triggers a new deployment
+# Last modified: 2026-08-14

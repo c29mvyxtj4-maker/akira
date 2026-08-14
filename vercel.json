@@ -1,8 +1,15 @@
 {
-  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
-  "installCommand": "cd akira-saas && npm install --legacy-peer-deps",
-  "outputDirectory": "akira-saas/dist",
-  "framework": "vite",
+  "projects": {
+    "default": {
+      "path": "akira-saas",
+      "settings": {
+        "buildCommand": "npm install --legacy-peer-deps && npm run build",
+        "installCommand": "npm install --legacy-peer-deps",
+        "outputDirectory": "dist",
+        "framework": "vite"
+      }
+    }
+  },
   "headers": [
     {
       "source": "/index.html",

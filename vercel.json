@@ -1,0 +1,16 @@
+{
+  "monorepo": true,
+  "projects": [
+    {
+      "src": "akira-saas",
+      "config": {
+        "rewrites": [
+          {
+            "source": "/(.*)",
+            "destination": "/index.html"
+          }
+        ]
+      }
+    }
+  ]
+}

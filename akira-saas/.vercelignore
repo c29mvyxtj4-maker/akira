@@ -1,3 +1,4 @@
 # Force Vercel to always rebuild
 # This file being modified triggers a new deployment
-# Last modified: 2026-08-14
+# Last modified: 2026-08-14 FORCE REBUILD 2
+# Triggered rebuild to deploy DocumentsNotion component

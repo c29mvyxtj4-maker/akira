@@ -1,6 +1,9 @@
 {
-  "buildCommand": "cd akira-saas && bash scripts/vercel-build.sh",
+  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build && cp dist/index.html dist/_not_found.html",
   "installCommand": "cd akira-saas && npm install --legacy-peer-deps",
   "outputDirectory": "akira-saas/dist",
-  "framework": "vite"
+  "framework": "vite",
+  "git": {
+    "deploymentEnabled": true
+  }
 }

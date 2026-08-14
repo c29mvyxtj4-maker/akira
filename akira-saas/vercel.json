@@ -1,13 +1,7 @@
 {
-  "buildCommand": "npm install --legacy-peer-deps && npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
-  "framework": "vite",
-  "outputDirectory": "dist",
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!assets|_next).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]

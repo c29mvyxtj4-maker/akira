@@ -1,5 +1,20 @@
 {
   "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
   "installCommand": "cd akira-saas && npm install --legacy-peer-deps",
-  "outputDirectory": "akira-saas/dist"
+  "outputDirectory": "akira-saas/dist",
+  "functions": {
+    "api/handler.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "^/(?!api/)(.*)$",
+      "dest": "/api/handler.js"
+    },
+    {
+      "src": "^/api/(.*)$",
+      "status": 404
+    }
+  ]
 }

@@ -42,6 +42,7 @@ const InboxPage     = lazy(() => import('@/pages/InboxPage'))
 const LandingPage   = lazy(() => import('@/pages/LandingPage'))
 const Automation    = lazy(() => import('@/pages/Automation')) // v2.0 Automation workflows
 const YouTube       = lazy(() => import('@/pages/YouTube')) // YouTube project management
+const DocumentsNotion = lazy(() => import('@/pages/DocumentsNotion')) // Notion-style documents
 
 function ComingSoon({ name }) {
   return (
@@ -134,6 +135,7 @@ export default function App() {
           <Route path="operatives/*"    element={<AIOperatives />} />
           <Route path="calendar/*"      element={<Calendar />} />
           <Route path="knowledge/*"     element={<Knowledge />} />
+          <Route path="documents-notion/*" element={<DocumentsNotion />} />
           <Route path="brain/*"         element={<Brain />} />
           <Route path="automation/*"    element={<Automation />} />
           <Route path="youtube/*"       element={<YouTube />} />

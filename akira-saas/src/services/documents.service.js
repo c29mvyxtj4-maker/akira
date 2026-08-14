@@ -1,156 +1,745 @@
+/**
+ * Documents Service
+ * Handles all database operations for the Notion-like document system
+ * Including documents, blocks, permissions, comments, versions, and more
+ */
+
 import { supabase } from '@/lib/supabase'
-import { getCompanySettings, updateCompanySettings } from '@/services/company.service'
-import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
 
-async function uid() {
-  var res = await supabase.auth.getUser()
-  if (!res.data || !res.data.user) throw new Error('No autenticado')
-  return res.data.user.id
-}
+// ============================================================================
+// DOCUMENTS
+// ============================================================================
 
-export var QUOTE_STATUS = {
-  draft:    { label: 'Borrador',   color: '#64748b' },
-  sent:     { label: 'Enviado',    color: '#3b82f6' },
-  accepted: { label: 'Aceptado',   color: '#22c55e' },
-  rejected: { label: 'Rechazado',  color: '#ef4444' },
-  expired:  { label: 'Caducado',   color: '#f59e0b' },
-}
+export async function fetchDocuments(filters = {}) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
 
-export var INVOICE_STATUS = {
-  draft: { label: 'Borrador', color: '#64748b' },
-  sent:  { label: 'Enviada',  color: '#3b82f6' },
-  paid:  { label: 'Pagada',   color: '#22c55e' },
-  void:  { label: 'Anulada',  color: '#ef4444' },
-}
+  let query = supabase
+    .from('documents')
+    .select(`
+      *,
+      created_by_profile:profiles!created_by(id, full_name, avatar_url),
+      folder:document_folders(id, name)
+    `)
+    .order('updated_at', { ascending: false })
 
-// ← CAMBIADO: ahora tambien calcula la retencion de IRPF
-function calcTotals(items, taxRate, irpfRate) {
-  var subtotal = (items || []).reduce(function(s, it) { return s + (Number(it.quantity) || 0) * (Number(it.price) || 0) }, 0)
-  var taxAmount  = subtotal * ((Number(taxRate) || 0) / 100)
-  var irpfAmount = subtotal * ((Number(irpfRate) || 0) / 100)
-  var total = subtotal + taxAmount - irpfAmount
-  return {
-    subtotal:   Math.round(subtotal * 100) / 100,
-    taxAmount:  Math.round(taxAmount * 100) / 100,
-    irpfAmount: Math.round(irpfAmount * 100) / 100,
-    total:      Math.round(total * 100) / 100,
+  // Apply filters
+  if (filters.folderId) {
+    query = query.eq('folder_id', filters.folderId)
   }
-}
-
-export async function getDocuments(documentType) {
-  var q = scopeToOrg(supabase.from('commercial_documents').select('*, clients(id, name, company)').eq('archived', false)).order('issue_date', { ascending: false })
-  if (documentType && documentType !== 'all') q = q.eq('document_type', documentType)
-  var res = await q
-  if (res.error) throw res.error
-  return res.data || []
-}
-
-export async function getDocumentById(id) {
-  var res = await supabase.from('commercial_documents').select('*, clients(id, name, company, email, phone)').eq('id', id).single()
-  if (res.error) throw res.error
-  return res.data
-}
-
-export async function createQuote(form) {
-  var ownerId = await uid()
-  var cs = await getCompanySettings()
-  var totals = calcTotals(form.items, form.tax_rate, form.irpf_rate)
-  var quoteNumber = (cs.quote_prefix || 'PRES') + '-' + String(cs.next_quote_number || 1).padStart(3, '0')
-
-  var res = await supabase.from('commercial_documents').insert({
-    owner_id: ownerId, client_id: form.client_id || null,
-    document_type: 'quote', quote_number: quoteNumber, invoice_number: null,
-    org_id: getActiveOrgId() || null,
-    issue_date: form.issue_date || new Date().toISOString().split('T')[0],
-    valid_until: form.valid_until || null, due_date: null,
-    items: form.items || [],
-    tax_rate: Number(form.tax_rate) || 0,
-    irpf_rate: Number(form.irpf_rate) || 0,
-    subtotal: totals.subtotal, tax_amount: totals.taxAmount, irpf_amount: totals.irpfAmount, total: totals.total,
-    status: 'draft', notes: form.notes || null, archived: false,
-  }).select('*, clients(id, name, company)').single()
-  if (res.error) throw res.error
-
-  await updateCompanySettings({ next_quote_number: (cs.next_quote_number || 1) + 1 })
-  return res.data
-}
-
-export async function createInvoiceDirect(form) {
-  var ownerId = await uid()
-  var cs = await getCompanySettings()
-  var totals = calcTotals(form.items, form.tax_rate, form.irpf_rate)
-  var invoiceNumber = (cs.invoice_prefix || 'FAC') + '-' + String(cs.next_invoice_number || 1).padStart(3, '0')
-
-  var res = await supabase.from('commercial_documents').insert({
-    owner_id: ownerId, client_id: form.client_id || null,
-    document_type: 'invoice', quote_number: null, invoice_number: invoiceNumber,
-    org_id: getActiveOrgId() || null,
-    issue_date: form.issue_date || new Date().toISOString().split('T')[0],
-    valid_until: null, due_date: form.due_date || null,
-    items: form.items || [],
-    tax_rate: Number(form.tax_rate) || 0,
-    irpf_rate: Number(form.irpf_rate) || 0,
-    subtotal: totals.subtotal, tax_amount: totals.taxAmount, irpf_amount: totals.irpfAmount, total: totals.total,
-    status: 'draft', notes: form.notes || null, archived: false,
-  }).select('*, clients(id, name, company)').single()
-  if (res.error) throw res.error
-
-  await updateCompanySettings({ next_invoice_number: (cs.next_invoice_number || 1) + 1 })
-  return res.data
-}
-
-export async function updateDocument(id, form) {
-  var totals = calcTotals(form.items, form.tax_rate, form.irpf_rate)
-  var payload = {
-    client_id: form.client_id || null,
-    issue_date: form.issue_date || null,
-    items: form.items || [],
-    tax_rate: Number(form.tax_rate) || 0,
-    irpf_rate: Number(form.irpf_rate) || 0,
-    subtotal: totals.subtotal, tax_amount: totals.taxAmount, irpf_amount: totals.irpfAmount, total: totals.total,
-    notes: form.notes || null,
+  if (filters.isArchived !== undefined) {
+    query = query.eq('is_archived', filters.isArchived)
   }
-  if (form.document_type === 'quote') payload.valid_until = form.valid_until || null
-  else payload.due_date = form.due_date || null
+  if (filters.isPinned) {
+    query = query.eq('is_pinned', true)
+  }
+  if (filters.tags && filters.tags.length > 0) {
+    query = query.filter('tags', 'cs', `{${filters.tags.join(',')}}`)
+  }
+  if (filters.search) {
+    query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
+  }
 
-  var res = await supabase.from('commercial_documents').update(payload).eq('id', id).select('*, clients(id, name, company)').single()
-  if (res.error) throw res.error
-  return res.data
+  const { data, error } = await query
+
+  if (error) throw error
+  return data || []
 }
 
-export async function updateDocumentStatus(id, status) {
-  var res = await supabase.from('commercial_documents').update({ status: status }).eq('id', id).select('*, clients(id, name, company)').single()
-  if (res.error) throw res.error
-  return res.data
+export async function fetchDocument(documentId) {
+  const { data, error } = await supabase
+    .from('documents')
+    .select(`
+      *,
+      created_by_profile:profiles!created_by(id, full_name, avatar_url, email),
+      folder:document_folders(id, name)
+    `)
+    .eq('id', documentId)
+    .single()
+
+  if (error) throw error
+  return data
 }
 
-export async function archiveDocument(id) {
-  var res = await supabase.from('commercial_documents').update({ archived: true }).eq('id', id)
-  if (res.error) throw res.error
+export async function createDocument(documentData) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('documents')
+    .insert({
+      ...documentData,
+      created_by: user.id,
+      org_id: documentData.org_id,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+
+  // Log activity
+  await logActivity(data.id, user.id, 'create', { title: data.title })
+
+  return data
+}
+
+export async function updateDocument(documentId, updates) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('documents')
+    .update(updates)
+    .eq('id', documentId)
+    .select()
+    .single()
+
+  if (error) throw error
+
+  await logActivity(documentId, user.id, 'update', { updates })
+
+  return data
+}
+
+export async function deleteDocument(documentId) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase
+    .from('documents')
+    .delete()
+    .eq('id', documentId)
+
+  if (error) throw error
+
+  await logActivity(documentId, user.id, 'delete', {})
+}
+
+export async function archiveDocument(documentId) {
+  return updateDocument(documentId, { is_archived: true })
+}
+
+export async function unarchiveDocument(documentId) {
+  return updateDocument(documentId, { is_archived: false })
+}
+
+export async function pinDocument(documentId) {
+  return updateDocument(documentId, { is_pinned: true })
+}
+
+export async function unpinDocument(documentId) {
+  return updateDocument(documentId, { is_pinned: false })
+}
+
+// ============================================================================
+// DOCUMENT BLOCKS
+// ============================================================================
+
+export async function fetchBlocks(documentId) {
+  const { data, error } = await supabase
+    .from('document_blocks')
+    .select(`
+      *,
+      created_by_profile:profiles!created_by(id, full_name, avatar_url),
+      updated_by_profile:profiles!updated_by(id, full_name, avatar_url)
+    `)
+    .eq('document_id', documentId)
+    .eq('is_deleted', false)
+    .order('position', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createBlock(documentId, blockData) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_blocks')
+    .insert({
+      ...blockData,
+      document_id: documentId,
+      created_by: user.id,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+
+  await logActivity(documentId, user.id, 'create_block', { block_id: data.id, type: data.type })
+
+  return data
+}
+
+export async function updateBlock(blockId, updates) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_blocks')
+    .update({
+      ...updates,
+      updated_by: user.id,
+    })
+    .eq('id', blockId)
+    .select()
+    .single()
+
+  if (error) throw error
+
+  return data
+}
+
+export async function deleteBlock(blockId) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  // Soft delete
+  const { data, error } = await supabase
+    .from('document_blocks')
+    .update({ is_deleted: true, updated_by: user.id })
+    .eq('id', blockId)
+    .select()
+    .single()
+
+  if (error) throw error
+
+  return data
+}
+
+export async function reorderBlocks(documentId, blocks) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const updates = blocks.map((block, index) => ({
+    id: block.id,
+    position: index,
+  }))
+
+  const { error } = await supabase
+    .from('document_blocks')
+    .upsert(updates, { onConflict: 'id' })
+
+  if (error) throw error
+
+  await logActivity(documentId, user.id, 'reorder_blocks', { count: blocks.length })
+
   return true
 }
 
-export async function convertToInvoice(id) {
-  var doc = await getDocumentById(id)
-  if (doc.document_type === 'invoice') return doc
+// ============================================================================
+// DOCUMENT PERMISSIONS
+// ============================================================================
 
-  var cs = await getCompanySettings()
-  var invoiceNumber = (cs.invoice_prefix || 'FAC') + '-' + String(cs.next_invoice_number || 1).padStart(3, '0')
+export async function fetchPermissions(documentId) {
+  const { data, error } = await supabase
+    .from('document_permissions')
+    .select(`
+      *,
+      user:profiles!user_id(id, full_name, email, avatar_url),
+      granted_by_profile:profiles!granted_by(id, full_name)
+    `)
+    .eq('document_id', documentId)
 
-  var res = await supabase.from('commercial_documents').update({
-    document_type: 'invoice',
-    invoice_number: invoiceNumber,
-    due_date: doc.due_date || null,
-    status: 'draft',
-  }).eq('id', id).select('*, clients(id, name, company, email, phone)').single()
-  if (res.error) throw res.error
-
-  await updateCompanySettings({ next_invoice_number: (cs.next_invoice_number || 1) + 1 })
-  return res.data
+  if (error) throw error
+  return data || []
 }
 
-export async function getSelectorsForDocuments() {
-  var res = await supabase.from('clients').select('id, name, company').eq('archived', false).order('name')
-  if (res.error) throw res.error
-  return res.data || []
+export async function grantPermission(documentId, userId, role) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_permissions')
+    .upsert({
+      document_id: documentId,
+      user_id: userId,
+      role,
+      granted_by: user.id,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+
+  await logActivity(documentId, user.id, 'add_permission', { user_id: userId, role })
+
+  return data
+}
+
+export async function revokePermission(documentId, userId) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase
+    .from('document_permissions')
+    .delete()
+    .eq('document_id', documentId)
+    .eq('user_id', userId)
+
+  if (error) throw error
+
+  await logActivity(documentId, user.id, 'remove_permission', { user_id: userId })
+
+  return true
+}
+
+export async function updatePermission(documentId, userId, role) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_permissions')
+    .update({ role })
+    .eq('document_id', documentId)
+    .eq('user_id', userId)
+    .select()
+    .single()
+
+  if (error) throw error
+
+  await logActivity(documentId, user.id, 'update_permission', { user_id: userId, role })
+
+  return data
+}
+
+// ============================================================================
+// DOCUMENT COLLABORATORS
+// ============================================================================
+
+export async function updateCollaboratorStatus(documentId, cursor = {}) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_collaborators')
+    .upsert({
+      document_id: documentId,
+      user_id: user.id,
+      is_online: true,
+      cursor_block_id: cursor.blockId,
+      cursor_offset: cursor.offset,
+      last_edited_at: new Date().toISOString(),
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function fetchCollaborators(documentId) {
+  const { data, error } = await supabase
+    .from('document_collaborators')
+    .select(`
+      *,
+      user:profiles!user_id(id, full_name, avatar_url, email)
+    `)
+    .eq('document_id', documentId)
+    .eq('is_online', true)
+
+  if (error) throw error
+  return data || []
+}
+
+export async function markOffline(documentId) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase
+    .from('document_collaborators')
+    .update({ is_online: false })
+    .eq('document_id', documentId)
+    .eq('user_id', user.id)
+
+  if (error) throw error
+  return true
+}
+
+// ============================================================================
+// DOCUMENT COMMENTS
+// ============================================================================
+
+export async function fetchComments(documentId) {
+  const { data, error } = await supabase
+    .from('document_comments')
+    .select(`
+      *,
+      user:profiles!user_id(id, full_name, avatar_url, email),
+      resolved_by_profile:profiles!resolved_by(id, full_name),
+      replies:document_comment_replies(*)
+    `)
+    .eq('document_id', documentId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createComment(documentId, blockId, text) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_comments')
+    .insert({
+      document_id: documentId,
+      block_id: blockId,
+      user_id: user.id,
+      text,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+
+  await logActivity(documentId, user.id, 'comment', { block_id: blockId })
+
+  return data
+}
+
+export async function updateComment(commentId, text) {
+  const { data, error } = await supabase
+    .from('document_comments')
+    .update({ text })
+    .eq('id', commentId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteComment(commentId) {
+  const { error } = await supabase
+    .from('document_comments')
+    .delete()
+    .eq('id', commentId)
+
+  if (error) throw error
+  return true
+}
+
+export async function resolveComment(commentId) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_comments')
+    .update({
+      resolved: true,
+      resolved_by: user.id,
+      resolved_at: new Date().toISOString(),
+    })
+    .eq('id', commentId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function addCommentReply(commentId, text) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_comment_replies')
+    .insert({
+      comment_id: commentId,
+      user_id: user.id,
+      text,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+// ============================================================================
+// DOCUMENT VERSIONS
+// ============================================================================
+
+export async function fetchVersions(documentId) {
+  const { data, error } = await supabase
+    .from('document_versions')
+    .select(`
+      *,
+      created_by_profile:profiles!created_by(id, full_name, avatar_url)
+    `)
+    .eq('document_id', documentId)
+    .order('version_number', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createVersion(documentId, blocks, changeDescription = '') {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_versions')
+    .insert({
+      document_id: documentId,
+      blocks_snapshot: blocks,
+      created_by: user.id,
+      change_description: changeDescription,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function restoreVersion(documentId, versionNumber) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data: version, error: versionError } = await supabase
+    .from('document_versions')
+    .select('blocks_snapshot')
+    .eq('document_id', documentId)
+    .eq('version_number', versionNumber)
+    .single()
+
+  if (versionError) throw versionError
+
+  await supabase
+    .from('document_blocks')
+    .delete()
+    .eq('document_id', documentId)
+
+  const { error: insertError } = await supabase
+    .from('document_blocks')
+    .insert(
+      version.blocks_snapshot.map((block) => ({
+        ...block,
+        created_by: user.id,
+        updated_by: user.id,
+      }))
+    )
+
+  if (insertError) throw insertError
+
+  await logActivity(documentId, user.id, 'restore_version', { version_number: versionNumber })
+
+  return true
+}
+
+// ============================================================================
+// DOCUMENT FOLDERS
+// ============================================================================
+
+export async function fetchFolders(orgId) {
+  const { data, error } = await supabase
+    .from('document_folders')
+    .select(`
+      *,
+      created_by_profile:profiles!created_by(id, full_name, avatar_url)
+    `)
+    .eq('org_id', orgId)
+    .eq('is_archived', false)
+    .order('name', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createFolder(orgId, folderData) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data, error } = await supabase
+    .from('document_folders')
+    .insert({
+      ...folderData,
+      org_id: orgId,
+      created_by: user.id,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function updateFolder(folderId, updates) {
+  const { data, error } = await supabase
+    .from('document_folders')
+    .update(updates)
+    .eq('id', folderId)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteFolder(folderId) {
+  const { error } = await supabase
+    .from('document_folders')
+    .delete()
+    .eq('id', folderId)
+
+  if (error) throw error
+  return true
+}
+
+// ============================================================================
+// DOCUMENT SHARES
+// ============================================================================
+
+export async function fetchShares(documentId) {
+  const { data, error } = await supabase
+    .from('document_shares')
+    .select(`
+      *,
+      created_by_profile:profiles!created_by(id, full_name, avatar_url)
+    `)
+    .eq('document_id', documentId)
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createShare(documentId, shareData) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const token = Math.random().toString(36).substring(2, 34)
+
+  const { data, error } = await supabase
+    .from('document_shares')
+    .insert({
+      ...shareData,
+      document_id: documentId,
+      share_token: token,
+      created_by: user.id,
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+
+  await logActivity(documentId, user.id, 'create_share', { share_type: shareData.share_type })
+
+  return data
+}
+
+export async function deleteShare(shareId) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase
+    .from('document_shares')
+    .delete()
+    .eq('id', shareId)
+
+  if (error) throw error
+  return true
+}
+
+// ============================================================================
+// DOCUMENT ACTIVITIES
+// ============================================================================
+
+export async function fetchActivities(documentId) {
+  const { data, error } = await supabase
+    .from('document_activities')
+    .select(`
+      *,
+      user:profiles!user_id(id, full_name, avatar_url, email)
+    `)
+    .eq('document_id', documentId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+async function logActivity(documentId, userId, action, details = {}) {
+  try {
+    await supabase
+      .from('document_activities')
+      .insert({
+        document_id: documentId,
+        user_id: userId,
+        action,
+        details,
+      })
+  } catch (error) {
+    console.error('Failed to log activity:', error)
+  }
+}
+
+// ============================================================================
+// SEARCH
+// ============================================================================
+
+export async function searchDocuments(query, orgId) {
+  const { data, error } = await supabase
+    .from('documents')
+    .select('*')
+    .eq('org_id', orgId)
+    .or(`title.ilike.%${query}%,description.ilike.%${query}%,content_preview.ilike.%${query}%`)
+    .limit(20)
+
+  if (error) throw error
+  return data || []
+}
+
+// ============================================================================
+// REAL-TIME SUBSCRIPTIONS
+// ============================================================================
+
+export function subscribeToDocument(documentId, callback) {
+  return supabase
+    .channel(`document:${documentId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'document_blocks',
+        filter: `document_id=eq.${documentId}`,
+      },
+      callback
+    )
+    .subscribe()
+}
+
+export function subscribeToCollaborators(documentId, callback) {
+  return supabase
+    .channel(`collaborators:${documentId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'document_collaborators',
+        filter: `document_id=eq.${documentId}`,
+      },
+      callback
+    )
+    .subscribe()
+}
+
+export function subscribeToComments(documentId, callback) {
+  return supabase
+    .channel(`comments:${documentId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'document_comments',
+        filter: `document_id=eq.${documentId}`,
+      },
+      callback
+    )
+    .subscribe()
 }

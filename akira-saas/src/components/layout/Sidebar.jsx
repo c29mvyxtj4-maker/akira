@@ -68,6 +68,31 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
     localStorage.setItem('akira-recent-items', JSON.stringify(updated))
   }
 
+  // Load favorites from localStorage (backup system)
+  const loadFavoritesFromStorage = () => {
+    const favKeys = Object.keys(localStorage).filter(key => key.startsWith('favorite-'))
+    const favs = favKeys.map(key => {
+      const parts = key.replace('favorite-', '').split('-')
+      const itemType = parts[0]
+      const itemId = parts.slice(1).join('-')
+      const itemName = localStorage.getItem(`${key}-name`) || itemId
+      return { type: itemType, id: itemId, name: itemName }
+    })
+    return favs
+  }
+
+  // Listen for favorites updates (when user toggles favorite)
+  useEffect(() => {
+    const handleFavoritesUpdate = async () => {
+      console.log('[SIDEBAR] Favorites updated, reloading...')
+      const updatedFavs = await getFavorites()
+      setFavorites(updatedFavs || loadFavoritesFromStorage())
+    }
+
+    window.addEventListener('favorites-updated', handleFavoritesUpdate)
+    return () => window.removeEventListener('favorites-updated', handleFavoritesUpdate)
+  }, [])
+
   // Cargar datos al montar el componente
   useEffect(() => {
     const loadData = async () => {
@@ -241,7 +266,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
   const mainNavItems = [
     { icon: Home, label: 'Inicio', route: ROUTES.HOME },
     { icon: MessageCircle, label: 'Chat', route: '/brain' },
-    { icon: FileText, label: 'Documentos', route: '/documents' },
+    { icon: FileText, label: 'Documentos', route: ROUTES.DOCUMENTS },
     { icon: Mail, label: 'Correo', route: '/messages' },
     { icon: Search, label: 'Búsqueda', route: '/search' },
   ]

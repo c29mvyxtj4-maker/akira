@@ -62,7 +62,7 @@ export var ROUTES = {
   INVOICES:       '/invoices',
   CALENDAR:       '/calendar',
   KNOWLEDGE:      '/knowledge',
-  DOCUMENTS:      '/documents-notion',
+  DOCUMENTS:      '/documents',
   BRAIN:          '/brain',
   SETTINGS:       '/settings',
 

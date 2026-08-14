@@ -1,6 +1,0 @@
-{
-  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
-  "outputDirectory": "akira-saas/dist",
-  "cleanUrls": true,
-  "trailingSlash": false
-}

@@ -1,7 +1,7 @@
 export default function DocumentsNotion() {
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '20px' }}>📄 Documents</h1>
+      <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '20px' }}>📄 Documentos</h1>
       <p style={{ fontSize: '16px', color: '#888', marginBottom: '30px' }}>
         A powerful Notion-like document editor with real-time collaboration
       </p>

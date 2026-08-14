@@ -1,9 +1,5 @@
 {
-  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build && cp dist/index.html dist/_not_found.html",
+  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
   "installCommand": "cd akira-saas && npm install --legacy-peer-deps",
-  "outputDirectory": "akira-saas/dist",
-  "framework": "vite",
-  "git": {
-    "deploymentEnabled": true
-  }
+  "outputDirectory": "akira-saas/dist"
 }

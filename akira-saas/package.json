@@ -1,7 +1,7 @@
 {
   "name": "akira-saas",
   "private": true,
-  "version": "0.3.4",
+  "version": "1.0.0-documents",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -1,0 +1,21 @@
+DOCUMENTS DEPLOYMENT MARKER
+============================
+
+This file marks the deployment version of the /documents page feature.
+
+Build: 1.0.0-documents-live
+Date: 2026-08-14
+Status: READY FOR PRODUCTION
+
+Configuration:
+- vercel.json in akira-saas/ with correct build commands
+- Cache-Control headers disabled for HTML
+- SPA routing configured
+- DocumentsNotion component functional
+- All compilation errors resolved
+
+Expected behavior after deployment:
+- Navigate to https://akira-os-dun.vercel.app/documents
+- Should see "✨ DOCUMENTOS - LIVE NOW ✨" message
+- No more 404 errors
+- SPA routing working correctly

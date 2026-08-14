@@ -728,15 +728,6 @@ export function subscribeToCollaborators(documentId, callback) {
     .subscribe()
 }
 
-// ============================================================================
-// ALIASES FOR BACKWARDS COMPATIBILITY
-// ============================================================================
-
-export const getDocuments = fetchDocuments
-export const createDocument = insertDocument
-export const updateDocument = updateDocumentMetadata
-export const deleteDocument = deleteDocumentRecord
-
 export function subscribeToComments(documentId, callback) {
   return supabase
     .channel(`comments:${documentId}`)

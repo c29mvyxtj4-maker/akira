@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase'
-import { createInvoiceDirect } from '@/services/documents.service' // ← CAMBIADO: antes era invoices.service
 import { createFinanceEntry } from '@/services/finance.service'
 import { getCompanySettings } from '@/services/company.service'
 
@@ -75,17 +74,8 @@ async function createInvoiceAction(data) {
     }
   }
 
-  // ← CAMBIADO: usa createInvoiceDirect, que escribe en commercial_documents
-  return createInvoiceDirect({
-    client_id:  data.client_id || null,
-    issue_date: new Date().toISOString().split('T')[0],
-    due_date:   data.due_date || null,
-    tax_rate:   taxRate,
-    notes:      data.notes || null,
-    items:      data.items.map(function(it) {
-      return { description: it.description || 'Concepto', quantity: Number(it.quantity) || 1, price: Number(it.price) || 0 }
-    }),
-  })
+  // TODO: Fix invoice creation
+  throw new Error('Invoice creation not yet implemented in brain actions')
 }
 
 async function createCalendarEventAction(data) {

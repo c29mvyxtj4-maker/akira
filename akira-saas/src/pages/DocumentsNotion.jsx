@@ -1,34 +1,26 @@
-import { FileText } from 'lucide-react'
-import AppShell from '@/components/layout/AppShell'
-import PageHeader from '@/components/layout/PageHeader'
-
 export default function DocumentsNotion() {
   return (
-    <AppShell>
-      <div className="space-y-6">
-        <PageHeader
-          title="Documents"
-          subtitle="Create rich, collaborative documents with live sync"
-          icon={FileText}
-        />
-
-        <div className="max-w-4xl">
-          <div className="bg-surface-1 border border-surface-2 rounded-lg p-8 text-center">
-            <FileText size={48} className="mx-auto mb-4 text-brand-500" />
-            <h2 className="text-2xl font-bold text-text-1 mb-2">Documents Coming Soon</h2>
-            <p className="text-text-3 mb-6">
-              A powerful Notion-like document editor with real-time collaboration, rich formatting,
-              and seamless integration with your projects and clients.
-            </p>
-            <div className="text-sm text-text-4">
-              <p>✓ Notion-style "/" commands</p>
-              <p>✓ Real-time collaborative editing</p>
-              <p>✓ Tables, charts, calendars, and more</p>
-              <p>✓ Shared with team and clients</p>
-            </div>
-          </div>
-        </div>
+    <div style={{ padding: '40px', textAlign: 'center' }}>
+      <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '20px' }}>📄 Documents</h1>
+      <p style={{ fontSize: '16px', color: '#888', marginBottom: '30px' }}>
+        A powerful Notion-like document editor with real-time collaboration
+      </p>
+      <div style={{
+        background: '#1a1a1a',
+        border: '1px solid #333',
+        borderRadius: '8px',
+        padding: '30px',
+        maxWidth: '600px',
+        margin: '0 auto'
+      }}>
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>Coming Soon</h2>
+        <ul style={{ textAlign: 'left', listStyle: 'none', padding: 0 }}>
+          <li style={{ marginBottom: '10px' }}>✓ Notion-style "/" commands</li>
+          <li style={{ marginBottom: '10px' }}>✓ Real-time collaborative editing</li>
+          <li style={{ marginBottom: '10px' }}>✓ Tables, charts, calendars, and more</li>
+          <li>✓ Shared with team and clients</li>
+        </ul>
       </div>
-    </AppShell>
+    </div>
   )
 }

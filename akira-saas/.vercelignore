@@ -1,4 +1,4 @@
 # Force Vercel to always rebuild
 # This file being modified triggers a new deployment
-# Last modified: 2026-08-14 FORCE REBUILD 3 - _not_found.html Strategy
-# Triggered rebuild with _not_found.html fallback for SPA routing
+# Last modified: 2026-08-15 FORCE REBUILD 4 - SPA Fallback Directories
+# Triggered rebuild with directory-based SPA routing

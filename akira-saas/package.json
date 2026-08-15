@@ -9,6 +9,7 @@
     "start": "node server.js",
     "preview": "vite preview",
     "deploy": "node scripts/deploy.mjs",
+    "seed": "node scripts/seed-data.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -71,24 +71,32 @@ export function useFavorite(itemType, itemId, itemName = '') {
 
     setLoading(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      // Get user and verify session
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+      console.log('[useFavorite] Auth check:', { userId: user?.id, hasError: !!authError })
+
+      if (authError || !user?.id) {
+        console.error('[useFavorite] No valid auth session:', authError)
+        setLoading(false)
+        return
+      }
 
       if (isFavorite) {
         // Remover favorito
-        if (user) {
-          try {
-            await supabase
-              .from('favorites')
-              .delete()
-              .eq('user_id', user.id)
-              .eq('item_type', itemType)
-              .eq('item_id', itemId)
-          } catch (err) {
-            // Si hay error de tabla no encontrada, es normal, usa localStorage
-            if (err?.message?.includes('table') || err?.code === 'PGRST205') {
-              console.log('[useFavorite] Table not found, using localStorage')
-            }
+        try {
+          const { error: deleteError } = await supabase
+            .from('favorites')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('item_type', itemType)
+            .eq('item_id', itemId)
+
+          if (deleteError) {
+            console.warn('[useFavorite] Delete error:', deleteError)
           }
+        } catch (err) {
+          console.error('[useFavorite] Exception deleting:', err)
         }
 
         localStorage.removeItem(getLocalStorageKey())
@@ -96,46 +104,52 @@ export function useFavorite(itemType, itemId, itemName = '') {
         console.log('[useFavorite] Removed favorite:', itemType, itemId)
       } else {
         // Agregar favorito
-        if (user) {
-          try {
-            console.log('[useFavorite] Attempting to save to Supabase for user:', user.id)
+        try {
+          console.log('[useFavorite] Attempting to save to Supabase for user:', user.id)
 
-            // Obtener org_id del usuario
-            const { data: profile, error: profileError } = await supabase
-              .from('profiles')
-              .select('org_id')
-              .eq('id', user.id)
-              .single()
+          // Obtener org_id del usuario
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('org_id')
+            .eq('id', user.id)
+            .single()
 
-            if (profileError) {
-              console.warn('[useFavorite] Error getting profile:', profileError)
-            }
-
-            if (profile?.org_id) {
-              // Intenta guardar en Supabase
-              const { error: insertError } = await supabase
-                .from('favorites')
-                .insert({
-                  user_id: user.id,
-                  org_id: profile.org_id,
-                  item_type: itemType,
-                  item_id: itemId,
-                  item_name: itemName,
-                })
-
-              if (insertError) {
-                console.warn('[useFavorite] Error inserting to Supabase:', insertError)
-              } else {
-                console.log('[useFavorite] Successfully saved to Supabase')
-              }
-            } else {
-              console.warn('[useFavorite] No org_id found in profile')
-            }
-          } catch (err) {
-            console.error('[useFavorite] Exception saving to Supabase:', err)
+          if (profileError) {
+            console.warn('[useFavorite] Error getting profile:', profileError)
           }
-        } else {
-          console.warn('[useFavorite] No user authenticated, saving to localStorage only')
+
+          // Preparar datos para insertar
+          const favoriteData = {
+            user_id: user.id,
+            item_type: itemType,
+            item_id: itemId,
+            item_name: itemName || itemId,
+          }
+
+          // Agregar org_id si está disponible
+          if (profile?.org_id) {
+            favoriteData.org_id = profile.org_id
+          }
+
+          console.log('[useFavorite] Inserting data:', favoriteData)
+
+          // Intenta guardar en Supabase
+          const { error: insertError, data: insertedData } = await supabase
+            .from('favorites')
+            .insert([favoriteData])
+            .select()
+
+          if (insertError) {
+            console.error('[useFavorite] Error inserting to Supabase:', {
+              code: insertError.code,
+              message: insertError.message,
+              details: insertError.details,
+            })
+          } else {
+            console.log('[useFavorite] Successfully saved to Supabase:', insertedData)
+          }
+        } catch (err) {
+          console.error('[useFavorite] Exception saving to Supabase:', err)
         }
 
         localStorage.setItem(getLocalStorageKey(), 'true')

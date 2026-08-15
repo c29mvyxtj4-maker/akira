@@ -1,21 +1,39 @@
+import express from 'express'
 import { fileURLToPath } from 'url'
 import path from 'path'
-import { spawn } from 'child_process'
+import fs from 'fs'
 
+const app = express()
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const PORT = process.env.PORT || 3000
 
-// Change to akira-saas directory and start server
-const server = spawn('node', ['server.js'], {
-  cwd: path.join(__dirname, 'akira-saas'),
-  stdio: 'inherit',
-  shell: true
+// Serve static files from akira-saas/dist
+const distPath = path.join(__dirname, 'akira-saas/dist')
+
+app.use(express.static(distPath, {
+  maxAge: '1h',
+  etag: false
+}))
+
+// SPA routing: serve index.html for all non-file routes
+app.get('*', (req, res) => {
+  const indexPath = path.join(distPath, 'index.html')
+
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath)
+  } else {
+    res.status(500).send('Error: index.html not found. Build may have failed.')
+  }
 })
 
-server.on('error', (err) => {
-  console.error('Failed to start server:', err)
-  process.exit(1)
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Server error:', err)
+  res.status(500).send('Internal Server Error')
 })
 
-server.on('exit', (code) => {
-  process.exit(code)
+app.listen(PORT, () => {
+  console.log(`✅ AKIRA SPA Server running on port ${PORT}`)
+  console.log(`📍 Serving from: ${distPath}`)
+  console.log(`🔄 SPA routing enabled - all routes point to index.html`)
 })

@@ -1,5 +1,9 @@
 {
-  "buildCommand": "cd akira-saas && npm ci --legacy-peer-deps && npm run build",
-  "installCommand": "cd akira-saas && npm ci --legacy-peer-deps",
-  "outputDirectory": "akira-saas/dist"
+  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
+  "installCommand": "cd akira-saas && npm install --legacy-peer-deps",
+  "outputDirectory": "akira-saas/dist",
+  "nodeVersion": "20.x",
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

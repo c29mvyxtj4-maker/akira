@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "cd akira-saas && npm run dev",
     "build": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
+    "start": "cd akira-saas && npm install --legacy-peer-deps && npm start",
     "preview": "cd akira-saas && npm run preview"
   }
 }

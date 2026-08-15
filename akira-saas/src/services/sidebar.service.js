@@ -52,11 +52,11 @@ export async function getActivity24h() {
   }
 }
 
-// Obtener favoritos
+// Obtener favoritos (con fallback a localStorage)
 export async function getFavorites() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return []
+    if (!user) return getLocalStorageFavorites()
 
     const { data, error } = await supabase
       .from('favorites')
@@ -64,12 +64,38 @@ export async function getFavorites() {
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
-    if (error) throw error
+    // Si error o sin datos, intenta localStorage
+    if (error || !data || data.length === 0) {
+      console.log('[getFavorites] Supabase empty or error, trying localStorage')
+      return getLocalStorageFavorites()
+    }
+
     return data || []
   } catch (error) {
     console.error('Error fetching favorites:', error)
-    return []
+    // Fallback a localStorage
+    return getLocalStorageFavorites()
   }
+}
+
+// Helper para obtener favoritos desde localStorage
+function getLocalStorageFavorites() {
+  const favKeys = Object.keys(localStorage).filter(key => key.startsWith('favorite-'))
+  return favKeys
+    .filter(key => !key.includes('-name') && !key.includes('-type'))
+    .map(key => {
+      const parts = key.replace('favorite-', '').split('-')
+      const itemType = parts[0]
+      const itemId = parts.slice(1).join('-')
+      const itemName = localStorage.getItem(`${key}-name`) || itemId
+      return {
+        id: key,
+        item_type: itemType,
+        item_id: itemId,
+        item_name: itemName,
+        item_route: null,
+      }
+    })
 }
 
 // Agregar/remover favorito

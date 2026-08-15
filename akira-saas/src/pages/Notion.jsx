@@ -71,7 +71,7 @@ export default function NotionPage() {
   }
 
   if (loading || !page) {
-    return <PageSpinner label="Iniciando editor..." />
+    return <PageSpinner label="Cargando Notion..." />
   }
 
   return <NotionEditor pageId={page.id} />

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/create-spa-fallbacks.js",
+    "build": "vite build",
+    "start": "node server.js",
     "preview": "vite preview",
     "deploy": "node scripts/deploy.mjs",
     "test": "vitest run",

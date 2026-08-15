@@ -98,16 +98,22 @@ export function useFavorite(itemType, itemId, itemName = '') {
         // Agregar favorito
         if (user) {
           try {
+            console.log('[useFavorite] Attempting to save to Supabase for user:', user.id)
+
             // Obtener org_id del usuario
-            const { data: profile } = await supabase
+            const { data: profile, error: profileError } = await supabase
               .from('profiles')
               .select('org_id')
               .eq('id', user.id)
               .single()
 
+            if (profileError) {
+              console.warn('[useFavorite] Error getting profile:', profileError)
+            }
+
             if (profile?.org_id) {
               // Intenta guardar en Supabase
-              await supabase
+              const { error: insertError } = await supabase
                 .from('favorites')
                 .insert({
                   user_id: user.id,
@@ -116,13 +122,20 @@ export function useFavorite(itemType, itemId, itemName = '') {
                   item_id: itemId,
                   item_name: itemName,
                 })
+
+              if (insertError) {
+                console.warn('[useFavorite] Error inserting to Supabase:', insertError)
+              } else {
+                console.log('[useFavorite] Successfully saved to Supabase')
+              }
+            } else {
+              console.warn('[useFavorite] No org_id found in profile')
             }
           } catch (err) {
-            // Si hay error de tabla no encontrada, es normal, usa localStorage
-            if (err?.message?.includes('table') || err?.code === 'PGRST205') {
-              console.log('[useFavorite] Table not found, using localStorage')
-            }
+            console.error('[useFavorite] Exception saving to Supabase:', err)
           }
+        } else {
+          console.warn('[useFavorite] No user authenticated, saving to localStorage only')
         }
 
         localStorage.setItem(getLocalStorageKey(), 'true')
@@ -130,7 +143,7 @@ export function useFavorite(itemType, itemId, itemName = '') {
         localStorage.setItem(`${getLocalStorageKey()}-name`, itemName || itemId)
         localStorage.setItem(`${getLocalStorageKey()}-type`, itemType)
         setIsFavorite(true)
-        console.log('[useFavorite] Added favorite:', itemType, itemId)
+        console.log('[useFavorite] Added favorite to localStorage:', itemType, itemId)
       }
 
       // Dispatch event to update Sidebar

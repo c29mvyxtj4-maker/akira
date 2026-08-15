@@ -1,0 +1,5 @@
+-- Deshabilitar RLS en tablas de Notion temporalmente
+ALTER TABLE workspaces DISABLE ROW LEVEL SECURITY;
+ALTER TABLE teamspaces DISABLE ROW LEVEL SECURITY;
+ALTER TABLE notion_pages DISABLE ROW LEVEL SECURITY;
+ALTER TABLE notion_blocks DISABLE ROW LEVEL SECURITY;

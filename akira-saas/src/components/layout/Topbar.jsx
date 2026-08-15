@@ -13,7 +13,7 @@ export default function TopBar({ onToggleSidebar }) {
   const location = useLocation()
   const navigate = useNavigate()
   const { currentItem } = useCurrentItem()
-  const { isFavorite, toggleFavorite } = useFavorite(currentItem.type, currentItem.id, currentItem.name)
+  const { isFavorite, toggleFavorite } = useFavorite(currentItem?.type, currentItem?.id, currentItem?.name)
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const [showSettings, setShowSettings] = useState(false)

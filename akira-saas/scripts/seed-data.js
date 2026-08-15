@@ -5,12 +5,28 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
+import * as fs from 'fs'
+import * as path from 'path'
+import { fileURLToPath } from 'url'
+
+// Load .env file
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const envPath = path.join(__dirname, '..', '.env')
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf-8')
+  envContent.split('\n').forEach(line => {
+    const [key, value] = line.split('=')
+    if (key && value) {
+      process.env[key.trim()] = value.trim()
+    }
+  })
+}
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error('❌ VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY no configuradas')
+  console.error('❌ VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY no configuradas en .env')
   process.exit(1)
 }
 

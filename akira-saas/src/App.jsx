@@ -43,6 +43,7 @@ const LandingPage   = lazy(() => import('@/pages/LandingPage'))
 const Automation    = lazy(() => import('@/pages/Automation')) // v2.0 Automation workflows
 const YouTube       = lazy(() => import('@/pages/YouTube')) // YouTube project management
 const DocumentsNotion = lazy(() => import('@/pages/DocumentsNotion')) // Notion-style documents
+const Notion        = lazy(() => import('@/pages/Notion')) // Notion editor (Fase 1)
 
 function ComingSoon({ name }) {
   return (
@@ -129,7 +130,7 @@ export default function App() {
           {/* Facturas + Presupuestos unificados en commercial_documents (Documents).
              Las rutas antiguas redirigen aquí. */}
           <Route path="invoices/*"      element={<Documents />} />
-          <Route path="documents/*"     element={<DocumentsNotion />} />
+          <Route path="documents/*"     element={<Notion />} />
           <Route path="quotes/*"        element={<Navigate to="/invoices" replace />} />
           <Route path="time/*"          element={<TimeTracking />} />
           <Route path="operatives/*"    element={<AIOperatives />} />

@@ -4,9 +4,10 @@ import {
   Search, SlidersHorizontal, UserPlus, Archive,
   Edit3, ChevronRight, ChevronLeft, Phone, Mail, Globe,
   Instagram, TrendingUp, FolderKanban, AlertTriangle,
-  Clock, CalendarCheck, Users, UserCheck, FileText, Download,
+  Clock, CalendarCheck, Users, UserCheck, FileText, Download, Star,
 } from 'lucide-react'
 import { exportToCsv } from '@/utils/exportCsv'
+import { supabase } from '@/lib/supabase'
 import { useClients } from '@/hooks/useClients'
 import { useAddRecent } from '@/hooks/useAddRecent'
 import { useCurrentItem } from '@/context/CurrentItemContext'
@@ -254,6 +255,53 @@ function ProjectRow({ project }) {
 /* ClientDetail */
 function ClientDetail({ client, timeline, projects, finance, loading, onEdit, onArchive, onAddEntry, onDeleteEntry, onBack }) {
   const [tab, setTab] = useState('overview')
+  const [isFavorite, setIsFavorite] = useState(false)
+
+  const handleToggleFavorite = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session?.user?.id) return
+
+      const URL = import.meta.env.VITE_SUPABASE_URL
+      const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+      const userId = session.user.id
+      const accessToken = session.access_token
+
+      if (isFavorite) {
+        await fetch(`${URL}/rest/v1/favorites?item_id=eq.${client.id}&item_type=eq.client&user_id=eq.${userId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': KEY,
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        })
+      } else {
+        const favoriteData = {
+          user_id: userId,
+          item_type: 'client',
+          item_id: client.id,
+          item_name: client.name,
+        }
+
+        await fetch(`${URL}/rest/v1/favorites`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': KEY,
+            'Authorization': `Bearer ${accessToken}`,
+            'Prefer': 'return=representation',
+          },
+          body: JSON.stringify([favoriteData]),
+        })
+      }
+
+      setIsFavorite(!isFavorite)
+    } catch (err) {
+      console.error('[useFavorite] Error:', err.message)
+    }
+  }
 
   if (loading) {
     return (
@@ -328,6 +376,13 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
               <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <h2 className="text-xl font-bold text-text-1">{client.name}</h2>
                 {cfg && <Badge color={cfg.color}>{cfg.label}</Badge>}
+                <button
+                  onClick={handleToggleFavorite}
+                  className="text-text-3 hover:text-text-1 transition-colors ml-2"
+                  title={isFavorite ? 'Remover de favoritos' : 'Agregar a favoritos'}
+                >
+                  <Star size={20} fill={isFavorite ? 'currentColor' : 'none'} />
+                </button>
               </div>
               <p className="text-sm text-text-3">{client.company || 'Sin empresa'}</p>
               {client.niche && (

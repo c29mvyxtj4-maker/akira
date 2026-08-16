@@ -47,6 +47,12 @@ var ITEMS = [
     command: function (e, r) {
       e.chain().focus().deleteRange(r).setYoutubeVideo({ src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }).run()
     } },
+
+  // FASE 3: Avanzados
+  { title: 'Ecuación', desc: 'Fórmula matemática', icon: '∑', keys: ['ecuacion', 'math', 'formula', 'equation'], section: 'Avanzados',
+    command: function (e, r) {
+      e.chain().focus().deleteRange(r).setEquation({ content: 'E = mc^2' }).run()
+    } },
 ]
 
 function filterItems(query) {

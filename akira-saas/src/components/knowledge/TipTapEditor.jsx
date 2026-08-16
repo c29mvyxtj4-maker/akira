@@ -21,8 +21,9 @@ import { useEffect, useRef, useState } from 'react'
 import { uploadFile } from '@/services/kb.service'
 import { getPref } from '@/shared/hooks/usePreferences'
 import { SlashCommand } from './SlashCommand'
+import { EquationNode } from './EquationNode'
 
-/* –”€–”€ Limpieza de JSON para evitar referencias circulares –”€–”€–”€–”€ */
+/* –“€–“€ Limpieza de JSON para evitar referencias circulares –“€–“€–“€–“€ */
 function cleanJSON(node) {
   if (node === null || node === undefined) return node
   if (typeof node === 'string' || typeof node === 'number' || typeof node === 'boolean') return node
@@ -437,6 +438,7 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
       Youtube.configure({ controls: true, nocookie: true }),
       CharacterCount,
       CalloutNode,
+      EquationNode,
     ],
     content: { type: 'doc', content: [] },
     onUpdate: function(params) {

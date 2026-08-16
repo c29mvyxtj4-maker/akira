@@ -1,7 +1,11 @@
 {
-  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build && cd .. && cp -r akira-saas/dist/* . && cp -r akira-saas/dist/.[^.]* . 2>/dev/null || true",
-  "outputDirectory": ".",
+  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
+  "outputDirectory": "akira-saas/dist",
   "rewrites": [
+    {
+      "source": "/(.*\\.js$|.*\\.css$|.*\\.svg$|.*\\.png$|.*\\.jpg$|.*\\.gif$|.*\\.ico$|.*\\.json$|.*\\.txt$|assets/.*|icons/.*)",
+      "destination": "/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

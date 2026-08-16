@@ -1,5 +1,14 @@
 {
-  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build && cd .. && cp -r akira-saas/dist/* .",
-  "outputDirectory": ".",
-  "nodeVersion": "20.x"
+  "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
+  "outputDirectory": "akira-saas/dist",
+  "nodeVersion": "20.x",
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/.*",
+      "dest": "/index.html"
+    }
+  ]
 }

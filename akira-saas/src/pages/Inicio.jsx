@@ -30,7 +30,7 @@ import SettingsPanel from '@/pages/Settings'
 var GLOW = { className: 'glow-btn', borderRadius: 19, glowRadius: 15, glowIntensity: 1.4, coneSpread: 25, backgroundColor: 'transparent', glowColor: '355 78 62', colors: ['#e63946', '#ff5a66', '#a01f2b'], animated: true }
 
 // Fondo animado (three.js) â€” en diferido para no bloquear la carga inicial.
-var Silk = lazy(function () { return import('@/components/effects/Silk') })
+var Silk = lazy(function () { return import('@/shared/components/effects/Silk') })
 
 /*
  * Pantalla principal (hub). Sin sidebar: la navegaciÃ³n es esta pantalla + la

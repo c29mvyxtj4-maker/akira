@@ -10,7 +10,7 @@ import ResetPassword from '@/pages/auth/ResetPassword'
 
 // Layout
 import { AppLayoutContainer } from '@/shared/components/layout/AppLayoutContainer'
-import '@/styles/layout.css'
+import '@/shared/styles/layout.css'
 
 // Components
 import KeyboardShortcutsModal from '@/shared/components/ui/KeyboardShortcutsModal'

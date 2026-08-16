@@ -4,7 +4,7 @@ import {
   SidebarItem,
   SidebarSection,
   SidebarSeparator,
-} from '@/components/Sidebar';
+} from '@/shared/components/Sidebar';
 import {
   Inbox,
   CheckSquare,

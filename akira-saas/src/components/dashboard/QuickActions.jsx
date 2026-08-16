@@ -1,13 +1,14 @@
 ﻿import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { UserPlus, FolderPlus, TrendingUp, Brain } from 'lucide-react'
+import { UserPlus, FolderPlus, TrendingUp, Brain, FileText } from 'lucide-react'
 import { ROUTES } from '@/shared/config/constants'
 
 const ACTIONS = [
-  { label: 'Nuevo cliente',  icon: UserPlus,   to: ROUTES.CLIENTS,  color: 'text-brand-400',      bg: 'bg-brand-500/10      hover:bg-brand-500/20',      border: 'border-brand-500/20' },
-  { label: 'Nuevo proyecto', icon: FolderPlus,  to: ROUTES.PROJECTS, color: 'text-status-success', bg: 'bg-status-success/10 hover:bg-status-success/20', border: 'border-status-success/20' },
-  { label: 'Ver finanzas',   icon: TrendingUp,  to: ROUTES.FINANCE,  color: 'text-status-warning', bg: 'bg-status-warning/10 hover:bg-status-warning/20', border: 'border-status-warning/20' },
-  { label: 'Akira Brain',    icon: Brain,       to: ROUTES.BRAIN,    color: 'text-status-purple',  bg: 'bg-status-purple/10  hover:bg-status-purple/20',  border: 'border-status-purple/20' },
+  { label: 'Nuevo cliente',  icon: UserPlus,   to: ROUTES.CLIENTS,    color: 'text-brand-400',      bg: 'bg-brand-500/10      hover:bg-brand-500/20',      border: 'border-brand-500/20' },
+  { label: 'Nuevo proyecto', icon: FolderPlus,  to: ROUTES.PROJECTS,   color: 'text-status-success', bg: 'bg-status-success/10 hover:bg-status-success/20', border: 'border-status-success/20' },
+  { label: 'Ver finanzas',   icon: TrendingUp,  to: ROUTES.FINANCE,    color: 'text-status-warning', bg: 'bg-status-warning/10 hover:bg-status-warning/20', border: 'border-status-warning/20' },
+  { label: 'Documentos',     icon: FileText,    to: '/documents',      color: 'text-blue-400',      bg: 'bg-blue-500/10       hover:bg-blue-500/20',       border: 'border-blue-500/20' },
+  { label: 'Akira Brain',    icon: Brain,       to: ROUTES.BRAIN,      color: 'text-status-purple',  bg: 'bg-status-purple/10  hover:bg-status-purple/20',  border: 'border-status-purple/20' },
 ]
 
 export default function QuickActions() {

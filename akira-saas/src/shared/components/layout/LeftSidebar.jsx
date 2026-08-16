@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageCircle,
+  FileText,
 } from 'lucide-react';
 
 export const LeftSidebar = () => {
@@ -68,6 +69,12 @@ export const LeftSidebar = () => {
           label="Conocimiento"
           onClick={() => navigate('/knowledge')}
           active={isActive('/knowledge')}
+        />
+        <SidebarItem
+          icon={<FileText size={20} />}
+          label="Documentos"
+          onClick={() => navigate('/documents')}
+          active={isActive('/documents')}
         />
       </SidebarSection>
 

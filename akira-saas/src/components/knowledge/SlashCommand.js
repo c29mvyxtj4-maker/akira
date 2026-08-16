@@ -39,18 +39,14 @@ var ITEMS = [
     command: function (e, r) { e.chain().focus().deleteRange(r).insertCallout({ type: 'info' }).run() } },
 
   // FASE 2: Multimedia
+  { title: 'Imagen', desc: 'Inserta una imagen', icon: '🖼', keys: ['imagen', 'image', 'foto', 'picture'], section: 'Multimedia',
+    command: function (e, r) {
+      e.chain().focus().deleteRange(r).setImage({ src: 'https://via.placeholder.com/600x400?text=Imagen' }).run()
+    } },
   { title: 'Vídeo YouTube', desc: 'Incrusta un video de YouTube', icon: '🎬', keys: ['video', 'youtube', 'vimeo'], section: 'Multimedia',
     command: function (e, r) {
       e.chain().focus().deleteRange(r).setYoutubeVideo({ src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }).run()
     } },
-  { title: 'Audio', desc: 'Archivo de audio MP3', icon: '🔊', keys: ['audio', 'musica', 'sonido'], section: 'Multimedia',
-    command: function (e, r) {
-      e.chain().focus().deleteRange(r).insertAudio({ src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' }).run()
-    } },
-
-  // FASE 3: Avanzados
-  { title: 'Tabla de contenidos', desc: 'Índice automático de encabezados', icon: '📑', keys: ['indice', 'toc', 'contenidos', 'tabla'], section: 'Avanzados',
-    command: function (e, r) { e.chain().focus().deleteRange(r).insertTableOfContents().run() } },
 ]
 
 function filterItems(query) {

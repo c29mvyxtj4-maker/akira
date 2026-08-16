@@ -1,0 +1,463 @@
+/* ────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE CSS VARIABLES
+   Sistema de variables responsivas para layout móvil, tablet y desktop
+   ──────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Layout Padding - Adapt según breakpoint */
+  --layout-padding-xs: 8px;
+  --layout-padding-sm: 12px;
+  --layout-padding-md: 16px;
+  --layout-padding-lg: 20px;
+  --layout-padding-xl: 24px;
+
+  /* Sidebar Dimensions */
+  --sidebar-width-expanded: 280px;
+  --sidebar-width-tablet: 200px;
+  --sidebar-width-collapsed: 50px;
+  --sidebar-width-mobile: 0px;
+
+  /* Topbar Height */
+  --topbar-height-desktop: 56px;
+  --topbar-height-mobile: 48px;
+
+  /* Bottom Navigation Height */
+  --bottombar-height: 66px;
+  --bottombar-height-with-safe-area: calc(66px + env(safe-area-inset-bottom));
+
+  /* Font Sizes - Responsive scaling */
+  --font-size-base: clamp(14px, 4vw, 16px);
+  --font-size-sm: clamp(12px, 3vw, 14px);
+  --font-size-lg: clamp(16px, 5vw, 18px);
+  --font-size-xl: clamp(18px, 6vw, 24px);
+  --font-size-2xl: clamp(24px, 8vw, 32px);
+
+  /* Spacing - Dynamic based on viewport */
+  --space-compact: clamp(4px, 1vw, 8px);
+  --space-normal: clamp(8px, 2vw, 12px);
+  --space-generous: clamp(12px, 3vw, 16px);
+
+  /* Component Sizing */
+  --button-height-mobile: 44px;
+  --button-height-desktop: 36px;
+  --icon-size-mobile: 24px;
+  --icon-size-desktop: 20px;
+
+  /* Touch Target Minimums (WCAG 2.5.5) */
+  --touch-target-min: 44px;
+  --click-target-min: 24px;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   EXTRA SMALL (320px-479px) - iPhone SE, small phones
+   ──────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 479px) {
+  :root {
+    --layout-padding: var(--layout-padding-xs);
+    --sidebar-width: var(--sidebar-width-mobile);
+    --topbar-height: var(--topbar-height-mobile);
+
+    /* Compact spacing para pequeñas pantallas */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+  }
+
+  /* Safe areas para phones con notch */
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* No sidebar visible */
+  .sidebar {
+    display: none;
+  }
+
+  /* Bottom navigation is primary navigation */
+  .bottom-navigation {
+    display: flex;
+  }
+
+  /* Buttons inherit touch target sizing */
+  button,
+  a[role="button"],
+  .button {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+  }
+
+  /* Input fields readable without zoom (iOS prevents zoom at 16px+) */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  /* Grids collapse to single column */
+  .responsive-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Fullscreen modals on mobile */
+  .modal,
+  .sheet {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   SMALL (480px-767px) - Small tablets, large phones
+   ──────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 480px) and (max-width: 767px) {
+  :root {
+    --layout-padding: var(--layout-padding-sm);
+    --sidebar-width: var(--sidebar-width-mobile);
+    --topbar-height: var(--topbar-height-mobile);
+
+    /* Slightly more breathing room */
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 20px;
+  }
+
+  /* Sidebar still hidden, drawer overlay instead */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 40;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Overlay backdrop */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+    display: none;
+  }
+
+  .sidebar-overlay.visible {
+    display: block;
+  }
+
+  /* Bottom navigation */
+  .bottom-navigation {
+    display: flex;
+  }
+
+  /* Grids: 1-2 columns depending on content */
+  .responsive-grid-1 {
+    grid-template-columns: 1fr;
+  }
+
+  .responsive-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Modal sheet behavior */
+  .modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 90dvh;
+    border-radius: 16px 16px 0 0;
+    max-width: 100%;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   MEDIUM (768px-1023px) - Tablet small to medium
+   ──────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --layout-padding: var(--layout-padding-md);
+    --sidebar-width: var(--sidebar-width-tablet);
+    --topbar-height: var(--topbar-height-desktop);
+
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 20px;
+    --space-xl: 24px;
+  }
+
+  /* Compact sidebar + bottom nav combo */
+  .sidebar {
+    width: var(--sidebar-width-tablet);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transform: none;
+  }
+
+  .sidebar-overlay {
+    display: none;
+  }
+
+  .bottom-navigation {
+    display: flex;
+  }
+
+  /* 2-column grids on tablet */
+  .responsive-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .responsive-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Drawer for secondary content */
+  .secondary-panel {
+    position: fixed;
+    right: 0;
+    top: var(--topbar-height);
+    height: calc(100% - var(--topbar-height));
+    width: 340px;
+    border-left: 1px solid var(--border);
+    background: var(--bg-1);
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 20;
+  }
+
+  .secondary-panel.open {
+    transform: translateX(0);
+  }
+
+  /* Modal centered on tablet */
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80dvh;
+    border-radius: 12px;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   LARGE (1024px-1279px) - Tablet large to small desktop
+   ──────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  :root {
+    --layout-padding: var(--layout-padding-lg);
+    --sidebar-width: var(--sidebar-width-expanded);
+    --topbar-height: var(--topbar-height-desktop);
+
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 20px;
+    --space-xl: 24px;
+  }
+
+  /* Full sidebar, no bottom nav */
+  .sidebar {
+    width: var(--sidebar-width-expanded);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .bottom-navigation {
+    display: none;
+  }
+
+  /* 3-4 column grids */
+  .responsive-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .responsive-grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Secondary panel visible */
+  .secondary-panel {
+    position: relative;
+    width: 340px;
+    transform: none;
+    z-index: auto;
+  }
+
+  /* Standard centered modal */
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 600px;
+    width: auto;
+    max-height: 80dvh;
+    border-radius: 12px;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   EXTRA LARGE (1280px+) - Desktop
+   ──────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 1280px) {
+  :root {
+    --layout-padding: var(--layout-padding-xl);
+    --sidebar-width: var(--sidebar-width-expanded);
+    --topbar-height: var(--topbar-height-desktop);
+
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 20px;
+    --space-xl: 24px;
+  }
+
+  /* No bottom navigation on desktop */
+  .bottom-navigation {
+    display: none;
+  }
+
+  /* Full 4-column grids */
+  .responsive-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .responsive-grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  /* Secondary panel always visible */
+  .secondary-panel {
+    position: relative;
+    width: 340px;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   UTILITY CLASSES FOR RESPONSIVE BEHAVIOR
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* Hide on mobile, show on desktop */
+.hidden-mobile {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .hidden-mobile {
+    display: revert;
+  }
+}
+
+/* Show on mobile, hide on desktop */
+.visible-mobile {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .visible-mobile {
+    display: none;
+  }
+}
+
+/* Responsive padding helpers */
+.p-responsive {
+  padding: var(--layout-padding);
+}
+
+.px-responsive {
+  padding-left: var(--layout-padding);
+  padding-right: var(--layout-padding);
+}
+
+.py-responsive {
+  padding-top: var(--layout-padding);
+  padding-bottom: var(--layout-padding);
+}
+
+/* Responsive gap for flex/grid */
+.gap-responsive {
+  gap: var(--space-md);
+}
+
+/* Responsive typography */
+.text-responsive {
+  font-size: var(--font-size-base);
+}
+
+/* Safe area respect for notched devices */
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-inset-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-inset-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Prevent zoom on iOS when input focused */
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+/* Smooth transitions for interactive elements on touch devices */
+button,
+a,
+.button {
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Prevent text selection on long-press */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Ensure minimum touch target size */
+.touch-target {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Viewport height without scrollbar (mobile) */
+.viewport-height {
+  height: 100dvh;
+}
+
+.viewport-width {
+  width: 100vw;
+}

@@ -1,5 +1,11 @@
 {
   "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "akira-saas/dist",
-  "nodeVersion": "20.x"
+  "nodeVersion": "20.x",
+  "rewrites": [
+    {
+      "source": "/:path((?!assets).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

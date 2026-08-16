@@ -10,6 +10,7 @@ import { WidgetGrid, useWidgets } from '@/modules/widgets'
 import { useApp } from '@/shared/context/AppContext'
 import { useAuth } from '@/shared/context/AuthContext'
 import { useOrg } from '@/shared/context/OrgContext'
+import { useLanguage } from '@/shared/hooks/useLanguage'
 import { ROUTES } from '@/shared/config/constants'
 import { DUR, EASE, SPRING } from '@/shared/config/motion'
 import { getUnreadMentionCount } from '@/services/mentions.service'
@@ -24,6 +25,7 @@ function fmtEur(n) {
 import AccountMenu from '@/shared/components/layout/AccountMenu'
 import BorderGlow from '@/shared/components/ui/BorderGlow'
 import SearchModal from '@/shared/components/ui/SearchModal'
+import LanguageSwitcher from '@/shared/components/ui/LanguageSwitcher'
 import SettingsPanel from '@/pages/Settings'
 
 // Props de BorderGlow afinados para botones pequeÃ±os del top bar (tono de marca).
@@ -37,9 +39,9 @@ var Silk = lazy(function () { return import('@/shared/components/effects/Silk') 
  * barra inferior global. Layout ancho para escritorio, rejillas responsive.
  */
 
-function fmtCur(n) {
+function fmtCur(n, currency) {
   if (!n && n !== 0) return '--'
-  return Number(n).toLocaleString(numberLocale(), { maximumFractionDigits: 0 }) + 'â‚¬'
+  return Number(n).toLocaleString(numberLocale(), { maximumFractionDigits: 0 }) + currency
 }
 
 export default function Inicio() {
@@ -47,6 +49,7 @@ export default function Inicio() {
   var { kpis, loading } = useApp()
   var { profile, user, signOut } = useAuth()
   var { org, members, workspaces, switchWorkspace, createWorkspace } = useOrg()
+  var { t, getCurrency } = useLanguage()
   var name = profile && profile.full_name ? profile.full_name.split(' ')[0] : 'usuario'
   var initial = profile && profile.full_name ? profile.full_name[0].toUpperCase() : 'M'
 
@@ -86,36 +89,39 @@ export default function Inicio() {
   }
 
   var PILLS = [
-    { icon: Mail,          label: 'Mensajes',   to: '/mensajes' },
-    { icon: Bell,          label: 'Menciones',  to: '/inbox' },
-    { icon: Video,         label: 'Reuniones',  to: '/calendar' },
+    { icon: Mail,          label: t('messages'),   to: '/mensajes' },
+    { icon: Bell,          label: t('mentions'),  to: '/inbox' },
+    { icon: Video,         label: t('meetings'),  to: '/calendar' },
   ]
 
+  var currency = getCurrency()
   var KPIS = [
-    { label: 'MRR',              value: loading ? 'â€”' : fmtCur(kpis && kpis.mrr),          icon: TrendingUp },
-    { label: 'Clientes activos', value: loading ? 'â€”' : (kpis ? kpis.activeClients : 0),   icon: Users },
-    { label: 'Proyectos',        value: loading ? 'â€”' : (kpis ? kpis.activeProjects : 0),  icon: FolderKanban },
-    { label: 'Ingresos mes',     value: loading ? 'â€”' : fmtCur(kpis && kpis.monthIncome),  icon: Wallet },
+    { label: 'MRR',              value: loading ? '–' : fmtCur(kpis && kpis.mrr, currency),          icon: TrendingUp },
+    { label: t('activeClients'), value: loading ? '–' : (kpis ? kpis.activeClients : 0),   icon: Users },
+    { label: t('projects'),        value: loading ? '–' : (kpis ? kpis.activeProjects : 0),  icon: FolderKanban },
+    { label: t('monthIncome'),     value: loading ? '–' : fmtCur(kpis && kpis.monthIncome, currency),  icon: Wallet },
   ]
 
   var QUICK = [
-    { label: 'Centro de mando', sub: 'KPIs y atenciÃ³n hoy', icon: LayoutDashboard, to: '/dashboard' },
-    { label: 'Clientes',   sub: 'Cuentas y portal',   icon: Users,        to: ROUTES.CLIENTS },
-    { label: 'Proyectos',  sub: 'Kanban y entregas',  icon: FolderKanban, to: ROUTES.PROJECTS },
-    { label: 'Finanzas',   sub: 'Ingresos y gastos',  icon: Wallet,       to: ROUTES.FINANCE },
-    { label: 'Facturas',   sub: 'Cobros y PDF',       icon: FileText,     to: ROUTES.INVOICES },
-    { label: 'Calendario', sub: 'Agenda y eventos',   icon: CalendarIcon, to: ROUTES.CALENDAR },
+    { label: t('commandCenter'), sub: t('commandCenterSub'), icon: LayoutDashboard, to: '/dashboard' },
+    { label: t('clients'),   sub: t('clientsSub'),   icon: Users,        to: ROUTES.CLIENTS },
+    { label: t('projects'),  sub: t('projectsSub'),  icon: FolderKanban, to: ROUTES.PROJECTS },
+    { label: t('finances'),   sub: t('financesSub'),  icon: Wallet,       to: ROUTES.FINANCE },
+    { label: t('invoices'),   sub: t('invoicesSub'),       icon: FileText,     to: ROUTES.INVOICES },
+    { label: t('calendar'), sub: t('calendarSub'),   icon: CalendarIcon, to: ROUTES.CALENDAR },
+    { label: t('documents'), sub: t('documentsSub'), icon: BookOpen,     to: ROUTES.DOCUMENTS },
   ]
 
   var SECTIONS = [
-    { label: 'Centro de mando',      icon: LayoutDashboard, to: '/dashboard' },
-    { label: 'Clientes',             icon: Users,        to: ROUTES.CLIENTS },
-    { label: 'Proyectos',            icon: FolderKanban, to: ROUTES.PROJECTS },
-    { label: 'Finanzas',             icon: Wallet,       to: ROUTES.FINANCE },
-    { label: 'Facturas',             icon: FileText,     to: ROUTES.INVOICES },
-    { label: 'Time tracking',        icon: Clock,        to: ROUTES.TIME_TRACKING },
-    { label: 'Calendario',           icon: CalendarIcon, to: ROUTES.CALENDAR },
-    { label: 'Base de conocimiento', icon: BookOpen,     to: ROUTES.KNOWLEDGE },
+    { label: t('commandCenter'),      icon: LayoutDashboard, to: '/dashboard' },
+    { label: t('clients'),             icon: Users,        to: ROUTES.CLIENTS },
+    { label: t('projects'),            icon: FolderKanban, to: ROUTES.PROJECTS },
+    { label: t('finances'),             icon: Wallet,       to: ROUTES.FINANCE },
+    { label: t('invoices'),             icon: FileText,     to: ROUTES.INVOICES },
+    { label: t('timeTracking'),        icon: Clock,        to: ROUTES.TIME_TRACKING },
+    { label: t('calendar'),           icon: CalendarIcon, to: ROUTES.CALENDAR },
+    { label: t('documents'),           icon: BookOpen,     to: ROUTES.DOCUMENTS },
+    { label: t('knowledgeBase'), icon: BookOpen,     to: ROUTES.KNOWLEDGE },
   ]
 
   var sectionLabel = { fontSize: '11px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '28px 0 12px' }
@@ -160,9 +166,10 @@ export default function Inicio() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          style={{ marginBottom: '28px' }}
+          style={{ marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
+          <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>{t('yourBusiness')}</p>
+          <LanguageSwitcher />
         </motion.div>
 
         {/* Navigation Bar - Avatar, Search, Pills */}

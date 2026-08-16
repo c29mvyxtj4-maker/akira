@@ -6,6 +6,7 @@ import { AuthProvider } from '@/shared/context/AuthContext.jsx'
 import { AppProvider }  from '@/shared/context/AppContext.jsx'
 import { OrgProvider }  from '@/shared/context/OrgContext.jsx'
 import { CurrentItemProvider } from '@/shared/context/CurrentItemContext.jsx'
+import { LanguageProvider } from '@/shared/context/LanguageContext.jsx'
 import App from './App.jsx'
 import ErrorBoundary from '@/shared/components/ErrorBoundary.jsx'
 import { installPrefsListener } from '@/shared/lib/applyPrefs'
@@ -32,17 +33,19 @@ if (typeof caches !== 'undefined' && caches.keys) {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <ErrorBoundary>
     <MotionConfig reducedMotion="user">
-      <BrowserRouter>
-        <AuthProvider>
-          <OrgProvider>
-            <AppProvider>
-              <CurrentItemProvider>
-                <App />
-              </CurrentItemProvider>
-            </AppProvider>
-          </OrgProvider>
-        </AuthProvider>
-      </BrowserRouter>
+      <LanguageProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <OrgProvider>
+              <AppProvider>
+                <CurrentItemProvider>
+                  <App />
+                </CurrentItemProvider>
+              </AppProvider>
+            </OrgProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </LanguageProvider>
     </MotionConfig>
   </ErrorBoundary>
 )

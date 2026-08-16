@@ -1,11 +1,22 @@
 {
-  "name": "akira-saas-monorepo",
+  "name": "akira",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "description": "AKIRA SaaS - Professional business operations platform",
   "type": "module",
+  "workspaces": [
+    "apps/web",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "cd akira-saas && npm run dev",
-    "build": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
-    "preview": "cd akira-saas && npm run preview"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "prettier": "^3.0.0"
   }
 }

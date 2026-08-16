@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { TrendingUp, Info } from 'lucide-react'
-import { getForecast } from '@/services/forecast.service'
+import { getForecast } from '@db/queries/forecast.service'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + 'â‚¬' }
 
 export default function ForecastCard() {
   var [data, setData] = useState(null)
@@ -28,7 +28,7 @@ export default function ForecastCard() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
         <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
           <TrendingUp style={{ width: '14px', height: '14px', color: '#22c55e' }} />
-          Previsión del próximo mes
+          PrevisiÃ³n del prÃ³ximo mes
         </h3>
         <button type="button" onClick={function() { setShowDetail(function(v) { return !v }) }}
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', display: 'flex' }}
@@ -53,7 +53,7 @@ export default function ForecastCard() {
             ) : data.activeSubs.map(function(s) {
               return (
                 <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'rgba(255,255,255,0.5)', padding: '2px 0' }}>
-                  <span>{s.name}{s.clients ? ' — ' + (s.clients.company || s.clients.name) : ''}</span>
+                  <span>{s.name}{s.clients ? ' â€” ' + (s.clients.company || s.clients.name) : ''}</span>
                   <span>{fmtCur(s.price)}/{s.period}</span>
                 </div>
               )
@@ -69,7 +69,7 @@ export default function ForecastCard() {
             ) : data.acceptedQuotes.map(function(q) {
               return (
                 <div key={q.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'rgba(255,255,255,0.5)', padding: '2px 0' }}>
-                  <span>{q.quote_number}{q.clients ? ' — ' + (q.clients.company || q.clients.name) : ''}</span>
+                  <span>{q.quote_number}{q.clients ? ' â€” ' + (q.clients.company || q.clients.name) : ''}</span>
                   <span>{fmtCur(q.total)}</span>
                 </div>
               )

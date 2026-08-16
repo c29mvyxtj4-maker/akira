@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { getCompanySettings, updateCompanySettings } from '@/services/company.service'
+﻿import { useEffect, useState } from 'react'
+import { getCompanySettings, updateCompanySettings } from '@db/queries/company.service'
 import { SaveBtn, Section } from './_shared'
 
 function AutomationsTab() {
@@ -48,9 +48,9 @@ function AutomationsTab() {
     <div>
       <Section title="Automatizaciones activas" description="La base de datos las ejecuta sola, sin que necesites tener la app abierta">
         {[
-          ['auto_finance_on_paid', 'Factura pagada → ingreso en Finanzas', 'Al marcar una factura como pagada, se registra automaticamente el ingreso'],
-          ['auto_followup_new_client', 'Cliente nuevo → seguimiento a 7 dias', 'Se crea un evento de calendario recordandote contactarlo'],
-          ['auto_review_on_completed', 'Proyecto completado → pedir reseña a 3 dias', 'Se crea un evento de calendario para pedirle feedback al cliente'],
+          ['auto_finance_on_paid', 'Factura pagada â†’ ingreso en Finanzas', 'Al marcar una factura como pagada, se registra automaticamente el ingreso'],
+          ['auto_followup_new_client', 'Cliente nuevo â†’ seguimiento a 7 dias', 'Se crea un evento de calendario recordandote contactarlo'],
+          ['auto_review_on_completed', 'Proyecto completado â†’ pedir reseÃ±a a 3 dias', 'Se crea un evento de calendario para pedirle feedback al cliente'],
         ].map(function(row) {
           return (
             <div key={row[0]} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
@@ -73,3 +73,4 @@ function AutomationsTab() {
 
 
 export default AutomationsTab
+

@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from 'react'
 import { Lock } from 'lucide-react'
 import { useOrg } from '@/shared/context/OrgContext'
-import { checkFeatureAccess } from '@/services/billing.service'
+import { checkFeatureAccess } from '@db/queries/billing.service'
 import { PLAN_TIERS } from '@/config/constants'
 
 // Gatea `children` segÃºn el plan de la org activa. Uso:
@@ -54,4 +54,5 @@ function UpgradeCTA({ access }) {
     </div>
   )
 }
+
 

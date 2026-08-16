@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react'
 import { Trash2 } from 'lucide-react'
-import { cancelInvitation, createInvitation, getInvitations, removeMember, sendInvitationEmail, updateMemberRole } from '@/services/org.service'
+import { cancelInvitation, createInvitation, getInvitations, removeMember, sendInvitationEmail, updateMemberRole } from '@db/queries/org.service'
 import { useOrg } from '@/shared/context/OrgContext'
 import ResourceAccessModal from './ResourceAccessModal'
 import { INP, Section, Toast, onBlur, onFocus } from './_shared'
@@ -213,4 +213,5 @@ function TeamTab() {
 
 
 export default TeamTab
+
 

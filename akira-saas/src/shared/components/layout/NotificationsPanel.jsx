@@ -1,6 +1,6 @@
 ﻿import { AlertTriangle, UserX, CheckCircle, X } from 'lucide-react'
 import { buildInvoiceReminderMailto } from '@/shared/hooks/useNotifications'
-import { getCompanySettings } from '@/services/company.service'
+import { getCompanySettings } from '@db/queries/company.service'
 import { useState, useEffect } from 'react'
 
 function fmtCur(n) {
@@ -122,3 +122,4 @@ export default function NotificationsPanel({ overdueInvoices, staleClients, urge
     </div>
   )
 }
+

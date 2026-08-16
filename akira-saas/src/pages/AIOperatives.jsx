@@ -4,7 +4,7 @@ import { Zap, Plus } from 'lucide-react'
 import PageHeader from '@/shared/components/layout/PageHeader'
 import Button from '@/shared/components/ui/Button'
 import OperativeCard from '@/components/operatives/OperativeCard'
-import { parseIntent, executeWorkflow, getWorkflowHistory } from '@/services/aiOperatives.service'
+import { parseIntent, executeWorkflow, getWorkflowHistory } from '@db/queries/aiOperatives.service'
 
 /**
  * AI Operatives Management Page
@@ -295,5 +295,6 @@ export default function AIOperatives() {
     </div>
   )
 }
+
 
 

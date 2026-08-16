@@ -10,9 +10,9 @@ import { exportToCsv } from '@/utils/exportCsv'
 import { useClients } from '@/shared/hooks/useClients'
 import { useAddRecent } from '@/shared/hooks/useAddRecent'
 import { useCurrentItem } from '@/shared/context/CurrentItemContext'
-import { CLIENT_NICHES } from '@/services/clients.service'
+import { CLIENT_NICHES } from '@db/queries/clients.service'
 import { CLIENT_STATUS, PROJECT_STATUS } from '@/config/constants'
-import { getEmailTemplates, buildTemplateMailto } from '@/services/templates.service'
+import { getEmailTemplates, buildTemplateMailto } from '@db/queries/templates.service'
 import PageHeader      from '@/shared/components/layout/PageHeader'
 import Modal           from '@/shared/components/ui/Modal'
 import Badge           from '@/shared/components/ui/Badge'
@@ -31,7 +31,7 @@ import {
   getPortalMessages, sendOwnerMessage,
   getPortalFiles, uploadPortalFile, deletePortalFile,
   getPortalApprovals, createPortalApproval, updatePortalApproval, deletePortalApproval,
-} from '@/services/portal.service'
+} from '@db/queries/portal.service'
 import PortalTab from '@/components/clients/PortalTab'
 
 /* helpers */
@@ -770,6 +770,7 @@ export default function Clients() {
     </div>
   )
 }
+
 
 
 

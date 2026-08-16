@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, X, Send, Loader2 } from 'lucide-react'
-import { sendMessageStream, createConversation, saveMessage } from '@/services/brain.service'
+import { sendMessageStream, createConversation, saveMessage } from '@db/queries/brain.service'
 import DOMPurify from 'dompurify'
 
 function renderSimpleMarkdown(text) {
@@ -12,7 +12,7 @@ function renderSimpleMarkdown(text) {
       var safe = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#fff;font-weight:700">$1</strong>')
       if (safe.trim() === '') return '<br>'
-      if (safe.startsWith('- ')) return '<div style="display:flex;gap:6px;margin:2px 0"><span>•</span><span>' + safe.slice(2) + '</span></div>'
+      if (safe.startsWith('- ')) return '<div style="display:flex;gap:6px;margin:2px 0"><span>â€¢</span><span>' + safe.slice(2) + '</span></div>'
       return '<p style="margin:2px 0;">' + safe + '</p>'
     })
     .join('')
@@ -22,7 +22,7 @@ function renderSimpleMarkdown(text) {
  * Boton flotante contextual de Akira Brain.
  * contextLabel: texto corto que se muestra en la cabecera (ej: "Genaro Alfonsin")
  * contextText:  bloque de texto con los datos reales de lo que se esta viendo,
- *               que se le añade a la pregunta para que Akira responda con contexto real
+ *               que se le aÃ±ade a la pregunta para que Akira responda con contexto real
  */
 export default function AskAkiraButton({ contextLabel, contextText, controlledOpen, onOpenChange, hideFab }) {
   var [internalOpen, setInternalOpen] = useState(false)
@@ -38,7 +38,7 @@ export default function AskAkiraButton({ contextLabel, contextText, controlledOp
   var [streaming, setStreaming] = useState(false)
   var [streamText, setStreamText] = useState('')
   var endRef = useRef(null)
-  var convId = useRef(null) // conversación persistida en Brain (se crea al 1er mensaje)
+  var convId = useRef(null) // conversaciÃ³n persistida en Brain (se crea al 1er mensaje)
 
   useEffect(function() {
     if (endRef.current) endRef.current.scrollIntoView({ behavior: 'smooth' })
@@ -55,7 +55,7 @@ export default function AskAkiraButton({ contextLabel, contextText, controlledOp
 
     var promptWithContext = 'Contexto de lo que estoy viendo ahora mismo:\n' + contextText + '\n\nMi pregunta: ' + question
 
-    // Persistir en Brain: crear la conversación al primer mensaje y guardar
+    // Persistir en Brain: crear la conversaciÃ³n al primer mensaje y guardar
     // ambos turnos (mejor esfuerzo; si falla, el chat sigue funcionando).
     if (!convId.current) {
       try { var c = await createConversation(question.slice(0, 60)); convId.current = c.id } catch (_) { /* noop */ }
@@ -99,7 +99,7 @@ export default function AskAkiraButton({ contextLabel, contextText, controlledOp
           }}
         >
           <Zap style={{ width: '15px', height: '15px' }} />
-          Pregúntale a Akira
+          PregÃºntale a Akira
         </motion.button>
       )}
 
@@ -136,7 +136,7 @@ export default function AskAkiraButton({ contextLabel, contextText, controlledOp
             <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {messages.length === 0 && !streaming && (
                 <div style={{ textAlign: 'center', padding: '20px 10px', color: 'var(--text-5)', fontSize: '12px' }}>
-                  Puedo ver los datos de esto que estás mirando ahora mismo. Pregúntame algo — por ejemplo, "¿qué le sugerirías a este cliente?".
+                  Puedo ver los datos de esto que estÃ¡s mirando ahora mismo. PregÃºntame algo â€” por ejemplo, "Â¿quÃ© le sugerirÃ­as a este cliente?".
                 </div>
               )}
 

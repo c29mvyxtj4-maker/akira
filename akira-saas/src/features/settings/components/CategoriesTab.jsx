@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Trash2 } from 'lucide-react'
-import { archiveFinanceCategory, createFinanceCategory, getFinanceCategories, renameFinanceCategory } from '@/services/categories.service'
+import { archiveFinanceCategory, createFinanceCategory, getFinanceCategories, renameFinanceCategory } from '@db/queries/categories.service'
 import { INP, Section, Toast, onBlur, onFocus } from './_shared'
 
 function CategoriesTab() {
@@ -70,7 +70,7 @@ function CategoriesTab() {
           <input
             value={newName}
             onChange={function(e) { setNewName(e.target.value) }}
-            placeholder="Nombre de la nueva categoría"
+            placeholder="Nombre de la nueva categorÃ­a"
             style={INP}
             onKeyDown={function(e) { if (e.key === 'Enter') handleAdd() }}
             onFocus={onFocus}
@@ -106,7 +106,7 @@ function CategoriesTab() {
                   <>
                     <button type="button" onClick={function() { setRenameVal(cat.name); setRenamingId(cat.id) }}
                       style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-4)', borderRadius: '6px', fontSize: '13px' }}
-                    >✎</button>
+                    >âœŽ</button>
                     <button type="button" onClick={function() { handleArchive(cat.id) }}
                       style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(230,57,70,0.5)', borderRadius: '6px' }}
                     ><Trash2 style={{ width: '13px', height: '13px' }} /></button>
@@ -123,3 +123,4 @@ function CategoriesTab() {
 
 
 export default CategoriesTab
+

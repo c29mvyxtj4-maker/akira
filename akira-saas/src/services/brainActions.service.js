@@ -1,6 +1,6 @@
-import { supabase } from '@/lib/supabase'
-import { createFinanceEntry } from '@/services/finance.service'
-import { getCompanySettings } from '@/services/company.service'
+﻿import { supabase } from '@/lib/supabase'
+import { createFinanceEntry } from '@db/queries/finance.service'
+import { getCompanySettings } from '@db/queries/company.service'
 
 export var ACTION_LABELS = {
   create_client:        'Crear cliente',
@@ -130,14 +130,14 @@ export async function executeAction(type, data) {
   throw new Error('Tipo de accion desconocido: ' + type)
 }
 
-/* ── Resumen legible para la tarjeta de confirmacion ──────── */
+/* â”€â”€ Resumen legible para la tarjeta de confirmacion â”€â”€â”€â”€â”€â”€â”€â”€ */
 export function summarizeAction(type, data) {
   if (type === 'create_client') {
     return [
       ['Nombre', data.name],
       ['Empresa', data.company || '--'],
       ['Estado', data.status || 'lead'],
-      ['Valor mensual', data.monthly_value ? data.monthly_value + '€' : '--'],
+      ['Valor mensual', data.monthly_value ? data.monthly_value + 'â‚¬' : '--'],
     ]
   }
   if (type === 'create_project') {
@@ -145,15 +145,15 @@ export function summarizeAction(type, data) {
       ['Nombre', data.name],
       ['Estado', data.status || 'pending'],
       ['Prioridad', data.priority || 'medium'],
-      ['Presupuesto', data.budget ? data.budget + '€' : '--'],
+      ['Presupuesto', data.budget ? data.budget + 'â‚¬' : '--'],
       ['Entrega', data.due_date || '--'],
     ]
   }
   if (type === 'create_invoice') {
     var total = (data.items || []).reduce(function(s, it) { return s + (Number(it.quantity) || 1) * (Number(it.price) || 0) }, 0)
     return [
-      ['Lineas', (data.items || []).map(function(it) { return it.description + ' (' + it.quantity + ' x ' + it.price + '€)' }).join(', ')],
-      ['Subtotal', total.toFixed(2) + '€'],
+      ['Lineas', (data.items || []).map(function(it) { return it.description + ' (' + it.quantity + ' x ' + it.price + 'â‚¬)' }).join(', ')],
+      ['Subtotal', total.toFixed(2) + 'â‚¬'],
       ['IVA', (data.tax_rate != null ? data.tax_rate : 21) + '%'],
       ['Vencimiento', data.due_date || '--'],
     ]
@@ -170,7 +170,7 @@ export function summarizeAction(type, data) {
     return [
       ['Tipo', data.type],
       ['Descripcion', data.description],
-      ['Importe', data.amount + '€'],
+      ['Importe', data.amount + 'â‚¬'],
       ['Fecha', data.entry_date || 'Hoy'],
     ]
   }

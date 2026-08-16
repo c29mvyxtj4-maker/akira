@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from 'react'
 import { Copy, Check } from 'lucide-react'
-import { getWorkspace, updateWorkspace } from '@/services/settings.service'
+import { getWorkspace, updateWorkspace } from '@db/queries/settings.service'
 import { useOrg } from '@/shared/context/OrgContext'
 import { usePrefs } from '@/shared/hooks/usePreferences'
 import { Field, INP, SaveBtn, Section, RowSection, Row, Toggle, RowSelect, MiniBtn, onBlur, onFocus } from './_shared'
@@ -151,5 +151,6 @@ function WorkspaceTab() {
 }
 
 export default WorkspaceTab
+
 
 

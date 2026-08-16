@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import type { YouTubeProject, CreateYouTubeProjectInput } from '@/types/youtube'
-import * as YouTubeService from '@/services/youtube.service'
+import * as YouTubeService from '@db/queries/youtube.service'
 
 export const useYouTube = (projectId?: string) => {
   const [project, setProject] = useState<YouTubeProject | null>(null)
@@ -8,7 +8,7 @@ export const useYouTube = (projectId?: string) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Obtener un proyecto específico
+  // Obtener un proyecto especÃ­fico
   const getProject = async (id: string) => {
     setLoading(true)
     setError(null)
@@ -54,7 +54,7 @@ export const useYouTube = (projectId?: string) => {
     }
   }
 
-  // Actualizar fecha de publicación
+  // Actualizar fecha de publicaciÃ³n
   const updatePublishingDate = async (id: string, newDate: Date) => {
     setLoading(true)
     setError(null)
@@ -122,3 +122,4 @@ export const useYouTube = (projectId?: string) => {
     deleteProject,
   }
 }
+

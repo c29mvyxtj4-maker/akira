@@ -9,15 +9,15 @@ import { useProjects } from '@/shared/hooks/useProjects'
 import { useAddRecent } from '@/shared/hooks/useAddRecent'
 import { useCurrentItem } from '@/shared/context/CurrentItemContext'
 import { useOrg } from '@/shared/context/OrgContext'
-import { getProjectMembers, addProjectMember, removeProjectMember, getOrgTeam } from '@/services/projectMembers.service'
-import { createMention } from '@/services/mentions.service'
+import { getProjectMembers, addProjectMember, removeProjectMember, getOrgTeam } from '@db/queries/projectMembers.service'
+import { createMention } from '@db/queries/mentions.service'
 import { DUR, EASE, SPRING } from '@/config/motion'
-import { PROJECT_STATUS_MAP, PROJECT_STAGE_MAP, PROJECT_PRIORITY_MAP } from '@/services/projects.service'
-import { getProjectTemplates } from '@/services/templates.service'
+import { PROJECT_STATUS_MAP, PROJECT_STAGE_MAP, PROJECT_PRIORITY_MAP } from '@db/queries/projects.service'
+import { getProjectTemplates } from '@db/queries/templates.service'
 import {
   getProjectTimeEntries, getRunningEntry, startTimer, stopTimer,
   addManualEntry, deleteTimeEntry, fmtDuration, sumSeconds,
-} from '@/services/time.service'
+} from '@db/queries/time.service'
 import { supabase } from '@/lib/supabase'
 import KanbanBoard from '@/components/projects/KanbanBoard'
 import ProjectPage from '@/components/projects/ProjectPage'
@@ -32,7 +32,7 @@ import { SkeletonCard } from '@/shared/components/ui/Skeleton'
 import clsx            from 'clsx'
 import ProjectSummaryCard from '@/components/projects/ProjectSummaryCard'
 import ProjectFilesTab from '@/components/projects/ProjectFilesTab'
-import { applyTemplate } from '@/services/taskTemplates.service'
+import { applyTemplate } from '@db/queries/taskTemplates.service'
 
 function fmtDate(d) {
   if (!d) return '--'
@@ -1148,6 +1148,7 @@ export default function Projects() {
     </div>
   )
 }
+
 
 
 

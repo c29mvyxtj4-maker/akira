@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { getAccountStats } from '@/services/settings.service'
+﻿import { useEffect, useState } from 'react'
+import { getAccountStats } from '@db/queries/settings.service'
 import { Section } from './_shared'
 
 function AccountTab({ user, onSignOut }) {
@@ -70,13 +70,14 @@ function AccountTab({ user, onSignOut }) {
         </div>
       </Section>
 
-      <Section title="Privacidad y términos" description="Cómo tratamos tus datos y las condiciones del servicio">
+      <Section title="Privacidad y tÃ©rminos" description="CÃ³mo tratamos tus datos y las condiciones del servicio">
         <a href="/legal" target="_blank" rel="noreferrer"
           style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#e63946', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}
-        >Ver Política de Privacidad y Términos →</a>
+        >Ver PolÃ­tica de Privacidad y TÃ©rminos â†’</a>
       </Section>
     </div>
   )
 }
 
 export default AccountTab
+

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
-import { ACTION_LABELS, RESOURCE_LABELS, getAuditLog } from '@/services/audit.service'
+import { ACTION_LABELS, RESOURCE_LABELS, getAuditLog } from '@db/queries/audit.service'
 import { INP, Section } from './_shared'
 
 function AuditTab() {
@@ -89,7 +89,7 @@ function AuditTab() {
                     {row.changes.map(function(c, i) {
                       return (
                         <div key={i} style={{ fontSize: '11px', color: 'var(--text-4)', padding: '6px 10px', background: 'var(--bg-4)', borderRadius: '6px' }}>
-                          <strong style={{ color: 'var(--text-2)' }}>{c.field}</strong>: {String(c.from)} → {String(c.to)}
+                          <strong style={{ color: 'var(--text-2)' }}>{c.field}</strong>: {String(c.from)} â†’ {String(c.to)}
                         </div>
                       )
                     })}
@@ -112,3 +112,4 @@ function AuditTab() {
 
 
 export default AuditTab
+

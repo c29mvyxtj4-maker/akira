@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Users, FolderKanban, Receipt, FileSignature, BookOpen, X, CornerDownLeft } from 'lucide-react'
-import { searchAll, getRecent, getDocPreview } from '@/services/search.service'
+import { searchAll, getRecent, getDocPreview } from '@db/queries/search.service'
 
 var TYPE_ICON = { client: Users, project: FolderKanban, invoice: Receipt, quote: FileSignature, doc: BookOpen }
 var TYPE_COLOR = { client: '#e63946', project: '#3b82f6', invoice: '#f59e0b', quote: '#a855f7', doc: '#22c55e' }
@@ -109,7 +109,7 @@ export default function CommandPalette({ open, onClose }) {
 
         {activeItem.type === 'doc' && (
           <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)', fontSize: '13px', color: 'var(--text-3)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-            {docPrev ? (docPrev.excerpt || 'Documento vacío.') : 'Cargando vista previa…'}
+            {docPrev ? (docPrev.excerpt || 'Documento vacÃ­o.') : 'Cargando vista previaâ€¦'}
           </div>
         )}
 
@@ -179,8 +179,8 @@ export default function CommandPalette({ open, onClose }) {
         </div>
 
         <div style={{ padding: '8px 16px', borderTop: '1px solid var(--border)', display: 'flex', gap: '14px', fontSize: '10px', color: 'var(--text-5)' }}>
-          <span>↑↓ Navegar</span>
-          <span>↵ Abrir</span>
+          <span>â†‘â†“ Navegar</span>
+          <span>â†µ Abrir</span>
           <span>Esc Cerrar</span>
         </div>
       </motion.div>
@@ -189,3 +189,4 @@ export default function CommandPalette({ open, onClose }) {
     </AnimatePresence>
   )
 }
+

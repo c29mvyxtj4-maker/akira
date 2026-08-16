@@ -13,7 +13,7 @@ import QuickActions  from '@/components/dashboard/QuickActions'
 import ForecastCard  from '@/components/dashboard/ForecastCard'
 import { SkeletonText, SkeletonCard, SkeletonPageHeader } from '@/shared/components/ui/Skeleton'
 import { useNotifications, buildInvoiceReminderMailto } from '@/shared/hooks/useNotifications'
-import { getCompanySettings } from '@/services/company.service'
+import { getCompanySettings } from '@db/queries/company.service'
 import { useNavigate } from 'react-router-dom'
 import { WidgetGrid, useWidgets } from '@/modules/widgets'
 import { useGlobalSync } from '@/modules/sync'
@@ -414,6 +414,7 @@ export default function Dashboard() {
     </div>
   )
 }
+
 
 
 

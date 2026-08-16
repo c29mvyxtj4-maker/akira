@@ -1,6 +1,6 @@
-import { useCallback } from 'react'
+﻿import { useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
-import { createBlock, updateBlock, reorderBlocks } from '@/services/documents.service'
+import { createBlock, updateBlock, reorderBlocks } from '@db/queries/documents.service'
 
 interface BlockData {
   type: string
@@ -76,3 +76,4 @@ export function useBlockOperations(documentId: string) {
     reorderBlocks: reorderBlocksFn,
   }
 }
+

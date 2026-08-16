@@ -18,7 +18,7 @@ import { TableCell }                from '@tiptap/extension-table-cell'
 import { CharacterCount }           from '@tiptap/extension-character-count'
 import { Youtube }                  from '@tiptap/extension-youtube'
 import { useEffect, useRef, useState } from 'react'
-import { uploadFile } from '@/services/kb.service'
+import { uploadFile } from '@db/queries/kb.service'
 import { getPref } from '@/shared/hooks/usePreferences'
 import { SlashCommand } from './SlashCommand'
 
@@ -559,3 +559,4 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
     </div>
   )
 }
+

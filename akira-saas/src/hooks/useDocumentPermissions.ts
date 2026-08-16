@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { fetchDocument, fetchPermissions } from '@/services/documents.service'
+import { fetchDocument, fetchPermissions } from '@db/queries/documents.service'
 
 type UserRole = 'viewer' | 'editor' | 'admin'
 
@@ -90,3 +90,4 @@ export function useDocumentPermissions(documentId: string, userId?: string) {
     loading,
   }
 }
+

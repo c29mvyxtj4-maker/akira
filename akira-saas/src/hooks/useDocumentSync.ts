@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
-import { fetchDocument, fetchBlocks, updateBlock, deleteBlock } from '@/services/documents.service'
+import { fetchDocument, fetchBlocks, updateBlock, deleteBlock } from '@db/queries/documents.service'
 
 interface Document {
   id: string
@@ -171,3 +171,4 @@ export function useDocumentSync(documentId: string) {
     deleteBlock: deleteBlockFn,
   }
 }
+

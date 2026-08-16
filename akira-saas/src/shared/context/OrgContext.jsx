@@ -1,6 +1,6 @@
 ﻿import { createContext, useContext, useState, useEffect } from 'react'
 import { useAuth } from '@/shared/context/AuthContext'
-import { ensureOrg, getOrgMembers, getMyWorkspaces, createOrg } from '@/services/org.service'
+import { ensureOrg, getOrgMembers, getMyWorkspaces, createOrg } from '@db/queries/org.service'
 
 var LS_KEY = 'akira-active-org'
 var OrgContext = createContext(null)
@@ -98,4 +98,5 @@ export function useOrg() {
   if (!ctx) throw new Error('useOrg debe usarse dentro de OrgProvider')
   return ctx
 }
+
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+﻿import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Send, Trash2, Edit2,
@@ -10,8 +10,8 @@ import {
   getConversations, createConversation, archiveConversation,
   updateConversationTitle, getMessages, saveMessage,
   sendMessageStream,
-} from '@/services/brain.service'
-import { executeAction, summarizeAction, ACTION_LABELS } from '@/services/brainActions.service'
+} from '@db/queries/brain.service'
+import { executeAction, summarizeAction, ACTION_LABELS } from '@db/queries/brainActions.service'
 import DOMPurify from 'dompurify'
 
 var ACTION_START = '[AKIRA_ACTION]'
@@ -94,7 +94,7 @@ function fmt(text) {
     .replace(/`(.+?)`/g,       '<code style="background:rgba(230,57,70,0.1);color:#e63946;padding:1px 5px;border-radius:4px;font-size:12px">$1</code>')
 }
 
-/* ── Tarjeta de confirmacion de accion ────────────────────── */
+/* â”€â”€ Tarjeta de confirmacion de accion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function ActionCard({ type, data, onConfirmed }) {
   var [status, setStatus] = useState('pending') // pending | saving | done | error
   var [errorMsg, setErrorMsg] = useState('')
@@ -420,9 +420,9 @@ export default function Brain() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
-  // Cuando se confirma una accion desde una tarjeta, añadimos un mensaje de confirmacion al historial
+  // Cuando se confirma una accion desde una tarjeta, aÃ±adimos un mensaje de confirmacion al historial
   function handleActionConfirmed(type, result) {
-    var confirmMsg = { id: 'tmp_conf_' + Date.now(), conversation_id: activeConvId, role: 'assistant', content: '✅ Listo, lo he guardado correctamente.', created_at: new Date().toISOString() }
+    var confirmMsg = { id: 'tmp_conf_' + Date.now(), conversation_id: activeConvId, role: 'assistant', content: 'âœ… Listo, lo he guardado correctamente.', created_at: new Date().toISOString() }
     setMessages(function(prev) { return prev.concat([confirmMsg]) })
     if (activeConvId) saveMessage(activeConvId, 'assistant', confirmMsg.content).catch(function() {})
   }
@@ -560,7 +560,7 @@ export default function Brain() {
                 </div>
                 <h2 style={{ fontSize: '22px', fontWeight: 900, color: '#f1f5f9', marginBottom: '8px', textAlign: 'center', letterSpacing: '-0.02em' }}>Akira Brain</h2>
                 <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginBottom: '32px', textAlign: 'center', maxWidth: '400px', lineHeight: 1.6 }}>
-                  Tu asistente de IA con acceso a los datos reales de tu negocio. Ahora tambien puede crear cosas por ti — siempre con tu confirmacion.
+                  Tu asistente de IA con acceso a los datos reales de tu negocio. Ahora tambien puede crear cosas por ti â€” siempre con tu confirmacion.
                 </p>
 
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '10px', width: '100%', maxWidth: '600px' }}>
@@ -652,7 +652,7 @@ export default function Brain() {
               </button>
             </div>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: '8px' }}>
-              Akira Brain tiene acceso a tus datos reales y puede proponer acciones — siempre las confirmas tu antes de guardarlas
+              Akira Brain tiene acceso a tus datos reales y puede proponer acciones â€” siempre las confirmas tu antes de guardarlas
             </p>
           </div>
         </div>

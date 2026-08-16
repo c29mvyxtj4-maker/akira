@@ -4,7 +4,7 @@ import {
   User, Building2, Mail, Phone, Globe,
   Instagram, Hash, DollarSign, FileText, Calendar,
 } from 'lucide-react'
-import { CLIENT_NICHES, CLIENT_SOURCES_MAP } from '@/services/clients.service'
+import { CLIENT_NICHES, CLIENT_SOURCES_MAP } from '@db/queries/clients.service'
 import Input   from '@/shared/components/ui/Input'
 import Select  from '@/shared/components/ui/Select'
 import Button  from '@/shared/components/ui/Button'
@@ -200,3 +200,4 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
     </form>
   )
 }
+

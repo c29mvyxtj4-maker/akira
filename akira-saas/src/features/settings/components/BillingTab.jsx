@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { AlertTriangle, Building2 } from 'lucide-react'
-import { getCompanySettings, updateCompanySettings, uploadLogo } from '@/services/company.service'
+import { getCompanySettings, updateCompanySettings, uploadLogo } from '@db/queries/company.service'
 import { Field, INP, SaveBtn, Section, onBlur, onFocus } from './_shared'
 
 function BillingTab() {
-  var DEFAULTS = { company_name: '', tax_id: '', address: '', city: '', postal_code: '', country: 'España', phone: '', email: '', logo_url: '', invoice_prefix: 'FAC', next_invoice_number: 1, default_tax_rate: 21, brand_color: '#e63946' }
+  var DEFAULTS = { company_name: '', tax_id: '', address: '', city: '', postal_code: '', country: 'EspaÃ±a', phone: '', email: '', logo_url: '', invoice_prefix: 'FAC', next_invoice_number: 1, default_tax_rate: 21, brand_color: '#e63946' }
   var [cs,      setCs]      = useState(DEFAULTS)
   var [loading, setLoading] = useState(true)
   var [saving,  setSaving]  = useState(false)
@@ -50,7 +50,7 @@ function BillingTab() {
       logo_url:         cs.logo_url,
       invoice_prefix:   cs.invoice_prefix,
       default_tax_rate: Number(cs.default_tax_rate) || 0,
-      brand_color:      cs.brand_color, // ← NUEVO
+      brand_color:      cs.brand_color, // â† NUEVO
     })
       .then(function() { setSaved(true); setTimeout(function() { setSaved(false) }, 2500) })
       .catch(function(e) { setError(e.message) })
@@ -76,7 +76,7 @@ function BillingTab() {
           </label>
         </div>
 
-        {/* ── NUEVO: selector de color de marca ── */}
+        {/* â”€â”€ NUEVO: selector de color de marca â”€â”€ */}
         <div>
           <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-4)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Color de marca</p>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -118,7 +118,7 @@ function BillingTab() {
             <input value={cs.tax_id || ''} onChange={set('tax_id')} placeholder="12345678A" style={INP} onFocus={onFocus} onBlur={onBlur} />
           </Field>
           <Field label="Direccion">
-            <input value={cs.address || ''} onChange={set('address')} placeholder="Calle, número" style={INP} onFocus={onFocus} onBlur={onBlur} />
+            <input value={cs.address || ''} onChange={set('address')} placeholder="Calle, nÃºmero" style={INP} onFocus={onFocus} onBlur={onBlur} />
           </Field>
           <Field label="Ciudad">
             <input value={cs.city || ''} onChange={set('city')} placeholder="Badalona" style={INP} onFocus={onFocus} onBlur={onBlur} />
@@ -127,7 +127,7 @@ function BillingTab() {
             <input value={cs.postal_code || ''} onChange={set('postal_code')} placeholder="08911" style={INP} onFocus={onFocus} onBlur={onBlur} />
           </Field>
           <Field label="Pais">
-            <input value={cs.country || ''} onChange={set('country')} placeholder="España" style={INP} onFocus={onFocus} onBlur={onBlur} />
+            <input value={cs.country || ''} onChange={set('country')} placeholder="EspaÃ±a" style={INP} onFocus={onFocus} onBlur={onBlur} />
           </Field>
           <Field label="Telefono">
             <input value={cs.phone || ''} onChange={set('phone')} placeholder="+34 600 000 000" style={INP} onFocus={onFocus} onBlur={onBlur} />
@@ -138,7 +138,7 @@ function BillingTab() {
         </div>
       </Section>
 
-      <Section title="Numeración y facturación" description="Cómo se numeran tus facturas y el IVA por defecto">
+      <Section title="NumeraciÃ³n y facturaciÃ³n" description="CÃ³mo se numeran tus facturas y el IVA por defecto">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
           <Field label="Prefijo de factura" hint="Ej: FAC-2026-001">
             <input value={cs.invoice_prefix || ''} onChange={set('invoice_prefix')} placeholder="FAC" style={INP} onFocus={onFocus} onBlur={onBlur} />
@@ -173,3 +173,4 @@ function BillingTab() {
 }
 
 export default BillingTab
+

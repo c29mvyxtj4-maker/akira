@@ -12,8 +12,8 @@ import { useAuth } from '@/shared/context/AuthContext'
 import { useOrg } from '@/shared/context/OrgContext'
 import { ROUTES } from '@/config/constants'
 import { DUR, EASE, SPRING } from '@/config/motion'
-import { getUnreadMentionCount } from '@/services/mentions.service'
-import { getFinanceKpis } from '@/services/finance.service'
+import { getUnreadMentionCount } from '@db/queries/mentions.service'
+import { getFinanceKpis } from '@db/queries/finance.service'
 import { getPref } from '@/shared/hooks/usePreferences'
 import TransparentArea from '@/shared/components/charts/TransparentArea'
 import { fmtEuro, numberLocale } from '@/lib/format'
@@ -372,6 +372,7 @@ export default function Inicio() {
     </div>
   )
 }
+
 
 
 

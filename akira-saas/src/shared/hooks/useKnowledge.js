@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+﻿import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import {
   getFolders,
@@ -16,7 +16,7 @@ import {
   uploadAndSaveAttachment,
   getAttachments,
   deleteAttachment,
-} from '@/services/kb.service'
+} from '@db/queries/kb.service'
 
 function safePrimitive(val) {
   if (val === null || val === undefined) return val
@@ -47,14 +47,14 @@ export function useKnowledge() {
   var [renamingFolder,   setRenamingFolder]   = useState(null)
   var [toastMsg,         setToastMsg]         = useState(null)
   var saveTimer = useRef(null)
-  var activeDocRef = useRef(null) // ← NUEVO: para saber el doc activo dentro de la suscripción sin recrearla
+  var activeDocRef = useRef(null) // â† NUEVO: para saber el doc activo dentro de la suscripciÃ³n sin recrearla
 
   function showToast(msg, type) {
     setToastMsg({ msg: msg, type: type || 'success' })
     setTimeout(function() { setToastMsg(null) }, 3500)
   }
 
-  /* ── Carpetas ──────────────────────────────────────────── */
+  /* â”€â”€ Carpetas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var loadFolders = useCallback(function() {
     setFoldersLoading(true)
     getFolders()
@@ -65,7 +65,7 @@ export function useKnowledge() {
 
   useEffect(function() { loadFolders() }, [loadFolders])
 
-  /* ── Documentos ────────────────────────────────────────── */
+  /* â”€â”€ Documentos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var loadDocs = useCallback(function() {
     setDocsLoading(true)
     getDocuments(selectedFolderId, search, statusFilter)
@@ -79,14 +79,14 @@ export function useKnowledge() {
     return function() { clearTimeout(t) }
   }, [loadDocs])
 
-  /* ── Abrir documento ───────────────────────────────────── */
+  /* â”€â”€ Abrir documento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function openDocument(id) {
     setDocLoading(true)
     setView('editor')
     getDocumentById(id)
       .then(function(doc) {
         setActiveDoc(doc)
-        activeDocRef.current = doc // ← NUEVO
+        activeDocRef.current = doc // â† NUEVO
         return Promise.all([
           getVersions(id).catch(function() { return [] }),
           getAttachments(id).catch(function() { return [] }),
@@ -103,8 +103,8 @@ export function useKnowledge() {
       .finally(function() { setDocLoading(false) })
   }
 
-  /* ── Tiempo real: recargar cuando cambia algo en otro dispositivo ── */
-  // ← NUEVO: todo este bloque
+  /* â”€â”€ Tiempo real: recargar cuando cambia algo en otro dispositivo â”€â”€ */
+  // â† NUEVO: todo este bloque
   useEffect(function() {
     var channel = supabase.channel('kb-store')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'kb_folders' }, function() {
@@ -113,7 +113,7 @@ export function useKnowledge() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'kb_documents' }, function(payload) {
         loadDocs()
 
-        // Si el documento que estás viendo ahora mismo cambió en otro dispositivo, lo actualizamos también
+        // Si el documento que estÃ¡s viendo ahora mismo cambiÃ³ en otro dispositivo, lo actualizamos tambiÃ©n
         var changedId = payload.new && payload.new.id
         var current   = activeDocRef.current
         if (changedId && current && changedId === current.id && !saveTimer.current) {
@@ -130,7 +130,7 @@ export function useKnowledge() {
     return function() { supabase.removeChannel(channel) }
   }, [loadFolders, loadDocs])
 
-  /* ── Autosave ──────────────────────────────────────────── */
+  /* â”€â”€ Autosave â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function scheduleAutoSave(docId, updates) {
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(function() {
@@ -139,7 +139,7 @@ export function useKnowledge() {
         .then(function(saved) {
           setActiveDoc(function(prev) {
             var merged = prev && prev.id === saved.id ? Object.assign({}, prev, saved) : prev
-            activeDocRef.current = merged // ← NUEVO
+            activeDocRef.current = merged // â† NUEVO
             return merged
           })
           setDocs(function(prev) {
@@ -154,21 +154,21 @@ export function useKnowledge() {
             })
           })
           setLastSaved(new Date())
-          saveTimer.current = null // ← NUEVO: liberamos el "candado" para volver a aceptar cambios remotos
+          saveTimer.current = null // â† NUEVO: liberamos el "candado" para volver a aceptar cambios remotos
         })
         .catch(function(e) { showToast('Error al guardar: ' + e.message, 'error') })
         .finally(function() { setSaving(false) })
     }, 2000)
   }
 
-  /* ── Handlers de contenido ─────────────────────────────── */
+  /* â”€â”€ Handlers de contenido â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function handleContentChange(docId, content) {
     if (!docId || !content || typeof content !== 'object') return
     // content ya viene limpio desde TipTapEditor (getJSON + cleanJSON)
     setActiveDoc(function(prev) {
       if (!prev || prev.id !== docId) return prev
       var updated = Object.assign({}, prev, { content: content })
-      activeDocRef.current = updated // ← NUEVO
+      activeDocRef.current = updated // â† NUEVO
       return updated
     })
     scheduleAutoSave(docId, { content: content })
@@ -179,7 +179,7 @@ export function useKnowledge() {
     setActiveDoc(function(prev) {
       if (!prev || prev.id !== docId) return prev
       var updated = Object.assign({}, prev, { title: title })
-      activeDocRef.current = updated // ← NUEVO
+      activeDocRef.current = updated // â† NUEVO
       return updated
     })
     scheduleAutoSave(docId, { title: title })
@@ -196,13 +196,13 @@ export function useKnowledge() {
     setActiveDoc(function(prev) {
       if (!prev || prev.id !== docId) return prev
       var updated = Object.assign({}, prev, safeUpdates)
-      activeDocRef.current = updated // ← NUEVO
+      activeDocRef.current = updated // â† NUEVO
       return updated
     })
     scheduleAutoSave(docId, safeUpdates)
   }
 
-  /* ── Version manual ────────────────────────────────────── */
+  /* â”€â”€ Version manual â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function handleSaveVersion() {
     if (!activeDoc) return
     saveVersion(activeDoc)
@@ -213,7 +213,7 @@ export function useKnowledge() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
-  /* ── Crear documento ───────────────────────────────────── */
+  /* â”€â”€ Crear documento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function handleCreateDoc(folderId) {
     var target = folderId || (
       selectedFolderId !== 'all' &&
@@ -230,7 +230,7 @@ export function useKnowledge() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
-  // ← NUEVO: crea un documento ya con el contenido de una plantilla dentro
+  // â† NUEVO: crea un documento ya con el contenido de una plantilla dentro
   function handleCreateDocFromTemplate(title, content, folderId) {
     var target = folderId || (
       selectedFolderId !== 'all' &&
@@ -250,7 +250,7 @@ export function useKnowledge() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
-  /* ── Archivar documento ────────────────────────────────── */
+  /* â”€â”€ Archivar documento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function handleArchiveDoc(id) {
     if (!window.confirm('Archivar este documento?')) return
     archiveDocument(id)
@@ -262,7 +262,7 @@ export function useKnowledge() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
-  /* ── Favorito ──────────────────────────────────────────── */
+  /* â”€â”€ Favorito â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function handleToggleFavorite(id, current) {
     toggleFavorite(id, current)
       .then(function(updated) {
@@ -276,7 +276,7 @@ export function useKnowledge() {
         if (activeDoc && activeDoc.id === id) {
           setActiveDoc(function(prev) {
             var merged = Object.assign({}, prev, { is_favorited: updated.is_favorited })
-            activeDocRef.current = merged // ← NUEVO
+            activeDocRef.current = merged // â† NUEVO
             return merged
           })
         }
@@ -284,7 +284,7 @@ export function useKnowledge() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
-  /* ── Adjuntos ──────────────────────────────────────────── */
+  /* â”€â”€ Adjuntos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function handleAttachFile(file) {
     if (!activeDoc) return Promise.reject(new Error('No hay documento activo'))
     return uploadAndSaveAttachment(file, activeDoc.id)
@@ -304,7 +304,7 @@ export function useKnowledge() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
-  /* ── Carpetas CRUD ─────────────────────────────────────── */
+  /* â”€â”€ Carpetas CRUD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function handleCreateFolder(parentId) {
     createFolder('Nueva carpeta', parentId)
       .then(function(folder) {
@@ -359,7 +359,7 @@ export function useKnowledge() {
     })
   }
 
-  /* ── Return ────────────────────────────────────────────── */
+  /* â”€â”€ Return â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   return {
     folders:                 folders,
     foldersLoading:          foldersLoading,
@@ -380,7 +380,7 @@ export function useKnowledge() {
     statusFilter:            statusFilter,
     setStatusFilter:         setStatusFilter,
     handleCreateDoc:         handleCreateDoc,
-    handleCreateDocFromTemplate: handleCreateDocFromTemplate, // ← NUEVO
+    handleCreateDocFromTemplate: handleCreateDocFromTemplate, // â† NUEVO
     handleArchiveDoc:        handleArchiveDoc,
     handleToggleFavorite:    handleToggleFavorite,
     activeDoc:               activeDoc,

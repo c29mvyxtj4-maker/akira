@@ -13,7 +13,7 @@ import {
   getPortalFiles, uploadPortalFile, deletePortalFile,
   getPortalApprovals, createPortalApproval, updatePortalApproval, deletePortalApproval,
   getPortalClientData, getPortalBranding,
-} from '@/services/portal.service'
+} from '@db/queries/portal.service'
 import { supabase } from '@/lib/supabase'
 import EmptyState from '@/shared/components/ui/EmptyState'
 import Spinner    from '@/shared/components/ui/Spinner'
@@ -644,3 +644,4 @@ export default function PortalTab({ client }) {
     </div>
   )
 }
+

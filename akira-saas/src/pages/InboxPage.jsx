@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ChevronLeft, Inbox, CheckCheck, AtSign } from 'lucide-react'
-import { getMyMentions, markMentionRead, markAllMentionsRead } from '@/services/mentions.service'
+import { getMyMentions, markMentionRead, markAllMentionsRead } from '@db/queries/mentions.service'
 import { DUR, EASE } from '@/config/motion'
 
 function fmtWhen(iso) {
@@ -24,9 +24,9 @@ export default function InboxPage() {
     setLoading(true)
     getMyMentions().then(setItems).catch(function () {}).finally(function () { setLoading(false) })
   }
-  // Al abrir la bandeja se marcan todas como leídas: así la insignia de Inicio
+  // Al abrir la bandeja se marcan todas como leÃ­das: asÃ­ la insignia de Inicio
   // se limpia y no queda un contador "fantasma" colgado. Las filas mantienen su
-  // estilo leído/no-leído de esta vista porque no recargamos.
+  // estilo leÃ­do/no-leÃ­do de esta vista porque no recargamos.
   useEffect(function () {
     load()
     markAllMentionsRead().catch(function () {})
@@ -56,7 +56,7 @@ export default function InboxPage() {
                 <CheckCheck style={{ width: '14px', height: '14px' }} /> Marcar todo
               </button>
             )}
-            <button type="button" onClick={function () { navigate(-1) }} aria-label="Volver atrás" title="Volver atrás"
+            <button type="button" onClick={function () { navigate(-1) }} aria-label="Volver atrÃ¡s" title="Volver atrÃ¡s"
               style={{ width: '38px', height: '38px', flexShrink: 0, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--bg-3)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <ChevronLeft style={{ width: '18px', height: '18px' }} />
             </button>
@@ -64,12 +64,12 @@ export default function InboxPage() {
         </div>
 
         {loading ? (
-          <p style={{ fontSize: '14px', color: 'var(--text-4)' }}>Cargando…</p>
+          <p style={{ fontSize: '14px', color: 'var(--text-4)' }}>Cargandoâ€¦</p>
         ) : items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-4)' }}>
             <AtSign style={{ width: '30px', height: '30px', margin: '0 auto 12px', opacity: 0.5 }} />
-            <p style={{ fontSize: '14px' }}>Nada por aquí todavía.</p>
-            <p style={{ fontSize: '12px', color: 'var(--text-5)', marginTop: '4px' }}>Cuando te asignen una tarea o te añadan a un proyecto, aparecerá aquí.</p>
+            <p style={{ fontSize: '14px' }}>Nada por aquÃ­ todavÃ­a.</p>
+            <p style={{ fontSize: '12px', color: 'var(--text-5)', marginTop: '4px' }}>Cuando te asignen una tarea o te aÃ±adan a un proyecto, aparecerÃ¡ aquÃ­.</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -94,3 +94,4 @@ export default function InboxPage() {
     </div>
   )
 }
+

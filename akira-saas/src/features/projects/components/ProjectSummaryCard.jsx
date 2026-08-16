@@ -1,7 +1,7 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, RefreshCw } from 'lucide-react'
-import { generateProjectSummary } from '@/services/brain.service'
+import { generateProjectSummary } from '@db/queries/brain.service'
 
 export default function ProjectSummaryCard({ project }) {
   var [summary, setSummary] = useState(null)

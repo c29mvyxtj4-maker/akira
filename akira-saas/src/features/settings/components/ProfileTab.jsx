@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState, useRef } from 'react'
 import { Copy, Check, Upload } from 'lucide-react'
-import { getProfile, updateProfile } from '@/services/settings.service'
+import { getProfile, updateProfile } from '@db/queries/settings.service'
 import { supabase } from '@/lib/supabase'
 import { usePrefs } from '@/shared/hooks/usePreferences'
 import { Field, INP, SaveBtn, Section, RowSection, Row, Toggle, MiniBtn, onBlur, onFocus } from './_shared'
@@ -158,4 +158,5 @@ function ProfileTab({ user }) {
 }
 
 export default ProfileTab
+
 

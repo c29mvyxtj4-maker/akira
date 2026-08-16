@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Send, Megaphone, MessageSquare, Trash2 } from 'lucide-react'
 import { useOrg } from '@/shared/context/OrgContext'
 import { useAuth } from '@/shared/context/AuthContext'
-import { getOrgTeam } from '@/services/projectMembers.service'
+import { getOrgTeam } from '@db/queries/projectMembers.service'
 import {
   getTeamMessages, sendTeamMessage, subscribeTeamMessages,
   getAnnouncements, postAnnouncement, deleteAnnouncement, subscribeAnnouncements,
-} from '@/services/messages.service'
+} from '@db/queries/messages.service'
 
 function fmtTime(iso) {
   if (!iso) return ''
@@ -172,4 +172,5 @@ export default function Mensajes() {
     </div>
   )
 }
+
 

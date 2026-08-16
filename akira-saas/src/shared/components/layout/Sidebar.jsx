@@ -24,8 +24,8 @@ import {
 } from 'lucide-react'
 import { ROUTES } from '@/config/constants'
 import { supabase } from '@/lib/supabase'
-import { getRecentPages, getFavorites, getUserWorkspaces, getRecentClients, getRecentProjects } from '@/services/sidebar.service'
-import { EVENT_TYPES } from '@/services/calendar.service'
+import { getRecentPages, getFavorites, getUserWorkspaces, getRecentClients, getRecentProjects } from '@db/queries/sidebar.service'
+import { EVENT_TYPES } from '@db/queries/calendar.service'
 import AccountMenu from '@/shared/components/layout/AccountMenu'
 import { useAuth } from '@/shared/context/AuthContext'
 import { useOrg } from '@/shared/context/OrgContext'
@@ -670,5 +670,6 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
     </motion.div>
   )
 }
+
 
 

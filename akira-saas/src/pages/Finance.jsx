@@ -10,8 +10,8 @@ import {
   getFinanceEntries, createFinanceEntry, updateFinanceEntry,
   archiveFinanceEntry, getFinanceKpis, getClientRanking,
   getSelectorsForFinance, FINANCE_TYPES, FINANCE_STATUS,
-} from '@/services/finance.service'
-import { getFinanceCategories } from '@/services/categories.service'
+} from '@db/queries/finance.service'
+import { getFinanceCategories } from '@db/queries/categories.service'
 import PageHeader      from '@/shared/components/layout/PageHeader'
 import Modal           from '@/shared/components/ui/Modal'
 import Badge           from '@/shared/components/ui/Badge'
@@ -559,5 +559,6 @@ export default function Finance() {
     </div>
   )
 }
+
 
 

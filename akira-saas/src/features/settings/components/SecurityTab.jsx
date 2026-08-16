@@ -1,6 +1,6 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { AlertTriangle, Eye, EyeOff } from 'lucide-react'
-import { updatePassword } from '@/services/settings.service'
+import { updatePassword } from '@db/queries/settings.service'
 import { Field, INP, SaveBtn, Section, onBlur, onFocus } from './_shared'
 
 function SecurityTab() {
@@ -63,3 +63,4 @@ function SecurityTab() {
 
 
 export default SecurityTab
+

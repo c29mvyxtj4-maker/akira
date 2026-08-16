@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Trash2, ChevronDown } from 'lucide-react'
-import { TIMELINE_TYPES } from '@/services/clients.service'
+import { TIMELINE_TYPES } from '@db/queries/clients.service'
 import Button  from '@/shared/components/ui/Button'
 import Select  from '@/shared/components/ui/Select'
 
@@ -151,3 +151,4 @@ export default function ClientTimeline({ timeline = [], onAdd, onDelete }) {
     </div>
   )
 }
+

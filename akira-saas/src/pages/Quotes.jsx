@@ -4,9 +4,9 @@ import { Plus, Trash2, FileSignature, Archive, ChevronLeft, Building2, ArrowRigh
 import {
   getQuotes, getQuoteById, createQuote, updateQuote,
   updateQuoteStatus, archiveQuote, convertQuoteToInvoice, QUOTE_STATUS,
-} from '@/services/quotes.service'
-import { getCompanySettings } from '@/services/company.service'
-import { getServicesForSelect } from '@/services/subscriptions.service'
+} from '@db/queries/quotes.service'
+import { getCompanySettings } from '@db/queries/company.service'
+import { getServicesForSelect } from '@db/queries/subscriptions.service'
 import { downloadQuotePdf } from '@/utils/generateQuotePdf'
 import { supabase } from '@/lib/supabase'
 import { useAddRecent } from '@/shared/hooks/useAddRecent'
@@ -516,6 +516,7 @@ export default function Quotes() {
     </div>
   )
 }
+
 
 
 

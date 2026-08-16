@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { downloadCsv, downloadExport } from '@/services/export.service'
-import { getQuarterlyReport } from '@/services/quarterlyReport.service'
-import { getCompanySettings } from '@/services/company.service'
+﻿import { useState } from 'react'
+import { downloadCsv, downloadExport } from '@db/queries/export.service'
+import { getQuarterlyReport } from '@db/queries/quarterlyReport.service'
+import { getCompanySettings } from '@db/queries/company.service'
 import { downloadQuarterlyReportPdf } from '@/utils/generateQuarterlyReportPdf'
 import { INP, Section, Toast } from './_shared'
 
@@ -112,3 +112,4 @@ function DataExportTab() {
 
 
 export default DataExportTab
+

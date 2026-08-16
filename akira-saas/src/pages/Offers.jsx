@@ -4,12 +4,12 @@ import { Search, Plus, Archive, Edit3, AlertTriangle, Wrench, TrendingUp, Packag
 import {
   getServices, createService, updateService, archiveService,
   SERVICE_CATEGORIES,
-} from '@/services/services.service'
+} from '@db/queries/services.service'
 import {
   getSubscriptions, createSubscription, updateSubscription, archiveSubscription,
   getClientsForSelect, getServicesForSelect,
   SUB_PERIODS, SUB_STATUS, calcMonthlyValue,
-} from '@/services/subscriptions.service'
+} from '@db/queries/subscriptions.service'
 import PageHeader      from '@/shared/components/layout/PageHeader'
 import Modal           from '@/shared/components/ui/Modal'
 import Badge           from '@/shared/components/ui/Badge'
@@ -606,4 +606,5 @@ export default function Offers() {
     </div>
   )
 }
+
 

@@ -1,17 +1,17 @@
-import { useState, useMemo } from 'react'
+﻿import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { PROJECT_STAGE_MAP, PROJECT_STATUS_MAP } from '@/services/projects.service'
+import { PROJECT_STAGE_MAP, PROJECT_STATUS_MAP } from '@db/queries/projects.service'
 
 var STAGES = ['preproduction', 'production', 'postproduction', 'delivery', 'closed']
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'â‚¬' }
 
 function KanbanCard({ project, onSelect, onDragStart }) {
   var sc = PROJECT_STATUS_MAP[project.status]
   var tasks = Array.isArray(project.tasks) ? project.tasks : []
   var done  = tasks.filter(function(t) { return t.done }).length
 
-  // Calcula el progreso automáticamente
+  // Calcula el progreso automÃ¡ticamente
   var progress = useMemo(function() {
     if (tasks.length === 0) return 0
     return Math.round((done / tasks.length) * 100)
@@ -34,7 +34,7 @@ function KanbanCard({ project, onSelect, onDragStart }) {
       <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-1)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.name}</p>
       <p style={{ fontSize: '11px', color: 'var(--text-4)', marginBottom: '8px' }}>{project.clients ? (project.clients.company || project.clients.name) : 'Sin cliente'}</p>
 
-      {/* Barra de progreso automática */}
+      {/* Barra de progreso automÃ¡tica */}
       {tasks.length > 0 && (
         <div style={{ marginBottom: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>

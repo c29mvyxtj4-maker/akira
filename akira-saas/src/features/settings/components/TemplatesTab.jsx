@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Trash2 } from 'lucide-react'
-import { archiveEmailTemplate, archiveProjectTemplate, createEmailTemplate, createProjectTemplate, getEmailTemplates, getProjectTemplates, updateEmailTemplate, updateProjectTemplate } from '@/services/templates.service'
+import { archiveEmailTemplate, archiveProjectTemplate, createEmailTemplate, createProjectTemplate, getEmailTemplates, getProjectTemplates, updateEmailTemplate, updateProjectTemplate } from '@db/queries/templates.service'
 import { INP, Section, Toast } from './_shared'
 
 function ProjectTemplateForm({ initial, onSave, onCancel }) {
@@ -133,10 +133,10 @@ function TemplatesTab() {
             <div key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: '10px' }}>
               <div>
                 <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-1)' }}>{t.name}</p>
-                <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '2px' }}>{t.default_priority} · {t.default_stage} · {t.default_budget}€</p>
+                <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '2px' }}>{t.default_priority} Â· {t.default_stage} Â· {t.default_budget}â‚¬</p>
               </div>
               <div style={{ display: 'flex', gap: '6px' }}>
-                <button type="button" onClick={function() { setEditingProject(t); setShowProjectForm(true) }} style={{ background: 'none', border: 'none', color: 'var(--text-4)', cursor: 'pointer', fontSize: '13px' }}>✎</button>
+                <button type="button" onClick={function() { setEditingProject(t); setShowProjectForm(true) }} style={{ background: 'none', border: 'none', color: 'var(--text-4)', cursor: 'pointer', fontSize: '13px' }}>âœŽ</button>
                 <button type="button" onClick={function() { handleArchiveProject(t.id) }} style={{ background: 'none', border: 'none', color: 'rgba(230,57,70,0.5)', cursor: 'pointer' }}><Trash2 style={{ width: '13px', height: '13px' }} /></button>
               </div>
             </div>
@@ -161,7 +161,7 @@ function TemplatesTab() {
                 <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}</p>
               </div>
               <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                <button type="button" onClick={function() { setEditingEmail(t); setShowEmailForm(true) }} style={{ background: 'none', border: 'none', color: 'var(--text-4)', cursor: 'pointer', fontSize: '13px' }}>✎</button>
+                <button type="button" onClick={function() { setEditingEmail(t); setShowEmailForm(true) }} style={{ background: 'none', border: 'none', color: 'var(--text-4)', cursor: 'pointer', fontSize: '13px' }}>âœŽ</button>
                 <button type="button" onClick={function() { handleArchiveEmail(t.id) }} style={{ background: 'none', border: 'none', color: 'rgba(230,57,70,0.5)', cursor: 'pointer' }}><Trash2 style={{ width: '13px', height: '13px' }} /></button>
               </div>
             </div>
@@ -182,3 +182,4 @@ function TemplatesTab() {
 
 
 export default TemplatesTab
+

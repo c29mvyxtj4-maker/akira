@@ -5,7 +5,7 @@ import {
   getSubscriptions, createSubscription, updateSubscription, archiveSubscription,
   getClientsForSelect, getServicesForSelect,
   SUB_PERIODS, SUB_STATUS, calcMonthlyValue,
-} from '@/services/subscriptions.service'
+} from '@db/queries/subscriptions.service'
 import PageHeader      from '@/shared/components/layout/PageHeader'
 import Modal           from '@/shared/components/ui/Modal'
 import Badge           from '@/shared/components/ui/Badge'
@@ -344,4 +344,5 @@ export default function Subscriptions() {
     </div>
   )
 }
+
 

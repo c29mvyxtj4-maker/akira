@@ -1,7 +1,23 @@
 {
   "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "akira-saas/dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/(?!.*\\.)",
+      "destination": "/index.html"
+    }
   ]
 }

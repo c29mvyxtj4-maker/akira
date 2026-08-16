@@ -1,22 +1,17 @@
 {
   "buildCommand": "cd akira-saas && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "akira-saas/dist",
-  "routes": [
+  "env": {
+    "VERCEL_ANALYTICS_ID": ""
+  },
+  "rewrites": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     },
     {
-      "src": "/icons/(.*)",
-      "dest": "/icons/$1"
-    },
-    {
-      "src": "/(.*\\..*)",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/.*",
+      "destination": "/index.html"
     }
   ]
 }

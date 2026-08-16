@@ -21,7 +21,7 @@ import { PageSpinner } from '@/shared/components/ui/Spinner'
 import AreaChart       from '@/shared/components/charts/AreaChart'
 import clsx            from 'clsx'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'â‚¬' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '€' }
 function fmtDate(d) { if (!d) return '--'; return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 
 var INP = {

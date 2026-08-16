@@ -11,7 +11,7 @@ export async function getWorkspaces() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.warn('[Notion] Error fetching workspaces:', error.message)
+    console.warn('[AkiraLib] Error fetching workspaces:', error.message)
     return []
   }
 
@@ -28,7 +28,7 @@ export async function createWorkspace(name, icon = '📦') {
     .select()
 
   if (error) {
-    console.error('[Notion] Error creating workspace:', error)
+    console.error('[AkiraLib] Error creating workspace:', error)
     throw error
   }
   return data?.[0]
@@ -43,7 +43,7 @@ export async function getTeamspaces(workspaceId) {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.warn('[Notion] Error fetching teamspaces:', error.message)
+    console.warn('[AkiraLib] Error fetching teamspaces:', error.message)
     return []
   }
 
@@ -69,7 +69,7 @@ export async function getPages(teamspaceId, parentId = null) {
     .order('updated_at', { ascending: false })
 
   if (error) {
-    console.warn('[Notion] Error fetching pages:', error.message)
+    console.warn('[AkiraLib] Error fetching pages:', error.message)
     return []
   }
 
@@ -89,7 +89,7 @@ export async function getPage(pageId) {
     .single()
 
   if (error) {
-    console.warn('[Notion] Error fetching page:', error.message)
+    console.warn('[AkiraLib] Error fetching page:', error.message)
     return null
   }
 
@@ -133,7 +133,7 @@ export async function getBlocks(pageId) {
     .order('"order"', { ascending: true })
 
   if (error) {
-    console.warn('[Notion] Error fetching blocks:', error.message)
+    console.warn('[AkiraLib] Error fetching blocks:', error.message)
     return []
   }
 

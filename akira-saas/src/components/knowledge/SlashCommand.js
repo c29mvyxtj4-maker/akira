@@ -10,30 +10,47 @@ import Suggestion from '@tiptap/suggestion'
  */
 
 var ITEMS = [
-  { title: 'Texto', desc: 'Párrafo normal', icon: '¶', keys: ['texto', 'parrafo', 'text', 'p'],
+  // FASE 1: Bloques básicos y de texto
+  { title: 'Texto', desc: 'Párrafo normal', icon: '¶', keys: ['texto', 'parrafo', 'text', 'p'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).setParagraph().run() } },
-  { title: 'Encabezado 1', desc: 'Título grande', icon: 'H1', keys: ['h1', 'encabezado', 'titulo', 'heading'],
+  { title: 'Encabezado 1', desc: 'Título grande', icon: 'H1', keys: ['h1', 'encabezado', 'titulo', 'heading'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).toggleHeading({ level: 1 }).run() } },
-  { title: 'Encabezado 2', desc: 'Título mediano', icon: 'H2', keys: ['h2', 'encabezado', 'subtitulo', 'heading'],
+  { title: 'Encabezado 2', desc: 'Título mediano', icon: 'H2', keys: ['h2', 'encabezado', 'subtitulo', 'heading'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).toggleHeading({ level: 2 }).run() } },
-  { title: 'Encabezado 3', desc: 'Título pequeño', icon: 'H3', keys: ['h3', 'encabezado', 'heading'],
+  { title: 'Encabezado 3', desc: 'Título pequeño', icon: 'H3', keys: ['h3', 'encabezado', 'heading'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).toggleHeading({ level: 3 }).run() } },
-  { title: 'Lista con viñetas', desc: 'Lista simple', icon: '•', keys: ['lista', 'vinetas', 'bullet', 'ul'],
+  { title: 'Encabezado 4', desc: 'Título muy pequeño', icon: 'H4', keys: ['h4', 'encabezado', 'heading'], section: 'Bloques básicos',
+    command: function (e, r) { e.chain().focus().deleteRange(r).toggleHeading({ level: 4 }).run() } },
+  { title: 'Lista con viñetas', desc: 'Lista simple', icon: '•', keys: ['lista', 'vinetas', 'bullet', 'ul'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).toggleBulletList().run() } },
-  { title: 'Lista numerada', desc: 'Lista ordenada', icon: '1.', keys: ['numerada', 'ordenada', 'ol', 'numero'],
+  { title: 'Lista numerada', desc: 'Lista ordenada', icon: '1.', keys: ['numerada', 'ordenada', 'ol', 'numero'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).toggleOrderedList().run() } },
-  { title: 'Lista de tareas', desc: 'Casillas de verificación', icon: '☑', keys: ['tarea', 'todo', 'checkbox', 'tareas'],
+  { title: 'Lista de tareas', desc: 'Casillas de verificación', icon: '☑', keys: ['tarea', 'todo', 'checkbox', 'tareas'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).toggleTaskList().run() } },
-  { title: 'Cita', desc: 'Bloque de cita', icon: '❝', keys: ['cita', 'quote', 'blockquote'],
+  { title: 'Cita', desc: 'Bloque de cita', icon: '❝', keys: ['cita', 'quote', 'blockquote'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).toggleBlockquote().run() } },
-  { title: 'Código', desc: 'Bloque de código', icon: '</>', keys: ['codigo', 'code', 'pre'],
+  { title: 'Código', desc: 'Bloque de código', icon: '</>', keys: ['codigo', 'code', 'pre'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).toggleCodeBlock().run() } },
-  { title: 'Tabla', desc: 'Tabla 3×3', icon: '▦', keys: ['tabla', 'table'],
+  { title: 'Tabla', desc: 'Tabla 3×3', icon: '▦', keys: ['tabla', 'table'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() } },
-  { title: 'Divisor', desc: 'Línea separadora', icon: '—', keys: ['divisor', 'linea', 'hr', 'separador'],
+  { title: 'Divisor', desc: 'Línea separadora', icon: '—', keys: ['divisor', 'linea', 'hr', 'separador'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).setHorizontalRule().run() } },
-  { title: 'Callout', desc: 'Bloque destacado', icon: '💡', keys: ['callout', 'destacado', 'aviso', 'nota'],
+  { title: 'Callout', desc: 'Bloque destacado', icon: '💡', keys: ['callout', 'destacado', 'aviso', 'nota'], section: 'Bloques básicos',
     command: function (e, r) { e.chain().focus().deleteRange(r).insertCallout({ type: 'info' }).run() } },
+
+  // FASE 2: Multimedia
+  { title: 'Vídeo YouTube', desc: 'Incrusta un video de YouTube', icon: '🎬', keys: ['video', 'youtube', 'vimeo'], section: 'Multimedia',
+    command: function (e, r) {
+      e.chain().focus().deleteRange(r).setYoutubeVideo({ src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }).run()
+    } },
+  { title: 'Audio', desc: 'Archivo de audio MP3', icon: '🔊', keys: ['audio', 'musica', 'sonido'], section: 'Multimedia',
+    command: function (e, r) {
+      e.chain().focus().deleteRange(r).insertAudio({ src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' }).run()
+    } },
+
+  // FASE 3: Avanzados
+  { title: 'Tabla de contenidos', desc: 'Índice automático de encabezados', icon: '📑', keys: ['indice', 'toc', 'contenidos', 'tabla'], section: 'Avanzados',
+    command: function (e, r) { e.chain().focus().deleteRange(r).insertTableOfContents().run() } },
 ]
 
 function filterItems(query) {

@@ -21,8 +21,10 @@ import { useEffect, useRef, useState } from 'react'
 import { uploadFile } from '@/services/kb.service'
 import { getPref } from '@/shared/hooks/usePreferences'
 import { SlashCommand } from './SlashCommand'
+import { AudioNode } from './AudioNode'
+import { TableOfContentsNode } from './TableOfContentsNode'
 
-/* â”€â”€ Limpieza de JSON para evitar referencias circulares â”€â”€â”€â”€ */
+/* –”€–”€ Limpieza de JSON para evitar referencias circulares –”€–”€–”€–”€ */
 function cleanJSON(node) {
   if (node === null || node === undefined) return node
   if (typeof node === 'string' || typeof node === 'number' || typeof node === 'boolean') return node
@@ -45,7 +47,7 @@ function cleanJSON(node) {
   return clean
 }
 
-/* â”€â”€ Callout extension â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Callout extension –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 var CALLOUT_CFG = {
   info:    { label: 'i',  bg: 'rgba(59,130,246,0.08)',  border: 'rgba(59,130,246,0.25)',  color: '#3b82f6' },
   warning: { label: '!',  bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.25)',  color: '#f59e0b' },
@@ -115,7 +117,7 @@ var CalloutNode = Node.create({
   },
 })
 
-/* â”€â”€ ToolBtn â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ ToolBtn –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function ToolBtn({ active, onClick, title, children }) {
   return (
     <button
@@ -142,7 +144,7 @@ function Sep() {
   return <div style={{ width: '1px', height: '18px', background: 'rgba(255,255,255,0.07)', margin: '0 2px', flexShrink: 0 }} />
 }
 
-/* â”€â”€ BlockSelect â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ BlockSelect –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function BlockSelect({ editor }) {
   if (!editor) return null
   var opts = [
@@ -172,7 +174,7 @@ function BlockSelect({ editor }) {
   )
 }
 
-/* â”€â”€ CalloutMenu â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ CalloutMenu –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function CalloutMenu({ editor, onClose }) {
   var types = [
     { type: 'info',    label: 'Info' },
@@ -205,7 +207,7 @@ function CalloutMenu({ editor, onClose }) {
   )
 }
 
-/* â”€â”€ TableMenu â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ TableMenu –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function TableMenu({ editor, onClose }) {
   function Btn(label, fn, danger) {
     return (
@@ -231,7 +233,7 @@ function TableMenu({ editor, onClose }) {
   )
 }
 
-/* â”€â”€ Toolbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Toolbar –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function Toolbar({ editor, docId }) {
   var [showCallout, setShowCallout] = useState(false)
   var [showTable,   setShowTable]   = useState(false)
@@ -286,13 +288,13 @@ function Toolbar({ editor, docId }) {
         <input type="color" onChange={function(e) { editor.chain().focus().setColor(e.target.value).run() }} style={{ position: 'absolute', opacity: 0, inset: 0, cursor: 'pointer' }} />
       </label>
       <Sep />
-      <ToolBtn active={editor.isActive({ textAlign: 'left' })}   onClick={function() { editor.chain().focus().setTextAlign('left').run() }}   title="Izquierda">â‰¡</ToolBtn>
-      <ToolBtn active={editor.isActive({ textAlign: 'center' })} onClick={function() { editor.chain().focus().setTextAlign('center').run() }} title="Centro">â‰¡</ToolBtn>
-      <ToolBtn active={editor.isActive({ textAlign: 'right' })}  onClick={function() { editor.chain().focus().setTextAlign('right').run() }}  title="Derecha">â‰¡</ToolBtn>
+      <ToolBtn active={editor.isActive({ textAlign: 'left' })}   onClick={function() { editor.chain().focus().setTextAlign('left').run() }}   title="Izquierda">–‰¡</ToolBtn>
+      <ToolBtn active={editor.isActive({ textAlign: 'center' })} onClick={function() { editor.chain().focus().setTextAlign('center').run() }} title="Centro">–‰¡</ToolBtn>
+      <ToolBtn active={editor.isActive({ textAlign: 'right' })}  onClick={function() { editor.chain().focus().setTextAlign('right').run() }}  title="Derecha">–‰¡</ToolBtn>
       <Sep />
-      <ToolBtn active={editor.isActive('bulletList')}  onClick={function() { editor.chain().focus().toggleBulletList().run() }}  title="Lista">â€¢ â‰¡</ToolBtn>
-      <ToolBtn active={editor.isActive('orderedList')} onClick={function() { editor.chain().focus().toggleOrderedList().run() }} title="Numerada">1.â‰¡</ToolBtn>
-      <ToolBtn active={editor.isActive('taskList')}    onClick={function() { editor.chain().focus().toggleTaskList().run() }}    title="Tareas">â˜‘â‰¡</ToolBtn>
+      <ToolBtn active={editor.isActive('bulletList')}  onClick={function() { editor.chain().focus().toggleBulletList().run() }}  title="Lista">–¢ –‰¡</ToolBtn>
+      <ToolBtn active={editor.isActive('orderedList')} onClick={function() { editor.chain().focus().toggleOrderedList().run() }} title="Numerada">1.–‰¡</ToolBtn>
+      <ToolBtn active={editor.isActive('taskList')}    onClick={function() { editor.chain().focus().toggleTaskList().run() }}    title="Tareas">–˜‘–‰¡</ToolBtn>
       <ToolBtn active={editor.isActive('blockquote')}  onClick={function() { editor.chain().focus().toggleBlockquote().run() }}  title="Cita">"</ToolBtn>
       <ToolBtn active={editor.isActive('codeBlock')}   onClick={function() { editor.chain().focus().toggleCodeBlock().run() }}   title="Bloque">
         <span style={{ fontFamily: 'monospace', fontSize: '10px' }}>{'{ }'}</span>
@@ -309,23 +311,23 @@ function Toolbar({ editor, docId }) {
         <input ref={fileRef} type="file" accept="image/*" onChange={handleImg} style={{ display: 'none' }} />
       </label>
       <div style={{ position: 'relative' }}>
-        <ToolBtn active={editor.isActive('table')} onClick={function() { setShowTable(function(v) { return !v }); setShowCallout(false) }} title="Tabla">âŠž</ToolBtn>
+        <ToolBtn active={editor.isActive('table')} onClick={function() { setShowTable(function(v) { return !v }); setShowCallout(false) }} title="Tabla">–Šž</ToolBtn>
         {showTable && <TableMenu editor={editor} onClose={function() { setShowTable(false) }} />}
       </div>
-      <ToolBtn active={false} onClick={insertYoutube} title="Video">â–¶</ToolBtn>
-      <ToolBtn active={false} onClick={function() { editor.chain().focus().setHorizontalRule().run() }} title="Divisor">â€”</ToolBtn>
+      <ToolBtn active={false} onClick={insertYoutube} title="Video">––¶</ToolBtn>
+      <ToolBtn active={false} onClick={function() { editor.chain().focus().setHorizontalRule().run() }} title="Divisor">–”</ToolBtn>
       <div style={{ position: 'relative' }}>
         <ToolBtn active={editor.isActive('callout')} onClick={function() { setShowCallout(function(v) { return !v }); setShowTable(false) }} title="Callout">ðŸ’¡</ToolBtn>
         {showCallout && <CalloutMenu editor={editor} onClose={function() { setShowCallout(false) }} />}
       </div>
       <div style={{ flex: 1 }} />
-      <ToolBtn active={false} onClick={function() { editor.chain().focus().undo().run() }} title="Deshacer">â†©</ToolBtn>
-      <ToolBtn active={false} onClick={function() { editor.chain().focus().redo().run() }} title="Rehacer">â†ª</ToolBtn>
+      <ToolBtn active={false} onClick={function() { editor.chain().focus().undo().run() }} title="Deshacer">–†©</ToolBtn>
+      <ToolBtn active={false} onClick={function() { editor.chain().focus().redo().run() }} title="Rehacer">–†ª</ToolBtn>
     </div>
   )
 }
 
-/* â”€â”€ AttachmentsPanel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ AttachmentsPanel –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function AttachmentsPanel({ attachments, onAdd, onDelete }) {
   var fileRef     = useRef(null)
   var [uploading, setUploading] = useState(false)
@@ -407,9 +409,9 @@ function AttachmentsPanel({ attachments, onAdd, onDelete }) {
   )
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    EDITOR PRINCIPAL
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 export default function TipTapEditor({ doc, onChange, attachments, onAttachFile, onDeleteAttachment, showAttachments }) {
   var docIdRef    = useRef(null)
   var onChangeRef = useRef(onChange)
@@ -419,7 +421,7 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
   var editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [1,2,3,4,5,6] } }),
-      Placeholder.configure({ placeholder: "Escribe '/' para insertar bloquesâ€¦" }),
+      Placeholder.configure({ placeholder: "Escribe '/' para insertar bloques│" }),
       SlashCommand,
       Underline,
       TextStyle,
@@ -437,6 +439,8 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
       Youtube.configure({ controls: true, nocookie: true }),
       CharacterCount,
       CalloutNode,
+      AudioNode,
+      TableOfContentsNode,
     ],
     content: { type: 'doc', content: [] },
     onUpdate: function(params) {
@@ -453,7 +457,7 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
       }
     },
     editorProps: {
-      // Corrector ortogrÃ¡fico segÃºn la preferencia (idioma o desactivado).
+      // Corrector ortográfico segÀºn la preferencia (idioma o desactivado).
       attributes: (function () {
         var sc = getPref('pref_spellcheck', 'es')
         var attrs = { class: 'kb-editor-content', spellcheck: sc === 'off' ? 'false' : 'true' }

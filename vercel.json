@@ -4,11 +4,20 @@
   "nodeVersion": "20.x",
   "routes": [
     {
-      "handle": "filesystem"
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
-      "src": "/.*",
+      "src": "/(.*)\\.(js|css|svg|png|jpg|jpeg|gif|ico|webp|woff|woff2|eot|ttf)$",
+      "dest": "/$1.$2"
+    },
+    {
+      "src": "/",
       "dest": "/index.html"
+    },
+    {
+      "src": "/(.+)$",
+      "dest": "/api/__catchall"
     }
   ]
 }

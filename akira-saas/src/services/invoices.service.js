@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase'
-import { getActiveOrgId, scopeToOrg } from '@/lib/activeOrg'
+﻿import { supabase } from '@/shared/lib/supabase'
+import { getActiveOrgId, scopeToOrg } from '@/shared/lib/activeOrg'
 
 async function uid() {
   var res = await supabase.auth.getUser()

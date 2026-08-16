@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/shared/lib/supabase'
 
 async function uid() {
   var res = await supabase.auth.getUser()
@@ -6,9 +6,9 @@ async function uid() {
   return res.data.user.id
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    PLANTILLAS DE PROYECTO
-═══════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 export async function getProjectTemplates() {
   var ownerId = await uid()
@@ -51,9 +51,9 @@ export async function archiveProjectTemplate(id) {
   return true
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    PLANTILLAS DE EMAIL
-═══════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 export async function getEmailTemplates() {
   var ownerId = await uid()
@@ -94,7 +94,7 @@ export async function archiveEmailTemplate(id) {
   return true
 }
 
-/* ── Rellena {{nombre}} / {{empresa}} con los datos reales del cliente y arma el mailto ── */
+/* â”€â”€ Rellena {{nombre}} / {{empresa}} con los datos reales del cliente y arma el mailto â”€â”€ */
 export function buildTemplateMailto(template, client) {
   if (!client || !client.email) return null
 

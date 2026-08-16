@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Upload, Trash2, Download, Image as ImageIcon, Video, Music, FileText, File as FileIcon } from 'lucide-react'
 import { getProjectFiles, uploadProjectFile, deleteProjectFile, fmtFileSize, fileKind } from '@/services/projectFiles.service'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/shared/lib/supabase'
 
 var KIND_ICON = { image: ImageIcon, video: Video, audio: Music, pdf: FileText, other: FileIcon }
 var KIND_COLOR = { image: '#22c55e', video: '#3b82f6', audio: '#a855f7', pdf: '#f59e0b', other: '#64748b' }
@@ -36,7 +36,7 @@ function FileCard({ file, onDelete }) {
         <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</p>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
           <span style={{ fontSize: '10px', color: 'var(--text-4)' }}>
-            {fmtFileSize(file.file_size)} {file.version > 1 ? '· v' + file.version : ''}
+            {fmtFileSize(file.file_size)} {file.version > 1 ? 'Â· v' + file.version : ''}
           </span>
           <span style={{ fontSize: '10px', color: 'var(--text-5)' }}>{fmtDate(file.created_at)}</span>
         </div>

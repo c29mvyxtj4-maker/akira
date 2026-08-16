@@ -1,9 +1,9 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/shared/lib/supabase'
 
 /*
  * Miembros vinculados a un proyecto (tabla project_members). Los nombres se
  * resuelven contra `profiles` en un segundo paso: project_members.user_id apunta
- * a auth.users, así que PostgREST no puede unir directamente con profiles.
+ * a auth.users, asÃ­ que PostgREST no puede unir directamente con profiles.
  */
 
 async function attachProfiles(rows) {
@@ -41,10 +41,11 @@ export async function removeProjectMember(id) {
   return true
 }
 
-// Equipo de la organización (con nombres) para elegir a quién añadir al proyecto.
+// Equipo de la organizaciÃ³n (con nombres) para elegir a quiÃ©n aÃ±adir al proyecto.
 export async function getOrgTeam(orgId) {
   if (!orgId) return []
   var res = await supabase.from('org_members').select('user_id, role').eq('org_id', orgId)
   if (res.error) throw res.error
   return attachProfiles(res.data || [])
 }
+

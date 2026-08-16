@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/shared/lib/supabase'
 
 async function uid() {
   var res = await supabase.auth.getUser()
@@ -6,7 +6,7 @@ async function uid() {
   return res.data.user.id
 }
 
-/* ── Perfil ───────────────────────────────────────────────── */
+/* â”€â”€ Perfil â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export async function getProfile() {
   var ownerId = await uid()
   var res = await supabase.from('profiles').select('*').eq('id', ownerId).single()
@@ -24,12 +24,12 @@ export async function updateProfile(updates) {
   return res.data
 }
 
-/* ── Workspace ────────────────────────────────────────────── */
+/* â”€â”€ Workspace â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export async function getWorkspace() {
   var ownerId = await uid()
   var res = await supabase.from('workspace_settings').select('*').eq('owner_id', ownerId).single()
   if (res.error && res.error.code === 'PGRST116') {
-    // No existe — crear uno por defecto
+    // No existe â€” crear uno por defecto
     var created = await supabase.from('workspace_settings').insert({
       owner_id:     ownerId,
       business_name: '',
@@ -51,14 +51,14 @@ export async function updateWorkspace(updates) {
   return res.data
 }
 
-/* ── Password ─────────────────────────────────────────────── */
+/* â”€â”€ Password â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export async function updatePassword(newPassword) {
   var res = await supabase.auth.updateUser({ password: newPassword })
   if (res.error) throw res.error
   return true
 }
 
-/* ── Estadisticas de la cuenta ────────────────────────────── */
+/* â”€â”€ Estadisticas de la cuenta â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export async function getAccountStats() {
   var ownerId = await uid()
   var results = await Promise.allSettled([
@@ -82,8 +82,8 @@ export async function getAccountStats() {
   }
 }
 
-/* ── Verificar columnas del perfil ────────────────────────── */
+/* â”€â”€ Verificar columnas del perfil â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export async function ensureProfileColumns() {
-  // No hace nada en el cliente — solo comprueba que el perfil existe
+  // No hace nada en el cliente â€” solo comprueba que el perfil existe
   return true
 }

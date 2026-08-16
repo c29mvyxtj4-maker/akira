@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from 'framer-motion';
+﻿import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, X, ArrowRight } from 'lucide-react';
 import { getTemplatesList } from '@/services/taskTemplates.service';
-import { DUR, EASE } from '@/config/motion';
+import { DUR, EASE } from '@/shared/config/motion';
 
 export default function TaskTemplateModal({ isOpen, onClose, onSelectTemplate, loading = false }) {
   const templates = getTemplatesList();
@@ -91,7 +91,7 @@ export default function TaskTemplateModal({ isOpen, onClose, onSelectTemplate, l
                   Saltar por ahora
                 </button>
                 <p className="text-2xs text-text-5 flex-1 text-center">
-                  Puedes agregar tareas manualmente después
+                  Puedes agregar tareas manualmente despuÃ©s
                 </p>
               </div>
             </div>
@@ -101,3 +101,4 @@ export default function TaskTemplateModal({ isOpen, onClose, onSelectTemplate, l
     </AnimatePresence>
   );
 }
+

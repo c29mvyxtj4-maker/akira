@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, Wrench, TrendingUp, Package, CreditCard } from 'lucide-react'
 import {
@@ -10,15 +10,15 @@ import {
   getClientsForSelect, getServicesForSelect,
   SUB_PERIODS, SUB_STATUS, calcMonthlyValue,
 } from '@/services/subscriptions.service'
-import PageHeader      from '@/components/layout/PageHeader'
-import Modal           from '@/components/ui/Modal'
-import Badge           from '@/components/ui/Badge'
-import Button          from '@/components/ui/Button'
-import EmptyState      from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
+import PageHeader      from '@/shared/components/layout/PageHeader'
+import Modal           from '@/shared/components/ui/Modal'
+import Badge           from '@/shared/components/ui/Badge'
+import Button          from '@/shared/components/ui/Button'
+import EmptyState      from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
 import clsx            from 'clsx'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'â‚¬' }
 function fmtDate(d) { if (!d) return '--'; return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 function daysLeft(d) { if (!d) return null; return Math.ceil((new Date(d) - Date.now()) / 86400000) }
 
@@ -29,9 +29,9 @@ var INP = {
 }
 var SI = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#f1f5f9', borderRadius: '8px', fontSize: '12px', padding: '6px 10px', outline: 'none', fontFamily: 'inherit', cursor: 'pointer' }
 
-/* ═══════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    CATALOGO (antes Services.jsx)
-═══════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function ServiceForm({ initial, onSave, onCancel, loading }) {
   var EMPTY = { name: '', description: '', category: 'Video', price: '', cost: '', unit: 'proyecto', active: true }
   var [form, setForm] = useState(function() {
@@ -58,7 +58,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <input value={form.name} onChange={set('name')} placeholder="Pack de video corporativo" style={INP} />
         </div>
         <div>
-          <label className="label-base">Categoría</label>
+          <label className="label-base">CategorÃ­a</label>
           <select value={form.category} onChange={set('category')} style={INP}>
             {SERVICE_CATEGORIES.map(function(c) { return <option key={c} value={c}>{c}</option> })}
           </select>
@@ -78,7 +78,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <input type="number" min="0" step="0.01" value={form.cost} onChange={set('cost')} placeholder="0" style={INP} />
         </div>
         <div className="col-span-2">
-          <label className="label-base">Descripción</label>
+          <label className="label-base">DescripciÃ³n</label>
           <textarea value={form.description} onChange={set('description')} rows={2} placeholder="Que incluye este servicio..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
       </div>
@@ -195,9 +195,9 @@ function CatalogTab({ services, loading, error, search, setSearch, category, set
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    SUSCRIPCIONES (antes Subscriptions.jsx)
-═══════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
   var EMPTY = { name: '', client_id: '', service_id: '', price: '', period: 'monthly', status: 'active', start_date: '', next_billing: '', notes: '' }
   var [form, setForm] = useState(function() {
@@ -265,7 +265,7 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
           <input type="date" value={form.start_date} onChange={set('start_date')} style={INP} />
         </div>
         <div>
-          <label className="label-base">Próximo cobro</label>
+          <label className="label-base">PrÃ³ximo cobro</label>
           <input type="date" value={form.next_billing} onChange={set('next_billing')} style={INP} />
         </div>
         <div className="col-span-2">
@@ -372,9 +372,9 @@ function SubscriptionsTab({ subs, clients, loading, error, search, setSearch, st
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PAGINA PRINCIPAL — OFERTAS
-═══════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   PAGINA PRINCIPAL â€” OFERTAS
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 export default function Offers() {
   var [tab, setTab] = useState('catalog') // 'catalog' | 'subscriptions'
 
@@ -548,7 +548,7 @@ export default function Offers() {
             })}
           </div>
 
-          {/* Pestañas */}
+          {/* PestaÃ±as */}
           <div className="flex gap-1 mb-5 bg-surface-3 rounded-lg p-1 w-fit">
             {TABS.map(function(t) {
               return (

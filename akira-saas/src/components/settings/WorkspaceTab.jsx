@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Copy, Check } from 'lucide-react'
 import { getWorkspace, updateWorkspace } from '@/services/settings.service'
-import { useOrg } from '@/context/OrgContext'
-import { usePrefs } from '@/hooks/usePreferences'
+import { useOrg } from '@/shared/context/OrgContext'
+import { usePrefs } from '@/shared/hooks/usePreferences'
 import { Field, INP, SaveBtn, Section, RowSection, Row, Toggle, RowSelect, MiniBtn, onBlur, onFocus } from './_shared'
 
 /*
- * General (grupo Espacio de trabajo) — datos del negocio + configuración del
- * espacio, exportación, estadísticas, personas, zona de riesgo e ID. Los datos
+ * General (grupo Espacio de trabajo) â€” datos del negocio + configuraciÃ³n del
+ * espacio, exportaciÃ³n, estadÃ­sticas, personas, zona de riesgo e ID. Los datos
  * de negocio se guardan en Supabase; el resto son preferencias del espacio.
  */
 function WorkspaceTab() {
@@ -47,7 +47,7 @@ function WorkspaceTab() {
 
   function deleteWorkspace() {
     var name = org.org ? org.org.name : 'este espacio'
-    if (!window.confirm('¿Eliminar "' + name + '"? Esta acción es delicada. Por seguridad se procesa manualmente; se abrirá tu correo con la solicitud.')) return
+    if (!window.confirm('Â¿Eliminar "' + name + '"? Esta acciÃ³n es delicada. Por seguridad se procesa manualmente; se abrirÃ¡ tu correo con la solicitud.')) return
     window.location.href = 'mailto:marcroson7@gmail.com?subject=' + encodeURIComponent('Eliminar espacio de trabajo AKIRA') + '&body=' + encodeURIComponent('Quiero eliminar el espacio de trabajo ' + (org.org ? org.org.id : '') + '.')
   }
 
@@ -57,7 +57,7 @@ function WorkspaceTab() {
 
   return (
     <div>
-      <RowSection title="Configuración del espacio de trabajo" description="Identidad y comportamiento de tu espacio.">
+      <RowSection title="ConfiguraciÃ³n del espacio de trabajo" description="Identidad y comportamiento de tu espacio.">
         <div style={{ padding: '14px 0' }}>
           <Field label="Nombre del espacio de trabajo" hint="El nombre visible de tu negocio dentro de AKIRA.">
             <input value={ws.business_name || ''} onChange={set('business_name')} placeholder="Tu empresa S.L." style={INP} onFocus={onFocus} onBlur={onBlur} />
@@ -68,7 +68,7 @@ function WorkspaceTab() {
             {(ws.business_name || (org.org && org.org.name) || 'A')[0].toUpperCase()}
           </span>
         </Row>
-        <Row title="Página de destino personalizada" description="La primera página que ve un miembro nuevo al entrar al espacio." last>
+        <Row title="PÃ¡gina de destino personalizada" description="La primera pÃ¡gina que ve un miembro nuevo al entrar al espacio." last>
           <RowSelect value={prefs.ws_landing} onChange={function (e) { setPref('ws_landing', e.target.value) }}
             options={[{ value: 'inicio', label: 'Inicio' }, { value: 'dashboard', label: 'Panel' }, { value: 'projects', label: 'Proyectos' }, { value: 'clients', label: 'Clientes' }]} />
         </Row>
@@ -78,12 +78,12 @@ function WorkspaceTab() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px' }}>
           <Field label="Moneda">
             <select value={ws.currency || 'EUR'} onChange={set('currency')} style={SEL}>
-              <option value="EUR">EUR — Euro</option>
-              <option value="USD">USD — Dolar</option>
-              <option value="GBP">GBP — Libra</option>
-              <option value="MXN">MXN — Peso mexicano</option>
-              <option value="COP">COP — Peso colombiano</option>
-              <option value="ARS">ARS — Peso argentino</option>
+              <option value="EUR">EUR â€” Euro</option>
+              <option value="USD">USD â€” Dolar</option>
+              <option value="GBP">GBP â€” Libra</option>
+              <option value="MXN">MXN â€” Peso mexicano</option>
+              <option value="COP">COP â€” Peso colombiano</option>
+              <option value="ARS">ARS â€” Peso argentino</option>
             </select>
           </Field>
           <Field label="Zona horaria">
@@ -109,28 +109,28 @@ function WorkspaceTab() {
       </Section>
 
       <RowSection title="Exportar" description="Descarga el contenido de tu espacio de trabajo.">
-        <Row title="Contenido del espacio de trabajo" description="Descarga clientes, proyectos, facturas y más en Ajustes → Importar y exportar.">
-          <MiniBtn label="Ver exportación" onClick={function () { window.alert('Ve a Ajustes → Importar y exportar para descargar tus datos.') }} />
+        <Row title="Contenido del espacio de trabajo" description="Descarga clientes, proyectos, facturas y mÃ¡s en Ajustes â†’ Importar y exportar.">
+          <MiniBtn label="Ver exportaciÃ³n" onClick={function () { window.alert('Ve a Ajustes â†’ Importar y exportar para descargar tus datos.') }} />
         </Row>
         <Row title="Miembros" description="Exporta la lista de personas de tu espacio de trabajo." last>
           <MiniBtn label="Exportar CSV" onClick={function () { window.alert('Disponible en el panel de Personas.') }} />
         </Row>
       </RowSection>
 
-      <RowSection title="Estadísticas" description="Métricas de uso del espacio.">
-        <Row title="Guardar y mostrar estadísticas de visitas" description="Cuenta cuántas veces se visita cada página del espacio." last>
+      <RowSection title="EstadÃ­sticas" description="MÃ©tricas de uso del espacio.">
+        <Row title="Guardar y mostrar estadÃ­sticas de visitas" description="Cuenta cuÃ¡ntas veces se visita cada pÃ¡gina del espacio." last>
           <Toggle checked={prefs.ws_stats} onClick={function () { setPref('ws_stats', !prefs.ws_stats) }} />
         </Row>
       </RowSection>
 
-      <RowSection title="Personas" description="Cómo se muestran las personas del espacio.">
+      <RowSection title="Personas" description="CÃ³mo se muestran las personas del espacio.">
         <Row title="Directorio personal" description="Un listado de todas las personas del espacio de trabajo.">
           <MiniBtn label="Abrir" onClick={function () { window.alert('Gestiona las personas en el apartado Personas.') }} />
         </Row>
-        <Row title="Mostrar la actividad reciente en los perfiles" description="Muestra la última actividad de cada persona en su perfil.">
+        <Row title="Mostrar la actividad reciente en los perfiles" description="Muestra la Ãºltima actividad de cada persona en su perfil.">
           <Toggle checked={prefs.ws_people_activity} onClick={function () { setPref('ws_people_activity', !prefs.ws_people_activity) }} />
         </Row>
-        <Row title="Tarjeta al pasar el cursor" description="Muestra una tarjeta con datos de la persona al pasar el ratón por su nombre." last>
+        <Row title="Tarjeta al pasar el cursor" description="Muestra una tarjeta con datos de la persona al pasar el ratÃ³n por su nombre." last>
           <Toggle checked={prefs.ws_people_hovercard} onClick={function () { setPref('ws_people_hovercard', !prefs.ws_people_hovercard) }} />
         </Row>
       </RowSection>
@@ -141,8 +141,8 @@ function WorkspaceTab() {
         </Row>
       </RowSection>
 
-      <RowSection title="ID del espacio de trabajo" description="Identificador único del espacio (útil para soporte).">
-        <Row title="ID del espacio de trabajo" description={org.org ? org.org.id : '—'} last>
+      <RowSection title="ID del espacio de trabajo" description="Identificador Ãºnico del espacio (Ãºtil para soporte).">
+        <Row title="ID del espacio de trabajo" description={org.org ? org.org.id : 'â€”'} last>
           <MiniBtn label={copied ? 'Copiado' : 'Copiar'} icon={copied ? Check : Copy} onClick={copyId} />
         </Row>
       </RowSection>
@@ -151,3 +151,5 @@ function WorkspaceTab() {
 }
 
 export default WorkspaceTab
+
+

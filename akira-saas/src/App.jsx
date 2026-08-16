@@ -1,21 +1,21 @@
-import { useState, lazy, Suspense } from 'react'
+﻿import { useState, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
-import { ROUTES }  from '@/config/constants'
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { useAuth } from '@/shared/context/AuthContext'
+import { ROUTES }  from '@/shared/config/constants'
+import { useKeyboardShortcuts } from '@/shared/hooks/useKeyboardShortcuts'
 
-// Auth pages — eager so the login screen paints instantly on first load
+// Auth pages â€” eager so the login screen paints instantly on first load
 import Login         from '@/pages/auth/Login'
 import ResetPassword from '@/pages/auth/ResetPassword'
 
 // Layout
-import { AppLayoutContainer } from '@/components/layout/AppLayoutContainer'
+import { AppLayoutContainer } from '@/shared/components/layout/AppLayoutContainer'
 import '@/styles/layout.css'
 
 // Components
-import KeyboardShortcutsModal from '@/components/ui/KeyboardShortcutsModal'
+import KeyboardShortcutsModal from '@/shared/components/ui/KeyboardShortcutsModal'
 
-// Pages — lazy-loaded so each route ships its own chunk (keeps the initial bundle small)
+// Pages â€” lazy-loaded so each route ships its own chunk (keeps the initial bundle small)
 const Dashboard     = lazy(() => import('@/pages/Dashboard'))
 const Clients       = lazy(() => import('@/pages/Clients'))
 const Projects      = lazy(() => import('@/pages/Projects'))
@@ -49,10 +49,10 @@ function ComingSoon({ name }) {
     <div className="flex items-center justify-center h-full">
       <div className="text-center">
         <div className="w-12 h-12 rounded-xl bg-surface-3 flex items-center justify-center mx-auto mb-3">
-          <span className="text-2xl">🚧</span>
+          <span className="text-2xl">ðŸš§</span>
         </div>
         <h2 className="text-lg font-semibold text-text-1 mb-1">{name}</h2>
-        <p className="text-text-4 text-sm">Módulo en construcción</p>
+        <p className="text-text-4 text-sm">MÃ³dulo en construcciÃ³n</p>
       </div>
     </div>
   )
@@ -71,7 +71,7 @@ function AppLoadingScreen() {
           <div className="w-1.5 h-1.5 rounded-full bg-brand-500 akira-loader-dot"
                style={{ animationDelay: '320ms' }} />
         </div>
-        <span className="text-text-4 text-sm">Iniciando AKIRA…</span>
+        <span className="text-text-4 text-sm">Iniciando AKIRAâ€¦</span>
       </div>
     </div>
   )
@@ -101,7 +101,7 @@ export default function App() {
     <>
       <Suspense fallback={<AppLoadingScreen />}>
       <Routes>
-        {/* Públicas */}
+        {/* PÃºblicas */}
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.RESET} element={<ResetPassword />} />
         <Route path="/landing" element={<LandingPage />} />
@@ -127,7 +127,7 @@ export default function App() {
           <Route path="subscriptions/*" element={<Subscriptions />} />
           <Route path="finance/*"       element={<Finance />} />
           {/* Facturas + Presupuestos unificados en commercial_documents (Documents).
-             Las rutas antiguas redirigen aquí. */}
+             Las rutas antiguas redirigen aquÃ­. */}
           <Route path="invoices/*"      element={<Documents />} />
           <Route path="documents/*"     element={<DocumentsNotion />} />
           <Route path="quotes/*"        element={<Navigate to="/invoices" replace />} />
@@ -142,13 +142,13 @@ export default function App() {
           <Route path="offers/*"        element={<Offers />} />
         </Route>
 
-        {/* Portal de clientes — rutas públicas */}
+        {/* Portal de clientes â€” rutas pÃºblicas */}
         <Route path="/portal"           element={<PortalLogin />} />
         <Route path="/portal/dashboard" element={<PortalDashboard />} />
         <Route path="/join" element={<JoinOrg />} />
         <Route path="/legal" element={<Legal />} />
 
-        {/* Catch-all al final para no interceptar las rutas públicas de arriba */}
+        {/* Catch-all al final para no interceptar las rutas pÃºblicas de arriba */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       </Suspense>
@@ -161,3 +161,5 @@ export default function App() {
     </>
   )
 }
+
+

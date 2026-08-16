@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase'
-import { scopeToOrg } from '@/lib/activeOrg'
+﻿import { supabase } from '@/shared/lib/supabase'
+import { scopeToOrg } from '@/shared/lib/activeOrg'
 
 function quarterRange(year, quarter) {
   var startMonth = (quarter - 1) * 3

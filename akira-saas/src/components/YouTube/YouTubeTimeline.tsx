@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { Check, ChevronRight, AlertCircle } from 'lucide-react'
-import type { YouTubePhase } from '@/types/youtube'
-import { formatPhaseDate, isPhaseAtRisk, daysUntil } from '@/utils/dateCalculations'
+import type { YouTubePhase } from '@/shared/types/youtube'
+import { formatPhaseDate, isPhaseAtRisk, daysUntil } from '@/shared/utils/dateCalculations'
 
 interface YouTubeTimelineProps {
   phases: YouTubePhase[]
@@ -98,10 +98,10 @@ export function YouTubeTimeline({ phases, onPhaseClick, onCompletePhase, editabl
 
                   <div className="grid grid-cols-2 gap-2 mb-3 text-xs text-text-3">
                     <div>
-                      📅 {formatPhaseDate(phase.startDate)} - {formatPhaseDate(phase.endDate)}
+                      ðŸ“… {formatPhaseDate(phase.startDate)} - {formatPhaseDate(phase.endDate)}
                     </div>
                     <div>
-                      {isCompleted ? '✅ Completed' : `⏱️ ${Math.max(0, daysLeft)} days left`}
+                      {isCompleted ? 'âœ… Completed' : `â±ï¸ ${Math.max(0, daysLeft)} days left`}
                     </div>
                   </div>
 
@@ -159,7 +159,7 @@ export function YouTubeTimeline({ phases, onPhaseClick, onCompletePhase, editabl
             animate={{ opacity: 1, scale: 1 }}
             className="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg text-center"
           >
-            <p className="text-green-700 font-semibold">🎉 All phases completed!</p>
+            <p className="text-green-700 font-semibold">ðŸŽ‰ All phases completed!</p>
             <p className="text-sm text-green-600 mt-1">Your video is ready to publish.</p>
           </motion.div>
         )}
@@ -167,3 +167,4 @@ export function YouTubeTimeline({ phases, onPhaseClick, onCompletePhase, editabl
     </div>
   )
 }
+

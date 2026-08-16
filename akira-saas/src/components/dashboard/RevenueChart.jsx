@@ -1,9 +1,9 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion } from 'framer-motion'
-import AreaChart      from '@/components/charts/AreaChart'
-import BarChart       from '@/components/charts/BarChart'
-import DonutChart     from '@/components/charts/DonutChart'
-import Card           from '@/components/ui/Card'
+import AreaChart      from '@/shared/components/charts/AreaChart'
+import BarChart       from '@/shared/components/charts/BarChart'
+import DonutChart     from '@/shared/components/charts/DonutChart'
+import Card           from '@/shared/components/ui/Card'
 
 const TABS = [
   { id: 'revenue',  label: 'Ingresos' },
@@ -23,7 +23,7 @@ export default function RevenueChart({ revenueSparkline = [], clientsByStatus = 
       <div className="flex items-center justify-between px-5 pt-4 pb-0">
         <div>
           <h3 className="text-sm font-semibold text-text-1">Resumen visual</h3>
-          <p className="text-xs text-text-4 mt-0.5">Evolución y distribución</p>
+          <p className="text-xs text-text-4 mt-0.5">EvoluciÃ³n y distribuciÃ³n</p>
         </div>
         {/* Tabs */}
         <div className="flex items-center gap-1 bg-surface-3 rounded-lg p-1">
@@ -52,7 +52,7 @@ export default function RevenueChart({ revenueSparkline = [], clientsByStatus = 
                 data={revenueSparkline}
                 lines={[{ key: 'value', color: '#e63946', name: 'Ingresos' }]}
                 height={180}
-                formatter={(v) => `${v.toLocaleString()}€`}
+                formatter={(v) => `${v.toLocaleString()}â‚¬`}
               />
             ) : (
               <div className="h-44 flex items-center justify-center text-text-4 text-sm">
@@ -93,7 +93,7 @@ export default function RevenueChart({ revenueSparkline = [], clientsByStatus = 
               </div>
             ) : (
               <div className="h-44 flex items-center justify-center text-text-4 text-sm">
-                Sin clientes todavía
+                Sin clientes todavÃ­a
               </div>
             )}
           </motion.div>
@@ -109,7 +109,7 @@ export default function RevenueChart({ revenueSparkline = [], clientsByStatus = 
               />
             ) : (
               <div className="h-44 flex items-center justify-center text-text-4 text-sm">
-                Sin proyectos todavía
+                Sin proyectos todavÃ­a
               </div>
             )}
           </motion.div>

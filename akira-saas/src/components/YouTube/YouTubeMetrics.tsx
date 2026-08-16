@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { TrendingUp, Clock, CheckCircle, AlertCircle, Calendar } from 'lucide-react'
-import type { YouTubeProject } from '@/types/youtube'
-import { calculateProjectProgress, daysUntil, getUpcomingPhases, isPhaseAtRisk } from '@/utils/dateCalculations'
+import type { YouTubeProject } from '@/shared/types/youtube'
+import { calculateProjectProgress, daysUntil, getUpcomingPhases, isPhaseAtRisk } from '@/shared/utils/dateCalculations'
 
 interface YouTubeMetricsProps {
   project: YouTubeProject
@@ -184,3 +184,4 @@ export function YouTubeMetrics({ project }: YouTubeMetricsProps) {
     </div>
   )
 }
+

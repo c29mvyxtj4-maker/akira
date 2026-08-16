@@ -1,8 +1,8 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, Video, Users, Clock } from 'lucide-react'
-import type { YouTubeTemplate, CreateYouTubeProjectInput } from '@/types/youtube'
-import { YOUTUBE_TEMPLATES } from '@/data/youtubeTemplates'
+import type { YouTubeTemplate, CreateYouTubeProjectInput } from '@/shared/types/youtube'
+import { YOUTUBE_TEMPLATES } from '@/shared/data/youtubeTemplates'
 
 interface YouTubeProjectFormProps {
   projectId: string
@@ -129,7 +129,7 @@ export function YouTubeProjectForm({ projectId, onSubmit, isLoading = false }: Y
 
       {selectedTemplate && (
         <div className="p-4 bg-brand-dim rounded-lg border border-brand-500 border-opacity-30">
-          <p className="text-sm text-text-1 font-semibold mb-2">📋 Template Overview</p>
+          <p className="text-sm text-text-1 font-semibold mb-2">ðŸ“‹ Template Overview</p>
           <p className="text-sm text-text-2 mb-3">{selectedTemplate.description}</p>
           <div className="space-y-1">
             {selectedTemplate.phases.map((phase) => (
@@ -155,3 +155,4 @@ export function YouTubeProjectForm({ projectId, onSubmit, isLoading = false }: Y
     </motion.form>
   )
 }
+

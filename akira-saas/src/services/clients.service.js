@@ -1,11 +1,11 @@
-import { supabase } from '@/lib/supabase'
-import { getActiveOrgId, scopeToOrg } from '@/lib/activeOrg'
+﻿import { supabase } from '@/shared/lib/supabase'
+import { getActiveOrgId, scopeToOrg } from '@/shared/lib/activeOrg'
 
-/* ── Constantes exportadas ──────────────────────────────── */
+/* â”€â”€ Constantes exportadas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export const CLIENT_NICHES = [
-  'Club / Equipo deportivo', 'Marca / Empresa', 'Artista / Músico',
+  'Club / Equipo deportivo', 'Marca / Empresa', 'Artista / MÃºsico',
   'Podcast / Media', 'Negocio local', 'Evento / Festival',
-  'Institución pública', 'Agencia', 'Influencer / Creator', 'Otro',
+  'InstituciÃ³n pÃºblica', 'Agencia', 'Influencer / Creator', 'Otro',
 ]
 
 export const CLIENT_SOURCES_MAP = {
@@ -13,23 +13,23 @@ export const CLIENT_SOURCES_MAP = {
   instagram:     'Instagram',
   web:           'Web',
   networking:    'Networking',
-  cold_outreach: 'Outreach frío',
+  cold_outreach: 'Outreach frÃ­o',
   event:         'Evento',
   other:         'Otro',
   unknown:       'Desconocido',
 }
 
 export const TIMELINE_TYPES = {
-  note:     { label: 'Nota',        color: '#6366f1', emoji: '📝' },
-  meeting:  { label: 'Reunión',     color: '#22c55e', emoji: '📅' },
-  call:     { label: 'Llamada',     color: '#3b82f6', emoji: '📞' },
-  delivery: { label: 'Entrega',     color: '#a855f7', emoji: '📦' },
-  proposal: { label: 'Propuesta',   color: '#f59e0b', emoji: '📄' },
-  incident: { label: 'Incidencia',  color: '#ef4444', emoji: '⚠️' },
-  other:    { label: 'Otro',        color: '#64748b', emoji: '💬' },
+  note:     { label: 'Nota',        color: '#6366f1', emoji: 'ðŸ“' },
+  meeting:  { label: 'ReuniÃ³n',     color: '#22c55e', emoji: 'ðŸ“…' },
+  call:     { label: 'Llamada',     color: '#3b82f6', emoji: 'ðŸ“ž' },
+  delivery: { label: 'Entrega',     color: '#a855f7', emoji: 'ðŸ“¦' },
+  proposal: { label: 'Propuesta',   color: '#f59e0b', emoji: 'ðŸ“„' },
+  incident: { label: 'Incidencia',  color: '#ef4444', emoji: 'âš ï¸' },
+  other:    { label: 'Otro',        color: '#64748b', emoji: 'ðŸ’¬' },
 }
 
-/* ── Helper uid ─────────────────────────────────────────── */
+/* â”€â”€ Helper uid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 async function uid() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('No autenticado')
@@ -42,9 +42,9 @@ function getOrgId() {
   return orgId
 }
 
-/* ═══════════════════════════════════════════════════════════
-   CLIENTS — CRUD
-═══════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   CLIENTS â€” CRUD
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 export async function getClients({
   search    = '',
@@ -142,9 +142,9 @@ function sanitize(p) {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    TIMELINE
-═══════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 export async function getTimeline(clientId) {
   const { data, error } = await supabase
@@ -186,9 +186,9 @@ export async function deleteTimelineEntry(id) {
   return true
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    DATOS RELACIONADOS
-═══════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 export async function getClientProjects(clientId) {
   const { data, error } = await supabase

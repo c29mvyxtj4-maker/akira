@@ -1,19 +1,19 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, Wrench, TrendingUp, Package } from 'lucide-react'
 import {
   getServices, createService, updateService, archiveService,
   SERVICE_CATEGORIES,
 } from '@/services/services.service'
-import PageHeader      from '@/components/layout/PageHeader'
-import Modal           from '@/components/ui/Modal'
-import Badge           from '@/components/ui/Badge'
-import Button          from '@/components/ui/Button'
-import EmptyState      from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
+import PageHeader      from '@/shared/components/layout/PageHeader'
+import Modal           from '@/shared/components/ui/Modal'
+import Badge           from '@/shared/components/ui/Badge'
+import Button          from '@/shared/components/ui/Button'
+import EmptyState      from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
 import clsx            from 'clsx'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'â‚¬' }
 
 var INP = {
   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
@@ -51,7 +51,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <input value={form.name} onChange={set('name')} placeholder="Pack de video corporativo" style={INP} />
         </div>
         <div>
-          <label className="label-base">Categoría</label>
+          <label className="label-base">CategorÃ­a</label>
           <select value={form.category} onChange={set('category')} style={INP}>
             {SERVICE_CATEGORIES.map(function(c) { return <option key={c} value={c}>{c}</option> })}
           </select>
@@ -71,7 +71,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <input type="number" min="0" step="0.01" value={form.cost} onChange={set('cost')} placeholder="0" style={INP} />
         </div>
         <div className="col-span-2">
-          <label className="label-base">Descripción</label>
+          <label className="label-base">DescripciÃ³n</label>
           <textarea value={form.description} onChange={set('description')} rows={2} placeholder="Que incluye este servicio..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
       </div>

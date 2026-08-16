@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Trash2, FileSignature, Archive, ChevronLeft, Building2, ArrowRightCircle, Wrench } from 'lucide-react'
 import {
@@ -7,17 +7,17 @@ import {
 } from '@/services/quotes.service'
 import { getCompanySettings } from '@/services/company.service'
 import { getServicesForSelect } from '@/services/subscriptions.service'
-import { downloadQuotePdf } from '@/utils/generateQuotePdf'
-import { supabase } from '@/lib/supabase'
-import { useAddRecent } from '@/hooks/useAddRecent'
-import { useCurrentItem } from '@/context/CurrentItemContext'
-import PageHeader   from '@/components/layout/PageHeader'
-import Button        from '@/components/ui/Button'
-import EmptyState   from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
+import { downloadQuotePdf } from '@/shared/utils/generateQuotePdf'
+import { supabase } from '@/shared/lib/supabase'
+import { useAddRecent } from '@/shared/hooks/useAddRecent'
+import { useCurrentItem } from '@/shared/context/CurrentItemContext'
+import PageHeader   from '@/shared/components/layout/PageHeader'
+import Button        from '@/shared/components/ui/Button'
+import EmptyState   from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
 import { useSearchParams } from 'react-router-dom'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'â‚¬' }
 function fmtDate(d) { if (!d) return '--'; return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 function makeItemId() { return 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6) }
 
@@ -40,7 +40,7 @@ function QuoteEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loadi
     return [{ id: makeItemId(), description: '', quantity: 1, price: 0 }]
   })
 
-  // Servicios activos — NUEVO
+  // Servicios activos â€” NUEVO
   var [services, setServices] = useState([])
   useEffect(function() {
     getServicesForSelect().then(setServices).catch(function() { setServices([]) })
@@ -89,7 +89,7 @@ function QuoteEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loadi
           <label className="label-base">Cliente</label>
           <select value={clientId} onChange={function(e) { setClientId(e.target.value) }} style={INP}>
             <option value="">Sin cliente</option>
-            {clients.map(function(c) { return <option key={c.id} value={c.id}>{c.name}{c.company ? ' — ' + c.company : ''}</option> })}
+            {clients.map(function(c) { return <option key={c.id} value={c.id}>{c.name}{c.company ? ' â€” ' + c.company : ''}</option> })}
           </select>
         </div>
         <div>
@@ -137,9 +137,9 @@ function QuoteEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loadi
               <select defaultValue="" onChange={addFromService}
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', borderRadius: '7px', fontSize: '12px', padding: '6px 10px 6px 28px', outline: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
               >
-                <option value="">+ Añadir servicio...</option>
+                <option value="">+ AÃ±adir servicio...</option>
                 {services.map(function(s) {
-                  return <option key={s.id} value={s.id}>{s.name} — {fmtCur(s.price)}</option>
+                  return <option key={s.id} value={s.id}>{s.name} â€” {fmtCur(s.price)}</option>
                 })}
               </select>
             </div>
@@ -329,7 +329,7 @@ export default function Quotes() {
 
   useEffect(function() { loadAll() }, [loadAll])
 
-  // Abrir directamente un presupuesto si venimos de la busqueda global — NUEVO
+  // Abrir directamente un presupuesto si venimos de la busqueda global â€” NUEVO
   var [searchParams] = useSearchParams()
   useEffect(function() {
     var openId = searchParams.get('open')
@@ -424,7 +424,7 @@ export default function Quotes() {
       <div className="flex-1 overflow-y-auto p-6">
         {!company || !company.company_name ? (
           <div style={{ padding: '14px 18px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '10px', marginBottom: '20px', fontSize: '13px', color: '#f59e0b' }}>
-            Todavia no has rellenado tus datos fiscales. Ve a Configuracion → Facturacion antes de crear tu primer presupuesto.
+            Todavia no has rellenado tus datos fiscales. Ve a Configuracion â†’ Facturacion antes de crear tu primer presupuesto.
           </div>
         ) : null}
 
@@ -471,7 +471,7 @@ export default function Quotes() {
                         <div style={{ display: 'flex', gap: '4px' }}>
                           <button type="button" onClick={function() { openEdit(q) }}
                             style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', color: '#94a3b8' }}
-                          >✎</button>
+                          >âœŽ</button>
                           <button type="button" onClick={function() { handleArchive(q.id) }}
                             style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(239,68,68,0.1)', cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                           ><Archive style={{ width: '13px', height: '13px' }} /></button>
@@ -516,3 +516,5 @@ export default function Quotes() {
     </div>
   )
 }
+
+

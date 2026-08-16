@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+﻿import { useState } from 'react'
+import { supabase } from '@/shared/lib/supabase'
 import { Section } from './_shared'
 
 function DangerZoneTab() {
@@ -23,7 +23,7 @@ function DangerZoneTab() {
         Las acciones de aqui abajo son delicadas. Leelas bien antes de tocar nada.
       </div>
 
-      <Section title="Cerrar sesión en todos los dispositivos" description="Útil si crees que alguien más tiene acceso a tu cuenta">
+      <Section title="Cerrar sesiÃ³n en todos los dispositivos" description="Ãštil si crees que alguien mÃ¡s tiene acceso a tu cuenta">
         {confirming === 'signout' ? (
           <div style={{ display: 'flex', gap: '8px' }}>
             <button type="button" onClick={function() { setConfirming(null) }}
@@ -42,8 +42,8 @@ function DangerZoneTab() {
 
       <Section title="Eliminar mi cuenta" description="Borra tu cuenta y todos tus datos de forma permanente">
         <p style={{ fontSize: '12px', color: 'var(--text-4)', lineHeight: 1.6 }}>
-          Por seguridad, eliminar una cuenta del todo (incluido tu acceso de login) requiere una revision manual — no se puede hacer con un solo clic desde aqui.
-          Al pulsar el boton, se abrira tu correo con una solicitud ya redactada; procesaremos la eliminacion de todos tus datos en un plazo maximo de 30 dias (derecho de supresion, RGPD). Antes, puedes descargar una copia en Ajustes → Importar y exportar.
+          Por seguridad, eliminar una cuenta del todo (incluido tu acceso de login) requiere una revision manual â€” no se puede hacer con un solo clic desde aqui.
+          Al pulsar el boton, se abrira tu correo con una solicitud ya redactada; procesaremos la eliminacion de todos tus datos en un plazo maximo de 30 dias (derecho de supresion, RGPD). Antes, puedes descargar una copia en Ajustes â†’ Importar y exportar.
         </p>
         {confirming === 'delete' ? (
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -66,3 +66,4 @@ function DangerZoneTab() {
 
 
 export default DangerZoneTab
+

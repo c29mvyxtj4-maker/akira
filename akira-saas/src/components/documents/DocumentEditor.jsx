@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Users, Share2, MoreVertical } from 'lucide-react'
 import BlockRenderer from './BlockRenderer'
 import SlashCommandPalette from './SlashCommandPalette'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '@/shared/context/AuthContext'
 
 export default function DocumentEditor({ docId, onBack }) {
   const { user } = useAuth()
@@ -58,3 +58,4 @@ export default function DocumentEditor({ docId, onBack }) {
     </div>
   )
 }
+

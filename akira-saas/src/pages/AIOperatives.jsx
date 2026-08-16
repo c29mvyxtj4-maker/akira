@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Zap, Plus } from 'lucide-react'
-import PageHeader from '@/components/layout/PageHeader'
-import Button from '@/components/ui/Button'
+import PageHeader from '@/shared/components/layout/PageHeader'
+import Button from '@/shared/components/ui/Button'
 import OperativeCard from '@/components/operatives/OperativeCard'
 import { parseIntent, executeWorkflow, getWorkflowHistory } from '@/services/aiOperatives.service'
 
@@ -110,9 +110,9 @@ export default function AIOperatives() {
 
       // Show result
       if (result.success) {
-        alert(`✅ ${result.result.outcome}`)
+        alert(`âœ… ${result.result.outcome}`)
       } else {
-        alert(`❌ Error: ${result.error}`)
+        alert(`âŒ Error: ${result.error}`)
       }
 
       setUserIntent('')
@@ -136,9 +136,9 @@ export default function AIOperatives() {
       await loadHistory()
 
       if (result.success) {
-        alert(`✅ ${result.result.outcome}`)
+        alert(`âœ… ${result.result.outcome}`)
       } else {
-        alert(`❌ ${result.error}`)
+        alert(`âŒ ${result.error}`)
       }
     } catch (error) {
       alert(`Error: ${error.message}`)
@@ -172,7 +172,7 @@ export default function AIOperatives() {
         }}
       >
         <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)', margin: '0 0 12px 0' }}>
-          🤖 What do you want to automate?
+          ðŸ¤– What do you want to automate?
         </h3>
 
         <form onSubmit={handleExecuteIntent} style={{ display: 'flex', gap: '8px' }}>
@@ -207,7 +207,7 @@ export default function AIOperatives() {
         </form>
 
         <p style={{ fontSize: '12px', color: 'var(--text-5)', margin: '12px 0 0 0' }}>
-          💡 Tip: Describe what you want to automate in natural language. AI will understand your intent and execute the right operative.
+          ðŸ’¡ Tip: Describe what you want to automate in natural language. AI will understand your intent and execute the right operative.
         </p>
       </motion.div>
 
@@ -278,7 +278,7 @@ export default function AIOperatives() {
                       color: isSuccess ? '#22c55e' : '#ef4444',
                       margin: 0,
                     }}>
-                      {isSuccess ? '✅ Success' : '❌ Failed'}
+                      {isSuccess ? 'âœ… Success' : 'âŒ Failed'}
                     </p>
                     {data.duration && (
                       <p style={{ fontSize: '11px', color: 'var(--text-5)', margin: '4px 0 0 0' }}>
@@ -295,3 +295,4 @@ export default function AIOperatives() {
     </div>
   )
 }
+

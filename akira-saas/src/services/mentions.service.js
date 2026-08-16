@@ -1,8 +1,8 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/shared/lib/supabase'
 
 /*
  * Bandeja de menciones (tabla mentions). Cada usuario ve las suyas. Las
- * menciones se crean desde acciones (asignar tarea, añadir a proyecto…).
+ * menciones se crean desde acciones (asignar tarea, aÃ±adir a proyectoâ€¦).
  */
 
 async function currentUserId() {
@@ -10,7 +10,7 @@ async function currentUserId() {
   return res.data && res.data.user ? res.data.user.id : null
 }
 
-// Mis menciones, con el nombre de quien la provocó (actor) resuelto aparte.
+// Mis menciones, con el nombre de quien la provocÃ³ (actor) resuelto aparte.
 export async function getMyMentions() {
   var uid = await currentUserId()
   if (!uid) return []
@@ -52,7 +52,7 @@ export async function markAllMentionsRead() {
   await supabase.from('mentions').update({ read: true }).eq('target_user', uid).eq('read', false)
 }
 
-// Crea una mención firmada por el usuario actual. Ignora auto-menciones.
+// Crea una menciÃ³n firmada por el usuario actual. Ignora auto-menciones.
 export async function createMention(m) {
   var actor = await currentUserId()
   if (!m || !m.target_user || m.target_user === actor) return null
@@ -69,3 +69,4 @@ export async function createMention(m) {
   if (res.error) throw res.error
   return res.data
 }
+

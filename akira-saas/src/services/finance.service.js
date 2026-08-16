@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase'
-import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
+﻿import { supabase } from '@/shared/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/shared/lib/activeOrg'
 
 export var FINANCE_TYPES = {
   income:   { label: 'Ingreso',   color: '#22c55e', sign: 1 },
@@ -22,7 +22,7 @@ async function uid() {
 }
 
 // Una entrada cuenta como ingreso real si es income/payment,
-// o si es una factura (invoice) ya confirmada. // ← NUEVO
+// o si es una factura (invoice) ya confirmada. // â† NUEVO
 function isIncomeRow(r) {
   return ['income', 'payment'].includes(r.type) || (r.type === 'invoice' && r.status === 'confirmed')
 }
@@ -113,7 +113,7 @@ export async function getFinanceKpis() {
   if (res.error) throw res.error
   var rows = res.data || []
 
-  // ← NUEVO: ahora recibe una funcion "predicate" en vez de una lista fija de tipos,
+  // â† NUEVO: ahora recibe una funcion "predicate" en vez de una lista fija de tipos,
   // para poder incluir el caso especial de factura+confirmada
   function sumWhere(arr, predicate, dateFrom, dateTo) {
     return arr.filter(function(r) {
@@ -170,7 +170,7 @@ export async function getClientRanking() {
   ;(res.data || []).forEach(function(r) {
     var cid = r.client_id
     if (!map[cid]) map[cid] = { id: cid, name: (r.clients && (r.clients.company || r.clients.name)) || cid, income: 0, expense: 0 }
-    if (isIncomeRow(r))  map[cid].income  += Number(r.amount) // ← NUEVO: usa el mismo criterio
+    if (isIncomeRow(r))  map[cid].income  += Number(r.amount) // â† NUEVO: usa el mismo criterio
     if (isExpenseRow(r)) map[cid].expense += Number(r.amount)
   })
 

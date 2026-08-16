@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, CreditCard, TrendingUp, Users } from 'lucide-react'
 import {
@@ -6,15 +6,15 @@ import {
   getClientsForSelect, getServicesForSelect,
   SUB_PERIODS, SUB_STATUS, calcMonthlyValue,
 } from '@/services/subscriptions.service'
-import PageHeader      from '@/components/layout/PageHeader'
-import Modal           from '@/components/ui/Modal'
-import Badge           from '@/components/ui/Badge'
-import Button          from '@/components/ui/Button'
-import EmptyState      from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
+import PageHeader      from '@/shared/components/layout/PageHeader'
+import Modal           from '@/shared/components/ui/Modal'
+import Badge           from '@/shared/components/ui/Badge'
+import Button          from '@/shared/components/ui/Button'
+import EmptyState      from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
 import clsx            from 'clsx'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'â‚¬' }
 function fmtDate(d) { if (!d) return '--'; return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 function daysLeft(d) { if (!d) return null; return Math.ceil((new Date(d) - Date.now()) / 86400000) }
 
@@ -96,7 +96,7 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
           <input type="date" value={form.start_date} onChange={set('start_date')} style={INP} />
         </div>
         <div>
-          <label className="label-base">Próximo cobro</label>
+          <label className="label-base">PrÃ³ximo cobro</label>
           <input type="date" value={form.next_billing} onChange={set('next_billing')} style={INP} />
         </div>
         <div className="col-span-2">

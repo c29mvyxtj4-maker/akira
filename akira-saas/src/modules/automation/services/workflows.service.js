@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/shared/lib/supabase'
 
 export async function fetchWorkflows(orgId) {
   const { data, error } = await supabase
@@ -100,3 +100,4 @@ export async function fetchAgentLogs(executionId) {
   if (error) throw error
   return data
 }
+

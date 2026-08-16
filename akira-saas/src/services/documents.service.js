@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Documents Service
  * Handles all database operations for the Notion-like document system
  * Including documents, blocks, permissions, comments, versions, and more
  */
 
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/shared/lib/supabase'
 
 // ============================================================================
 // DOCUMENTS
@@ -743,3 +743,4 @@ export function subscribeToComments(documentId, callback) {
     )
     .subscribe()
 }
+

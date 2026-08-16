@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/shared/lib/supabase'
 
 // ALL EVENT FETCHING MOVED TO SIDEBAR.COMPONENT TO BYPASS CACHE ISSUES
 // DO NOT USE THIS FUNCTION - USE INLINE CODE IN SIDEBAR.JSX
@@ -6,7 +6,7 @@ export async function getUpcomingEventsFixed() {
   return []
 }
 
-// Obtener últimas 10 páginas abiertas
+// Obtener Ãºltimas 10 pÃ¡ginas abiertas
 export async function getRecentPages() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -27,7 +27,7 @@ export async function getRecentPages() {
   }
 }
 
-// Obtener movimientos de las últimas 24h
+// Obtener movimientos de las Ãºltimas 24h
 export async function getActivity24h() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -149,7 +149,7 @@ export async function getUserWorkspaces() {
 
     console.log('[getUserWorkspaces] Found org_id:', org_id)
 
-    // Obtener la organización
+    // Obtener la organizaciÃ³n
     const { data: org, error: orgError } = await supabase
       .from('organizations')
       .select('*')
@@ -210,3 +210,4 @@ export async function getRecentProjects() {
     return []
   }
 }
+

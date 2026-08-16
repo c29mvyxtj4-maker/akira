@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BetaFormStepper } from '@/components/Stepper';
+﻿import React, { useState } from 'react';
+import { BetaFormStepper } from '@/shared/components/stepper';
 import { motion } from 'framer-motion';
 
 export default function LandingPage() {
@@ -7,22 +7,22 @@ export default function LandingPage() {
 
   const features = [
     {
-      icon: '👥',
+      icon: 'ðŸ‘¥',
       title: 'Know Your Clients',
       desc: 'Stop losing client context in email threads. Every client has one profile with contact info, communication history, all their projects, invoices, and payment status.'
     },
     {
-      icon: '👁️',
+      icon: 'ðŸ‘ï¸',
       title: 'See Your Work',
       desc: 'Track every project, every deadline, no status meetings needed. Drag tasks across columns. Your team knows what they\'re working on. Clients see progress via shared portal.'
     },
     {
-      icon: '💰',
+      icon: 'ðŸ’°',
       title: 'Get Paid Faster',
       desc: 'Invoicing takes 60 seconds, not 30 minutes. Generate from project, send with one click, get notified when they open it, when they pay. Never lose money to forgotten invoices.'
     },
     {
-      icon: '📊',
+      icon: 'ðŸ“Š',
       title: 'Know Your Margins',
       desc: 'See exactly how profitable every project is. Log hours per project, compare to estimate, identify low-margin clients. Make smarter pricing decisions.'
     }
@@ -31,21 +31,21 @@ export default function LandingPage() {
   const pricingTiers = [
     {
       name: 'Starter',
-      price: '€29',
+      price: 'â‚¬29',
       period: '/month',
       features: ['1 user account', 'Up to 5 clients', 'CRM + Projects + Invoicing', 'Client portal'],
       featured: false
     },
     {
       name: 'Professional',
-      price: '€79',
+      price: 'â‚¬79',
       period: '/month',
       features: ['3 user accounts', 'Unlimited clients', 'Everything in Starter +', 'Time Tracking + APIs', 'Priority support'],
       featured: true
     },
     {
       name: 'Enterprise',
-      price: '€199+',
+      price: 'â‚¬199+',
       period: '/month',
       features: ['5+ user accounts', 'Unlimited everything', 'Advanced analytics', 'White-label', 'Dedicated support'],
       featured: false
@@ -99,7 +99,7 @@ export default function LandingPage() {
               className="btn-primary"
               onClick={() => setShowForm(true)}
             >
-              Join the Beta — Free for 3 Months
+              Join the Beta â€” Free for 3 Months
             </button>
             <button className="btn-secondary">Watch Demo</button>
           </div>
@@ -162,7 +162,7 @@ export default function LandingPage() {
               <ul className="features-list">
                 {tier.features.map((feat, i) => (
                   <li key={i}>
-                    <span className="checkmark">✓</span> {feat}
+                    <span className="checkmark">âœ“</span> {feat}
                   </li>
                 ))}
               </ul>
@@ -544,3 +544,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

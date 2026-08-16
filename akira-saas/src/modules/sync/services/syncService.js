@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/shared/lib/supabase'
 import { syncEngine } from '../SyncEngine'
 
 export async function subscribeToClientsChanges(orgId, callback) {
@@ -79,3 +79,4 @@ export function isOnline() {
 export function getQueueLength() {
   return syncEngine.getQueueLength()
 }
+

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/shared/lib/supabase'
 
 var DEFAULT_FINANCE_CATEGORIES = [
   'General', 'Produccion', 'Equipamiento', 'Software',

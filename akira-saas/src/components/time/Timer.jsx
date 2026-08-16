@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Play, Pause, RotateCcw, CheckCircle } from 'lucide-react'
-import Button from '@/components/ui/Button'
+import Button from '@/shared/components/ui/Button'
 
 /**
  * Premium time tracking timer component
@@ -213,8 +213,9 @@ export default function Timer({
 
       {/* Tip */}
       <p style={{ fontSize: '11px', color: 'var(--text-5)', textAlign: 'center' }}>
-        💡 Press <kbd style={{ background: 'var(--bg-3)', padding: '1px 4px', borderRadius: '3px' }}>Space</kbd> to start/pause
+        ðŸ’¡ Press <kbd style={{ background: 'var(--bg-3)', padding: '1px 4px', borderRadius: '3px' }}>Space</kbd> to start/pause
       </p>
     </motion.div>
   )
 }
+

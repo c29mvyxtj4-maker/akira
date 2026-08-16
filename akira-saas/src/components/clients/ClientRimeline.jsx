@@ -1,9 +1,9 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Trash2, ChevronDown } from 'lucide-react'
 import { TIMELINE_TYPES } from '@/services/clients.service'
-import Button  from '@/components/ui/Button'
-import Select  from '@/components/ui/Select'
+import Button  from '@/shared/components/ui/Button'
+import Select  from '@/shared/components/ui/Select'
 
 function formatDt(d) {
   if (!d) return ''
@@ -44,7 +44,7 @@ export default function ClientTimeline({ timeline = [], onAdd, onDelete }) {
           icon={<Plus className="w-3 h-3" />}
           onClick={() => setOpen(v => !v)}
         >
-          Añadir
+          AÃ±adir
         </Button>
       </div>
 
@@ -75,7 +75,7 @@ export default function ClientTimeline({ timeline = [], onAdd, onDelete }) {
               <textarea
                 value={content}
                 onChange={e => setContent(e.target.value)}
-                placeholder="Descripción del evento…"
+                placeholder="DescripciÃ³n del eventoâ€¦"
                 rows={2}
                 className="input-base text-xs w-full resize-none"
               />
@@ -97,7 +97,7 @@ export default function ClientTimeline({ timeline = [], onAdd, onDelete }) {
         <p className="text-xs text-text-4 text-center py-6">Sin entradas en el timeline</p>
       ) : (
         <div className="relative">
-          {/* Línea vertical */}
+          {/* LÃ­nea vertical */}
           <div className="absolute left-3.5 top-0 bottom-0 w-px bg-border" />
 
           <div className="space-y-3">

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/shared/lib/supabase'
 import { Mail, ArrowRight, Check } from 'lucide-react'
 
 export default function PortalLogin() {
@@ -11,7 +11,7 @@ export default function PortalLogin() {
   const [error,   setError]   = useState('')
   const navigate = useNavigate()
 
-  // Si ya hay sesión activa, redirigir al dashboard del portal
+  // Si ya hay sesiÃ³n activa, redirigir al dashboard del portal
   useEffect(() => {
     supabase.auth.getSession().then((res) => {
       if (res.data && res.data.session) {
@@ -80,7 +80,7 @@ export default function PortalLogin() {
           ) : (
             <>
               <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '4px' }}>Acceder</h2>
-              <p style={{ fontSize: '12px', color: 'var(--text-4)', marginBottom: '20px' }}>Te enviaremos un enlace de acceso instantáneo</p>
+              <p style={{ fontSize: '12px', color: 'var(--text-4)', marginBottom: '20px' }}>Te enviaremos un enlace de acceso instantÃ¡neo</p>
 
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div>

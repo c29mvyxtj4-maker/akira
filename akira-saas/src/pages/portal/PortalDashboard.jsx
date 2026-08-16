@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/shared/lib/supabase'
 import { getPortalClientData, getPortalBranding } from '@/services/portal.service'
 import PortalView from '@/components/portal/PortalView'
 
@@ -77,7 +77,7 @@ export default function PortalDashboard() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-base)', padding: '20px' }}>
         <div style={{ textAlign: 'center', maxWidth: '320px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>ðŸ”’</div>
           <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '8px' }}>Acceso no disponible</h2>
           <p style={{ fontSize: '14px', color: 'var(--text-4)', lineHeight: 1.6, marginBottom: '20px' }}>{error}</p>
           <button type="button" onClick={handleSignOut}
@@ -90,3 +90,4 @@ export default function PortalDashboard() {
 
   return <PortalView data={data} branding={branding} user={user} mode="client" onExit={handleSignOut} />
 }
+

@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion'
 import { Clock, Plus, BarChart3 } from 'lucide-react'
 import Timer from '@/components/time/Timer'
-import TimeEntries from '@/components/time/TimeEntries'
+import TimeEntries from '@/features/time-tracking/components/TimeEntries'
 import PageHeader from '@/shared/components/layout/PageHeader'
 import Button from '@/shared/components/ui/Button'
 import EmptyState from '@/shared/components/ui/EmptyState'
@@ -355,6 +355,7 @@ export default function TimeTracking() {
     </div>
   )
 }
+
 
 
 

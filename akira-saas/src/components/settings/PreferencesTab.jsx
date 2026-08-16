@@ -1,4 +1,5 @@
 ﻿import { usePrefs } from '@/shared/hooks/usePreferences'
+import { useLanguage } from '@/shared/hooks/useLanguage'
 import { Row, RowSection, Toggle, Kbd, RowSelect, MiniBtn } from './_shared'
 
 /*
@@ -7,12 +8,12 @@ import { Row, RowSection, Toggle, Kbd, RowSelect, MiniBtn } from './_shared'
  * breve descripciÃ³n debajo. El tema se aplica de verdad (clase .light en la raÃ­z).
  */
 function PreferencesTab() {
+  var { language, changeLanguage } = useLanguage()
   var [prefs, setPref] = usePrefs({
     pref_theme:           'system',
     pref_high_contrast:   false,
     pref_bg_animation:    true,
     pref_reduce_motion:   false,
-    pref_language:        'es',
     pref_number_format:   'es-ES',
     pref_text_direction:  false,
     pref_spellcheck:      'es',
@@ -30,6 +31,7 @@ function PreferencesTab() {
   // lib/applyPrefs.js (reacciona al evento 'akira-prefs-change' que emite usePrefs).
   function toggle(key) { return function () { setPref(key, !prefs[key]) } }
   function onSel(key) { return function (e) { setPref(key, e.target.value) } }
+  function onLanguageChange(e) { changeLanguage(e.target.value) }
 
   return (
     <div>
@@ -51,8 +53,8 @@ function PreferencesTab() {
 
       <RowSection title="Idioma y hora" description="Idioma, formatos y zona horaria.">
         <Row title="Idioma de la aplicaciÃ³n" description="Idioma de la interfaz de AKIRA.">
-          <RowSelect value={prefs.pref_language} onChange={onSel('pref_language')}
-            options={[{ value: 'es', label: 'EspaÃ±ol' }, { value: 'en', label: 'English' }]} />
+          <RowSelect value={language} onChange={onLanguageChange}
+            options={[{ value: 'es', label: 'EspaÃ±ol' }, { value: 'ca', label: 'CatalÃ ' }, { value: 'en', label: 'English' }]} />
         </Row>
         <Row title="Formato de nÃºmero" description="CÃ³mo se muestran los miles y decimales (1.000,00 vs 1,000.00).">
           <RowSelect value={prefs.pref_number_format} onChange={onSel('pref_number_format')}

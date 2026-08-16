@@ -25,7 +25,6 @@ function fmtEur(n) {
 import AccountMenu from '@/shared/components/layout/AccountMenu'
 import BorderGlow from '@/shared/components/ui/BorderGlow'
 import SearchModal from '@/shared/components/ui/SearchModal'
-import LanguageSwitcher from '@/shared/components/ui/LanguageSwitcher'
 import SettingsPanel from '@/pages/Settings'
 
 // Props de BorderGlow afinados para botones pequeÃ±os del top bar (tono de marca).
@@ -166,10 +165,9 @@ export default function Inicio() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          style={{ marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+          style={{ marginBottom: '28px' }}
         >
           <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>{t('yourBusiness')}</p>
-          <LanguageSwitcher />
         </motion.div>
 
         {/* Navigation Bar - Avatar, Search, Pills */}

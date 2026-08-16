@@ -51,11 +51,11 @@ export async function stopTimer(entryId) {
 
   var startedAt = new Date(current.data.started_at)
   var endedAt   = new Date()
-  var seconds   = Math.max(1, Math.round((endedAt - startedAt) / 1000)) // â† NUEVO: precision real en segundos
+  var seconds   = Math.max(1, Math.round((endedAt - startedAt) / 1000)) // –† NUEVO: precision real en segundos
 
   var res = await supabase.from('time_entries').update({
     ended_at:         endedAt.toISOString(),
-    duration_seconds: seconds,                         // â† NUEVO
+    duration_seconds: seconds,                         // –† NUEVO
     duration_minutes: Math.round(seconds / 60),          // se mantiene solo para ordenar/sumar rapido
     is_running:       false,
   }).eq('id', entryId).select().single()
@@ -79,7 +79,7 @@ export async function addManualEntry(projectId, form) {
     description:      form.description || null,
     started_at:       started.toISOString(),
     ended_at:         ended.toISOString(),
-    duration_seconds: seconds,        // â† NUEVO
+    duration_seconds: seconds,        // –† NUEVO
     duration_minutes: Math.round(seconds / 60),
     is_running:       false,
   }).select().single()
@@ -93,7 +93,7 @@ export async function deleteTimeEntry(id) {
   return true
 }
 
-// â† CORREGIDO: recibe segundos, no minutos, y muestra con precision real
+// –† CORREGIDO: recibe segundos, no minutos, y muestra con precision real
 export function fmtDuration(totalSeconds) {
   var s = Number(totalSeconds) || 0
   if (s < 60) return s + 's'

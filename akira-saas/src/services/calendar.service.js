@@ -6,7 +6,7 @@ export var EVENT_TYPES = {
   shoot:    { label: 'Rodaje',     color: '#ef4444', emoji: 'ðŸŽ¬' },
   delivery: { label: 'Entrega',    color: '#22c55e', emoji: 'ðŸ“¦' },
   call:     { label: 'Llamada',    color: '#3b82f6', emoji: 'ðŸ“ž' },
-  deadline: { label: 'Deadline',   color: '#f59e0b', emoji: 'â°' },
+  deadline: { label: 'Deadline',   color: '#f59e0b', emoji: '–°' },
   reminder: { label: 'Recordatorio', color: '#ec4899', emoji: 'ðŸ””' },
   personal: { label: 'Personal',   color: '#a855f7', emoji: 'ðŸ‘¤' },
   other:    { label: 'Otro',       color: '#64748b', emoji: 'ðŸ“Œ' },

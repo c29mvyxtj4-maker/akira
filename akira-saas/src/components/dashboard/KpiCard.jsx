@@ -26,7 +26,7 @@ export default function KpiCard({ title, value, subtitle, icon: Icon, iconColor,
         e.currentTarget.style.boxShadow   = 'none'
       }}
     >
-      {/* Linea de acento superior â€” siempre roja */}
+      {/* Linea de acento superior –” siempre roja */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2px', background: 'var(--brand)', opacity: 0.55, borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0' }} />
 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '10px' }}>

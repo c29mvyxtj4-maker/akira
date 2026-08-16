@@ -2,13 +2,13 @@
 import { captureError } from '@/shared/lib/sentry'
 
 /**
- * LÃ­mite de error global.
+ * Límite de error global.
  *
- * Captura cualquier error de renderizado por debajo de Ã©l y muestra una
- * pantalla de recuperaciÃ³n en vez de dejar la app en blanco. Los errores de
+ * Captura cualquier error de renderizado por debajo de él y muestra una
+ * pantalla de recuperación en vez de dejar la app en blanco. Los errores de
  * React solo se capturan con componentes de clase, por eso este no es funcional.
  *
- * Punto Ãºnico para enganchar monitorizaciÃ³n (Sentry, etc.) mÃ¡s adelante:
+ * Punto Àºnico para enganchar monitorización (Sentry, etc.) más adelante:
  * ver `componentDidCatch`.
  */
 export default class ErrorBoundary extends Component {
@@ -22,9 +22,9 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    // Visible en consola en desarrollo y producciÃ³n.
+    // Visible en consola en desarrollo y producción.
     console.error('[AKIRA] Error no controlado:', error, info)
-    // Reportar a Sentry si estÃ¡ configurado (no-op si no hay DSN).
+    // Reportar a Sentry si está configurado (no-op si no hay DSN).
     captureError(error, { componentStack: info?.componentStack })
   }
 
@@ -49,12 +49,12 @@ export default class ErrorBoundary extends Component {
           <h1 style={S.title}>Algo ha fallado</h1>
           <p style={S.text}>
             Ha ocurrido un error inesperado y esta pantalla no ha podido cargarse.
-            Tus datos estÃ¡n a salvo. Prueba a recargar; si vuelve a pasar, vuelve al inicio.
+            Tus datos están a salvo. Prueba a recargar; si vuelve a pasar, vuelve al inicio.
           </p>
 
           <div style={S.actions}>
             <button type="button" onClick={this.handleReload} style={S.primary}>
-              Recargar la pÃ¡gina
+              Recargar la página
             </button>
             <button type="button" onClick={this.handleHome} style={S.secondary}>
               Volver al inicio

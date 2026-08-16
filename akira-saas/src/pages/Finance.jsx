@@ -30,7 +30,7 @@ var INP = {
   outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box',
 }
 
-/* â”€â”€ KPI Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ KPI Card –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function KpiCard({ label, value, sub, color, trend, icon: Icon, delay }) {
   return (
     <motion.div
@@ -56,7 +56,7 @@ function KpiCard({ label, value, sub, color, trend, icon: Icon, delay }) {
   )
 }
 
-/* â”€â”€ Formulario â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Formulario –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading }) {
   var today = new Date().toISOString().split('T')[0]
   var EMPTY = {
@@ -87,7 +87,7 @@ function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading
   return (
     <form onSubmit={function(e) { e.preventDefault(); if (!form.description.trim() || !amount) return; onSave(form) }} className="space-y-4">
 
-      {/* Tipo â€” pills */}
+      {/* Tipo –” pills */}
       <div>
         <label className="label-base">Tipo de movimiento</label>
         <div className="flex gap-2 flex-wrap mt-1">
@@ -112,11 +112,11 @@ function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading
 
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
-          <label className="label-base">DescripciÃ³n *</label>
+          <label className="label-base">Descripción *</label>
           <input value={form.description} onChange={set('description')} placeholder="Factura cliente / Gasto equipo..." style={INP} />
         </div>
         <div>
-          <label className="label-base">Importe (â‚¬) *</label>
+          <label className="label-base">Importe (–‚¬) *</label>
           <input type="number" min="0" step="0.01" value={form.amount} onChange={set('amount')} placeholder="0.00" style={INP} />
         </div>
         <div>
@@ -124,7 +124,7 @@ function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading
           <input type="date" value={form.entry_date} onChange={set('entry_date')} style={INP} />
         </div>
         <div>
-          <label className="label-base">CategorÃ­a</label>
+          <label className="label-base">Categoría</label>
           <select value={form.category} onChange={set('category')} style={INP}>
             {categories.map(function(c) { return <option key={c} value={c}>{c}</option> })}
           </select>
@@ -176,7 +176,7 @@ function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading
   )
 }
 
-/* â”€â”€ Tabla de entradas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Tabla de entradas –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function EntriesTable({ entries, onEdit, onArchive, loading }) {
   if (loading) return <PageSpinner label="Cargando movimientos..." />
   if (entries.length === 0) return (
@@ -188,7 +188,7 @@ function EntriesTable({ entries, onEdit, onArchive, loading }) {
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            {['Fecha', 'Tipo', 'DescripciÃ³n', 'Cliente', 'Proyecto', 'Importe', 'Estado', ''].map(function(h) {
+            {['Fecha', 'Tipo', 'Descripción', 'Cliente', 'Proyecto', 'Importe', 'Estado', ''].map(function(h) {
               return (
                 <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
                   {h}
@@ -246,7 +246,7 @@ function EntriesTable({ entries, onEdit, onArchive, loading }) {
   )
 }
 
-/* â”€â”€ Ranking de clientes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Ranking de clientes –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function ClientRanking({ ranking }) {
   if (ranking.length === 0) return (
     <div style={{ textAlign: 'center', padding: '24px 0', color: '#6b7280', fontSize: '13px' }}>Sin datos de clientes todavia</div>
@@ -275,15 +275,15 @@ function ClientRanking({ ranking }) {
   )
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    PAGINA PRINCIPAL
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 export default function Finance() {
   var [entries,     setEntries]     = useState([])
   var [kpis,        setKpis]        = useState(null)
   var [ranking,     setRanking]     = useState([])
   var [selectors,   setSelectors]   = useState({ clients: [], projects: [] })
-  var [categories,  setCategories]  = useState([]) // â† NUEVO
+  var [categories,  setCategories]  = useState([]) // –† NUEVO
   var [loading,     setLoading]     = useState(true)
   var [kpisLoading, setKpisLoading] = useState(true)
   var [error,       setError]       = useState(null)
@@ -306,7 +306,7 @@ export default function Finance() {
     setTimeout(function() { setToastMsg(null) }, 3500)
   }
 
-  function loadCategories() { // â† NUEVO
+  function loadCategories() { // –† NUEVO
     getFinanceCategories()
       .then(function(rows) { setCategories(rows.map(function(r) { return r.name })) })
       .catch(function() { setCategories(['General']) })
@@ -314,7 +314,7 @@ export default function Finance() {
 
   useEffect(function() {
     getSelectorsForFinance().then(function(d) { setSelectors(d) }).catch(function() {})
-    loadCategories() // â† NUEVO
+    loadCategories() // –† NUEVO
 
     setKpisLoading(true)
     Promise.all([getFinanceKpis(), getClientRanking()])
@@ -351,10 +351,10 @@ export default function Finance() {
     var columns = [
       { key: 'entry_date',  label: 'Fecha' },
       { key: 'type_label',  label: 'Tipo' },
-      { key: 'description', label: 'DescripciÃ³n' },
+      { key: 'description', label: 'Descripción' },
       { key: 'client',      label: 'Cliente' },
       { key: 'project',     label: 'Proyecto' },
-      { key: 'amount',      label: 'Importe (â‚¬)' },
+      { key: 'amount',      label: 'Importe (–‚¬)' },
       { key: 'status_label',label: 'Estado' },
     ]
     var rows = entries.map(function(e) {

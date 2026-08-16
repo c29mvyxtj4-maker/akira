@@ -21,8 +21,6 @@ import { useEffect, useRef, useState } from 'react'
 import { uploadFile } from '@/services/kb.service'
 import { getPref } from '@/shared/hooks/usePreferences'
 import { SlashCommand } from './SlashCommand'
-import { AudioNode } from './AudioNode'
-import { TableOfContentsNode } from './TableOfContentsNode'
 
 /* –”€–”€ Limpieza de JSON para evitar referencias circulares –”€–”€–”€–”€ */
 function cleanJSON(node) {
@@ -439,8 +437,6 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
       Youtube.configure({ controls: true, nocookie: true }),
       CharacterCount,
       CalloutNode,
-      AudioNode,
-      TableOfContentsNode,
     ],
     content: { type: 'doc', content: [] },
     onUpdate: function(params) {

@@ -101,7 +101,7 @@ export function YouTubeTimeline({ phases, onPhaseClick, onCompletePhase, editabl
                       ðŸ“… {formatPhaseDate(phase.startDate)} - {formatPhaseDate(phase.endDate)}
                     </div>
                     <div>
-                      {isCompleted ? 'âœ… Completed' : `â±ï¸ ${Math.max(0, daysLeft)} days left`}
+                      {isCompleted ? '–œ… Completed' : `–±ï¸ ${Math.max(0, daysLeft)} days left`}
                     </div>
                   </div>
 

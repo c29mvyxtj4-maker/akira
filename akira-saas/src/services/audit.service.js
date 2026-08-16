@@ -55,7 +55,7 @@ export async function getAuditLog(filters) {
 
   var q = supabase
     .from('audit_log')
-    .select('*') // â† CORREGIDO: ya no intentamos unir con "profiles" aqui
+    .select('*') // –† CORREGIDO: ya no intentamos unir con "profiles" aqui
     .order('created_at', { ascending: false })
     .limit(limit)
 
@@ -66,7 +66,7 @@ export async function getAuditLog(filters) {
   if (res.error) throw res.error
   var rows = res.data || []
 
-  // â† NUEVO: traemos los nombres de los usuarios implicados en un segundo paso, y los juntamos aqui
+  // –† NUEVO: traemos los nombres de los usuarios implicados en un segundo paso, y los juntamos aqui
   var userIds = Array.from(new Set(rows.map(function(r) { return r.user_id }).filter(Boolean)))
   var namesById = {}
   if (userIds.length > 0) {

@@ -55,8 +55,8 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
   const validate = () => {
     const e = {}
     if (!form.name.trim()) e.name = 'El nombre es obligatorio'
-    if (form.email && !/^[^@]+@[^@]+\.[^@]+$/.test(form.email)) e.email = 'Email invÃ¡lido'
-    if (form.monthly_value !== '' && isNaN(Number(form.monthly_value))) e.monthly_value = 'Debe ser un nÃºmero'
+    if (form.email && !/^[^@]+@[^@]+\.[^@]+$/.test(form.email)) e.email = 'Email inválido'
+    if (form.monthly_value !== '' && isNaN(Number(form.monthly_value))) e.monthly_value = 'Debe ser un nÀºmero'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -75,7 +75,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* SecciÃ³n: Identidad */}
+      {/* Sección: Identidad */}
       <div>
         <p className="text-2xs text-text-4 uppercase tracking-wider mb-3 font-semibold">Identidad</p>
         <div className="grid grid-cols-2 gap-3">
@@ -105,7 +105,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
         </div>
       </div>
 
-      {/* SecciÃ³n: Contacto */}
+      {/* Sección: Contacto */}
       <div>
         <p className="text-2xs text-text-4 uppercase tracking-wider mb-3 font-semibold">Contacto</p>
         <div className="grid grid-cols-2 gap-3">
@@ -119,7 +119,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
             error={errors.email}
           />
           <Input
-            label="TelÃ©fono"
+            label="Teléfono"
             value={form.phone}
             onChange={set('phone')}
             placeholder="+34 600 000 000"
@@ -129,7 +129,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
             label="Sitio web"
             value={form.website}
             onChange={set('website')}
-            placeholder="https://â€¦"
+            placeholder="https://│"
             icon={<Globe className="w-3.5 h-3.5" />}
           />
           <Input
@@ -142,7 +142,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
         </div>
       </div>
 
-      {/* SecciÃ³n: CRM */}
+      {/* Sección: CRM */}
       <div>
         <p className="text-2xs text-text-4 uppercase tracking-wider mb-3 font-semibold">CRM</p>
         <div className="grid grid-cols-2 gap-3">
@@ -159,7 +159,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
             options={SOURCE_OPTS}
           />
           <Input
-            label="Valor mensual (â‚¬)"
+            label="Valor mensual (–‚¬)"
             type="number"
             min="0"
             value={form.monthly_value}
@@ -169,7 +169,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
             error={errors.monthly_value}
           />
           <Input
-            label="PrÃ³ximo seguimiento"
+            label="Próximo seguimiento"
             type="datetime-local"
             value={form.next_followup_at}
             onChange={set('next_followup_at')}
@@ -182,7 +182,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
             value={form.notes}
             onChange={set('notes')}
             rows={3}
-            placeholder="Observaciones, contexto, referenciasâ€¦"
+            placeholder="Observaciones, contexto, referencias│"
             className="input-base w-full resize-none mt-1"
           />
         </div>

@@ -6,8 +6,8 @@ import { useCurrentItem } from '@/shared/context/CurrentItemContext'
 import { useFavorite } from '@/shared/hooks/useFavorite'
 
 /**
- * TopBar â€” Barra superior con estructura Notion-like
- * Izq: MenÃº hamburguesa + Flechas | Centro: TÃ­tulo/Breadcrumb | Der: BotÃ³n +
+ * TopBar –” Barra superior con estructura Notion-like
+ * Izq: Menú hamburguesa + Flechas | Centro: Título/Breadcrumb | Der: Botón +
  */
 export default function TopBar({ onToggleSidebar }) {
   const location = useLocation()
@@ -18,7 +18,7 @@ export default function TopBar({ onToggleSidebar }) {
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const [showSettings, setShowSettings] = useState(false)
 
-  // Mapeo de rutas a tÃ­tulos
+  // Mapeo de rutas a títulos
   const getTitleFromRoute = () => {
     const routeTitles = {
       '/': 'Inicio',
@@ -113,7 +113,7 @@ export default function TopBar({ onToggleSidebar }) {
           }}
           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-2)'}
           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-          title="AtrÃ¡s"
+          title="Atrás"
         >
           <ChevronLeft size={18} />
         </button>
@@ -140,7 +140,7 @@ export default function TopBar({ onToggleSidebar }) {
         </button>
       </div>
 
-      {/* Center: TÃ­tulo + Icono */}
+      {/* Center: Título + Icono */}
       <div style={{
         flex: 1,
         display: 'flex',
@@ -203,7 +203,7 @@ export default function TopBar({ onToggleSidebar }) {
           }}
           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-2)'}
           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-          title="AÃ±adir"
+          title="Añadir"
         >
           <Plus size={20} />
         </motion.button>

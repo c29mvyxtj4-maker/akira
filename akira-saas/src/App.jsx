@@ -4,7 +4,7 @@ import { useAuth } from '@/shared/context/AuthContext'
 import { ROUTES }  from '@/shared/config/constants'
 import { useKeyboardShortcuts } from '@/shared/hooks/useKeyboardShortcuts'
 
-// Auth pages â€” eager so the login screen paints instantly on first load
+// Auth pages –” eager so the login screen paints instantly on first load
 import Login         from '@/pages/auth/Login'
 import ResetPassword from '@/pages/auth/ResetPassword'
 
@@ -15,7 +15,7 @@ import '@/shared/styles/layout.css'
 // Components
 import KeyboardShortcutsModal from '@/shared/components/ui/KeyboardShortcutsModal'
 
-// Pages â€” lazy-loaded so each route ships its own chunk (keeps the initial bundle small)
+// Pages –” lazy-loaded so each route ships its own chunk (keeps the initial bundle small)
 const Dashboard     = lazy(() => import('@/pages/Dashboard'))
 const Clients       = lazy(() => import('@/pages/Clients'))
 const Projects      = lazy(() => import('@/pages/Projects'))
@@ -52,7 +52,7 @@ function ComingSoon({ name }) {
           <span className="text-2xl">ðŸš§</span>
         </div>
         <h2 className="text-lg font-semibold text-text-1 mb-1">{name}</h2>
-        <p className="text-text-4 text-sm">MÃ³dulo en construcciÃ³n</p>
+        <p className="text-text-4 text-sm">Módulo en construcción</p>
       </div>
     </div>
   )
@@ -71,7 +71,7 @@ function AppLoadingScreen() {
           <div className="w-1.5 h-1.5 rounded-full bg-brand-500 akira-loader-dot"
                style={{ animationDelay: '320ms' }} />
         </div>
-        <span className="text-text-4 text-sm">Iniciando AKIRAâ€¦</span>
+        <span className="text-text-4 text-sm">Iniciando AKIRA│</span>
       </div>
     </div>
   )
@@ -101,7 +101,7 @@ export default function App() {
     <>
       <Suspense fallback={<AppLoadingScreen />}>
       <Routes>
-        {/* PÃºblicas */}
+        {/* PÀºblicas */}
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.RESET} element={<ResetPassword />} />
         <Route path="/landing" element={<LandingPage />} />
@@ -127,7 +127,7 @@ export default function App() {
           <Route path="subscriptions/*" element={<Subscriptions />} />
           <Route path="finance/*"       element={<Finance />} />
           {/* Facturas + Presupuestos unificados en commercial_documents (Documents).
-             Las rutas antiguas redirigen aquÃ­. */}
+             Las rutas antiguas redirigen aquí. */}
           <Route path="invoices/*"      element={<Documents />} />
           <Route path="documents/*"     element={<DocumentsNotion />} />
           <Route path="quotes/*"        element={<Navigate to="/invoices" replace />} />
@@ -142,13 +142,13 @@ export default function App() {
           <Route path="offers/*"        element={<Offers />} />
         </Route>
 
-        {/* Portal de clientes â€” rutas pÃºblicas */}
+        {/* Portal de clientes –” rutas pÀºblicas */}
         <Route path="/portal"           element={<PortalLogin />} />
         <Route path="/portal/dashboard" element={<PortalDashboard />} />
         <Route path="/join" element={<JoinOrg />} />
         <Route path="/legal" element={<Legal />} />
 
-        {/* Catch-all al final para no interceptar las rutas pÃºblicas de arriba */}
+        {/* Catch-all al final para no interceptar las rutas pÀºblicas de arriba */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       </Suspense>

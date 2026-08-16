@@ -15,7 +15,7 @@ import { useAuth } from '@/shared/context/AuthContext'
 
 /**
  * MoreMenu - Drawer con opciones adicionales
- * Se muestra en mÃ³vil/tablet cuando el usuario hace click en "MÃ¡s"
+ * Se muestra en móvil/tablet cuando el usuario hace click en "Más"
  */
 
 interface MenuOption {

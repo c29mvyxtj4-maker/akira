@@ -1,7 +1,7 @@
 ﻿import { getPref } from '@/shared/hooks/usePreferences'
 
 /*
- * Formateo de nÃºmeros y fechas segÃºn las preferencias del usuario
+ * Formateo de nÀºmeros y fechas segÀºn las preferencias del usuario
  * (pref_number_format, pref_date_format). Centralizado para que las pantallas
  * puedan adoptarlo progresivamente.
  */
@@ -12,7 +12,7 @@ export function fmtNumber(n, opts) {
 }
 
 export function fmtEuro(n) {
-  return fmtNumber(n, { maximumFractionDigits: 0 }) + 'â‚¬'
+  return fmtNumber(n, { maximumFractionDigits: 0 }) + '€'
 }
 
 export function dateLocale() {

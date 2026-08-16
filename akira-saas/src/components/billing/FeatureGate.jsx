@@ -4,14 +4,14 @@ import { useOrg } from '@/shared/context/OrgContext'
 import { checkFeatureAccess } from '@/services/billing.service'
 import { PLAN_TIERS } from '@/shared/config/constants'
 
-// Gatea `children` segÃºn el plan de la org activa. Uso:
+// Gatea `children` segÀºn el plan de la org activa. Uso:
 //   <FeatureGate feature={FEATURES.AI_OPERATIVES}>
 //     <AIOperativesPanel />
 //   </FeatureGate>
 //
-// `currentUsage` es opcional: pÃ¡salo cuando la feature tiene un limit_value
-// numÃ©rico (p.ej. FEATURES.MAX_PROJECTS) para que el gate compare contra Ã©l.
-// Sin backend/Stripe aÃºn: esto solo lee organizations.plan y feature_limits.
+// `currentUsage` es opcional: pásalo cuando la feature tiene un limit_value
+// numérico (p.ej. FEATURES.MAX_PROJECTS) para que el gate compare contra él.
+// Sin backend/Stripe aÀºn: esto solo lee organizations.plan y feature_limits.
 export default function FeatureGate({ feature, currentUsage, fallback, children }) {
   var { org } = useOrg()
   var [state, setState] = useState({ loading: true, access: null })
@@ -44,12 +44,12 @@ function UpgradeCTA({ access }) {
         <Lock style={{ width: '16px', height: '16px', color: 'var(--brand)' }} />
       </div>
       <p style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--text-1)' }}>
-        Esta funciÃ³n no estÃ¡ disponible en tu plan {tierInfo.label}
+        Esta función no está disponible en tu plan {tierInfo.label}
       </p>
       <p style={{ fontSize: '12.5px', color: 'var(--text-4)', maxWidth: '320px' }}>
         {access.limit != null
-          ? 'Has alcanzado el lÃ­mite de tu plan actual (' + access.limit + ').'
-          : 'Actualiza tu plan para desbloquear esta funciÃ³n.'}
+          ? 'Has alcanzado el límite de tu plan actual (' + access.limit + ').'
+          : 'Actualiza tu plan para desbloquear esta función.'}
       </p>
     </div>
   )

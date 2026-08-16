@@ -2,9 +2,9 @@
 
 /*
  * Aplica las preferencias visuales globales (tema, contraste, reducir
- * movimiento) a la raÃ­z del documento. Se llama al arrancar la app y cada vez
+ * movimiento) a la raíz del documento. Se llama al arrancar la app y cada vez
  * que cambia una preferencia (evento 'akira-prefs-change'), para que el efecto
- * sea global y no solo mientras el modal de Ajustes estÃ¡ abierto.
+ * sea global y no solo mientras el modal de Ajustes está abierto.
  */
 export function applyPrefs() {
   if (typeof document === 'undefined') return

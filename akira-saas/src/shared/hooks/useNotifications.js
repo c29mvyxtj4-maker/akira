@@ -5,7 +5,7 @@ import { scopeToOrg } from '@/shared/lib/activeOrg'
 var STALE_DAYS = 7
 
 function fmtCur(n) {
-  return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'â‚¬'
+  return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '–‚¬'
 }
 function fmtDate(d) {
   if (!d) return '--'
@@ -17,7 +17,7 @@ export function buildInvoiceReminderMailto(invoice, company) {
   var email  = client && client.email
   if (!email) return null
 
-  var subject = 'Recordatorio de pago â€” Factura ' + invoice.invoice_number
+  var subject = 'Recordatorio de pago –” Factura ' + invoice.invoice_number
   var greeting = 'Hola' + (client.name ? ' ' + client.name.split(' ')[0] : '') + ','
   var body = greeting + '\n\n' +
     'Te escribo para recordarte que la factura ' + invoice.invoice_number + ' por ' + fmtCur(invoice.total) +
@@ -33,7 +33,7 @@ export function useNotifications() {
   var [staleClients,    setStaleClients]    = useState([])
   var [loading,         setLoading]         = useState(true)
 
-  // Nombre de canal unico por cada sitio que use este hook (campana, Dashboard, etc.) â€” NUEVO
+  // Nombre de canal unico por cada sitio que use este hook (campana, Dashboard, etc.) –” NUEVO
   var channelNameRef = useRef('notifications-store-' + Math.random().toString(36).slice(2))
 
   var load = useCallback(function() {
@@ -73,7 +73,7 @@ export function useNotifications() {
   useEffect(function() { load() }, [load])
 
   useEffect(function() {
-    var channel = supabase.channel(channelNameRef.current) // â† CAMBIADO: nombre unico, no fijo
+    var channel = supabase.channel(channelNameRef.current) // –† CAMBIADO: nombre unico, no fijo
       .on('postgres_changes', { event: '*', schema: 'public', table: 'commercial_documents' }, function() { load() })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' },  function() { load() })
       .subscribe()

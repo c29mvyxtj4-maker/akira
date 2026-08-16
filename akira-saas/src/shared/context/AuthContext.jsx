@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let mounted = true
 
-    // Obtener sesiÃ³n inicial sin timeout
+    // Obtener sesión inicial sin timeout
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return
       const u = session?.user ?? null
@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
       if (mounted) setLoading(false)
     })
 
-    // Escuchar cambios de sesiÃ³n
+    // Escuchar cambios de sesión
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (!mounted) return

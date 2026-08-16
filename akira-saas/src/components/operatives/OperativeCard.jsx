@@ -110,7 +110,7 @@ export default function OperativeCard({
               display: 'flex',
               gap: '6px',
             }}>
-              <span>â†’</span>
+              <span>–†’</span>
               <span>{step}</span>
             </div>
           ))}

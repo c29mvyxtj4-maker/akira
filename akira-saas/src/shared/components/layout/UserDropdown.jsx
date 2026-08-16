@@ -68,7 +68,7 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
               fontSize: '12px',
               color: 'var(--text-3)',
             }}>
-              Plan gratuito Â· 1 miembro
+              Plan gratuito · 1 miembro
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
       <div style={{
         padding: '8px',
       }}>
-        {/* ConfiguraciÃ³n */}
+        {/* Configuración */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           onClick={() => {
@@ -109,7 +109,7 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
           }}
         >
           <Settings size={16} />
-          ConfiguraciÃ³n
+          Configuración
         </motion.button>
 
         {/* Invitar a miembros */}
@@ -146,11 +146,11 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
           Invitar a miembros
         </motion.button>
 
-        {/* AÃ±adir cuenta */}
+        {/* Añadir cuenta */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           onClick={() => {
-            alert('AÃ±adir cuenta - Funcionalidad en desarrollo')
+            alert('Añadir cuenta - Funcionalidad en desarrollo')
             onClose()
           }}
           style={{
@@ -177,7 +177,7 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
           }}
         >
           <Plus size={16} />
-          AÃ±adir cuenta
+          Añadir cuenta
         </motion.button>
       </div>
 
@@ -306,14 +306,14 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
         margin: '8px 0',
       }} />
 
-      {/* Cerrar sesiÃ³n */}
+      {/* Cerrar sesión */}
       <div style={{
         padding: '8px',
       }}>
         <motion.button
           whileHover={{ scale: 1.02 }}
           onClick={() => {
-            alert('Cerrando sesiÃ³n...')
+            alert('Cerrando sesión...')
             onClose()
           }}
           style={{
@@ -340,7 +340,7 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
           }}
         >
           <LogOut size={16} />
-          Cerrar sesiÃ³n
+          Cerrar sesión
         </motion.button>
       </div>
     </motion.div>

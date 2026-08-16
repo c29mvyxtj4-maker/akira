@@ -23,7 +23,7 @@ export default function ActivityFeed() {
     ...clients.slice(0, 5).map(c => ({
       id:    c.id,
       type:  'client',
-      label: `Cliente ${c.status === 'lead' ? 'lead aÃ±adido' : 'actualizado'}`,
+      label: `Cliente ${c.status === 'lead' ? 'lead añadido' : 'actualizado'}`,
       name:  c.name,
       date:  c.updated_at || c.created_at,
       icon:  Users,
@@ -60,7 +60,7 @@ export default function ActivityFeed() {
         <h3 className="text-sm font-semibold text-text-1 mb-3">Actividad reciente</h3>
         <div className="flex flex-col items-center justify-center py-8 text-text-4 text-sm gap-2">
           <Clock className="w-8 h-8 opacity-30" />
-          <span>Sin actividad todavÃ­a</span>
+          <span>Sin actividad todavía</span>
         </div>
       </div>
     )

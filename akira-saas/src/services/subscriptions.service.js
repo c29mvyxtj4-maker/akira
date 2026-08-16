@@ -91,7 +91,7 @@ export async function getClientsForSelect() {
   return res.data || []
 }
 
-// â† CORREGIDO: quitamos "period" del select, esa columna no existe en la tabla "services"
+// –† CORREGIDO: quitamos "period" del select, esa columna no existe en la tabla "services"
 export async function getServicesForSelect() {
   var res = await supabase.from('services').select('id, name, price, category').eq('archived', false).eq('active', true).order('name')
   if (res.error) throw res.error

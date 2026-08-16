@@ -44,17 +44,17 @@ export default function Login() {
     return true
   }
 
-  // Alta real, disparada al completar el Ãºltimo paso del Stepper.
+  // Alta real, disparada al completar el Àºltimo paso del Stepper.
   async function doSignup() {
     if (loading) return
     setLoading(true); setError(''); setNotice('')
     try {
       var data = await signUp(email, password, fullName.trim())
       if (!data || !data.session) {
-        setNotice('Cuenta creada. Revisa tu correo para confirmarla y luego inicia sesiÃ³n.')
+        setNotice('Cuenta creada. Revisa tu correo para confirmarla y luego inicia sesión.')
         setMode('login'); setPassword('')
       }
-      // Si hay sesiÃ³n, isAuthenticated cambia y redirige solo.
+      // Si hay sesión, isAuthenticated cambia y redirige solo.
     } catch (err) {
       setError(err.message || 'Error al crear la cuenta')
       // Reinicia el asistente para reintentar (los campos siguen rellenados).
@@ -67,7 +67,7 @@ export default function Login() {
     if (loading) return
     if (!email || !password) { setError('Completa todos los campos'); return }
     if (isSignup && !fullName.trim()) { setError('Escribe tu nombre'); return }
-    if (isSignup && password.length < 6) { setError('La contraseÃ±a debe tener al menos 6 caracteres'); return }
+    if (isSignup && password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return }
 
     setLoading(true)
     setError('')
@@ -75,18 +75,18 @@ export default function Login() {
     try {
       if (isSignup) {
         var data = await signUp(email, password, fullName.trim())
-        // Si el proyecto exige confirmaciÃ³n por email, no hay sesiÃ³n todavÃ­a.
+        // Si el proyecto exige confirmación por email, no hay sesión todavía.
         if (!data || !data.session) {
-          setNotice('Cuenta creada. Revisa tu correo para confirmarla y luego inicia sesiÃ³n.')
+          setNotice('Cuenta creada. Revisa tu correo para confirmarla y luego inicia sesión.')
           setMode('login')
           setPassword('')
         }
-        // Si hay sesiÃ³n, isAuthenticated cambiarÃ¡ y redirige solo.
+        // Si hay sesión, isAuthenticated cambiará y redirige solo.
       } else {
         await signIn(email, password)
       }
     } catch (err) {
-      setError(err.message || (isSignup ? 'Error al crear la cuenta' : 'Error al iniciar sesiÃ³n'))
+      setError(err.message || (isSignup ? 'Error al crear la cuenta' : 'Error al iniciar sesión'))
     } finally {
       setLoading(false)
     }
@@ -123,14 +123,14 @@ export default function Login() {
               initialStep={1}
               onStepChange={setSignupStep}
               onFinalStepCompleted={doSignup}
-              backButtonText="AtrÃ¡s"
+              backButtonText="Atrás"
               nextButtonText="Continuar"
-              completeButtonText={loading ? 'Creandoâ€¦' : 'Crear cuenta'}
+              completeButtonText={loading ? 'Creando│' : 'Crear cuenta'}
               nextButtonProps={{ disabled: !canProceed() }}
             >
               <Step>
-                <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '4px' }}>Â¿CÃ³mo te llamas?</h2>
-                <p style={{ fontSize: '12.5px', color: 'var(--text-4)', marginBottom: '16px' }}>AsÃ­ te reconocerÃ¡n tus clientes y tu equipo en AKIRA.</p>
+                <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '4px' }}>¿Cómo te llamas?</h2>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-4)', marginBottom: '16px' }}>Así te reconocerán tus clientes y tu equipo en AKIRA.</p>
                 <label className="label-base" htmlFor="su-name">Nombre</label>
                 <input id="su-name" type="text" value={fullName} autoFocus autoComplete="name"
                   onChange={function(e) { setFullName(e.target.value); setError('') }}
@@ -138,22 +138,22 @@ export default function Login() {
               </Step>
               <Step>
                 <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '4px' }}>Tu correo</h2>
-                <p style={{ fontSize: '12.5px', color: 'var(--text-4)', marginBottom: '16px' }}>Lo usarÃ¡s para iniciar sesiÃ³n.</p>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-4)', marginBottom: '16px' }}>Lo usarás para iniciar sesión.</p>
                 <label className="label-base" htmlFor="su-email">Email</label>
                 <input id="su-email" type="email" value={email} autoComplete="email" inputMode="email"
                   onChange={function(e) { setEmail(e.target.value); setError('') }}
                   placeholder="tu@email.com" className="input-base" style={{ marginTop: '5px' }} />
               </Step>
               <Step>
-                <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '4px' }}>Crea una contraseÃ±a</h2>
-                <p style={{ fontSize: '12.5px', color: 'var(--text-4)', marginBottom: '16px' }}>MÃ­nimo 6 caracteres. GuÃ¡rdala bien.</p>
-                <label className="label-base" htmlFor="su-pwd">ContraseÃ±a</label>
+                <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '4px' }}>Crea una contraseña</h2>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-4)', marginBottom: '16px' }}>Mínimo 6 caracteres. Guárdala bien.</p>
+                <label className="label-base" htmlFor="su-pwd">Contraseña</label>
                 <div style={{ position: 'relative', marginTop: '5px' }}>
                   <input id="su-pwd" type={showPwd ? 'text' : 'password'} value={password} autoComplete="new-password"
                     onChange={function(e) { setPassword(e.target.value); setError('') }}
-                    placeholder="MÃ­nimo 6 caracteres" className="input-base" style={{ paddingRight: '40px' }} />
+                    placeholder="Mínimo 6 caracteres" className="input-base" style={{ paddingRight: '40px' }} />
                   <button type="button" onClick={function() { setShowPwd(function(v) { return !v }) }}
-                    aria-label={showPwd ? 'Ocultar contraseÃ±a' : 'Mostrar contraseÃ±a'}
+                    aria-label={showPwd ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                     style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-4)', display: 'flex', alignItems: 'center' }}>
                     {showPwd ? <EyeOff style={{ width: '15px', height: '15px' }} /> : <Eye style={{ width: '15px', height: '15px' }} />}
                   </button>
@@ -168,21 +168,21 @@ export default function Login() {
             )}
             <p style={{ fontSize: '11px', color: 'var(--text-5)', textAlign: 'center', lineHeight: 1.5, marginTop: '14px' }}>
               Al crear una cuenta aceptas la{' '}
-              <a href="/legal" target="_blank" rel="noreferrer" style={{ color: 'var(--brand)', fontWeight: 600 }}>PolÃ­tica de Privacidad y los TÃ©rminos</a>.
+              <a href="/legal" target="_blank" rel="noreferrer" style={{ color: 'var(--brand)', fontWeight: 600 }}>Política de Privacidad y los Términos</a>.
             </p>
             <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-4)', marginTop: '14px' }}>
-              Â¿Ya tienes cuenta?{' '}
-              <button type="button" onClick={switchMode} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--brand)', fontSize: '12px', fontWeight: 700, padding: 0 }}>Inicia sesiÃ³n</button>
+              ¿Ya tienes cuenta?{' '}
+              <button type="button" onClick={switchMode} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--brand)', fontSize: '12px', fontWeight: 700, padding: 0 }}>Inicia sesión</button>
             </p>
           </div>
         ) : (
-        /* Card de inicio de sesiÃ³n */
+        /* Card de inicio de sesión */
         <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', padding: '28px', boxShadow: 'var(--shadow-modal)' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '4px' }}>
             Bienvenido
           </h2>
           <p style={{ fontSize: '12px', color: 'var(--text-4)', marginBottom: '24px' }}>
-            Inicia sesiÃ³n en tu cuenta
+            Inicia sesión en tu cuenta
           </p>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -203,10 +203,10 @@ export default function Login() {
 
             <div>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <label className="label-base" htmlFor="login-password">ContraseÃ±a</label>
+                <label className="label-base" htmlFor="login-password">Contraseña</label>
                 {!isSignup && (
                   <Link to={ROUTES.RESET} style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-4)', textDecoration: 'none' }}>
-                    Â¿Olvidaste tu contraseÃ±a?
+                    ¿Olvidaste tu contraseña?
                   </Link>
                 )}
               </div>
@@ -216,13 +216,13 @@ export default function Login() {
                   type={showPwd ? 'text' : 'password'}
                   value={password}
                   onChange={function(e) { setPassword(e.target.value); setError('') }}
-                  placeholder={isSignup ? 'MÃ­nimo 6 caracteres' : 'Tu contraseÃ±a'}
+                  placeholder={isSignup ? 'Mínimo 6 caracteres' : 'Tu contraseña'}
                   className="input-base"
                   autoComplete={isSignup ? 'new-password' : 'current-password'}
                   style={{ paddingRight: '40px' }}
                 />
                 <button type="button" onClick={function() { setShowPwd(function(v) { return !v }) }}
-                  aria-label={showPwd ? 'Ocultar contraseÃ±a' : 'Mostrar contraseÃ±a'}
+                  aria-label={showPwd ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   aria-pressed={showPwd}
                   style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-4)', display: 'flex', alignItems: 'center' }}
                 >
@@ -276,7 +276,7 @@ export default function Login() {
                 </svg>
               ) : (
                 <>
-                  {isSignup ? 'Crear cuenta' : 'Iniciar sesiÃ³n'}
+                  {isSignup ? 'Crear cuenta' : 'Iniciar sesión'}
                   <ArrowRight style={{ width: '15px', height: '15px' }} />
                 </>
               )}
@@ -285,25 +285,25 @@ export default function Login() {
             {isSignup && (
               <p style={{ fontSize: '11px', color: 'var(--text-5)', textAlign: 'center', lineHeight: 1.5, marginTop: '2px' }}>
                 Al crear una cuenta aceptas la{' '}
-                <a href="/legal" target="_blank" rel="noreferrer" style={{ color: 'var(--brand)', fontWeight: 600 }}>PolÃ­tica de Privacidad y los TÃ©rminos</a>.
+                <a href="/legal" target="_blank" rel="noreferrer" style={{ color: 'var(--brand)', fontWeight: 600 }}>Política de Privacidad y los Términos</a>.
               </p>
             )}
           </form>
 
           {/* Cambiar entre login y registro */}
           <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-4)', marginTop: '18px' }}>
-            {isSignup ? 'Â¿Ya tienes cuenta? ' : 'Â¿No tienes cuenta? '}
+            {isSignup ? '¿Ya tienes cuenta? ' : '¿No tienes cuenta? '}
             <button type="button" onClick={switchMode}
               style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--brand)', fontSize: '12px', fontWeight: 700, padding: 0 }}
             >
-              {isSignup ? 'Inicia sesiÃ³n' : 'Crear cuenta'}
+              {isSignup ? 'Inicia sesión' : 'Crear cuenta'}
             </button>
           </p>
         </div>
         )}
 
         <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-5)', marginTop: '20px' }}>
-          AKIRA Business OS Â· Beta Â· build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
+          AKIRA Business OS · Beta · build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
         </p>
       </motion.div>
 

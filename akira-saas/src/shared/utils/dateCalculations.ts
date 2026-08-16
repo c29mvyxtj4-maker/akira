@@ -1,7 +1,7 @@
 ﻿import type { TemplatePhase } from '@/shared/types/youtube'
 
 /**
- * Calcula fechas para phases trabajando hacia atrÃ¡s desde publishing date
+ * Calcula fechas para phases trabajando hacia atrás desde publishing date
  * Considera el tiempo estimado y si las phases pueden ser paralelas
  */
 export const calculatePhaseDates = (
@@ -10,11 +10,11 @@ export const calculatePhaseDates = (
 ): Array<{ name: string; order: number; startDate: Date; endDate: Date; daysNeeded: number }> => {
   const result: Array<{ name: string; order: number; startDate: Date; endDate: Date; daysNeeded: number }> = []
 
-  // Publishing ocurre 1 dÃ­a antes de la fecha (para dejar buffer)
+  // Publishing ocurre 1 día antes de la fecha (para dejar buffer)
   let currentDate = new Date(publishingDate)
   currentDate.setDate(currentDate.getDate() - 1)
 
-  // Ordena phases en reversa para calcular hacia atrÃ¡s
+  // Ordena phases en reversa para calcular hacia atrás
   const sortedPhases = [...phases].sort((a, b) => b.order - a.order)
 
   for (const phase of sortedPhases) {
@@ -42,7 +42,7 @@ export const calculatePhaseDates = (
 }
 
 /**
- * Recalcula todas las phases si la fecha de publicaciÃ³n cambia
+ * Recalcula todas las phases si la fecha de publicación cambia
  */
 export const recalculatePhasesForNewDate = (
   oldPhases: Array<{ name: string; daysNeeded: number; order: number; parallelize?: boolean }>,
@@ -53,7 +53,7 @@ export const recalculatePhasesForNewDate = (
 }
 
 /**
- * Calcula cuÃ¡ntos dÃ­as faltan hasta un milestone
+ * Calcula cuántos días faltan hasta un milestone
  */
 export const daysUntil = (date: Date): number => {
   const today = new Date()
@@ -85,7 +85,7 @@ export const calculateProjectProgress = (
 }
 
 /**
- * Retorna las prÃ³ximas N fases
+ * Retorna las próximas N fases
  */
 export const getUpcomingPhases = (
   phases: Array<{ name: string; startDate: Date; status: 'pending' | 'in-progress' | 'completed' }>,
@@ -99,7 +99,7 @@ export const getUpcomingPhases = (
 }
 
 /**
- * Calcula si una fase estÃ¡ "en riesgo" (llegando a la fecha final)
+ * Calcula si una fase está "en riesgo" (llegando a la fecha final)
  */
 export const isPhaseAtRisk = (
   phase: { endDate: Date; status: 'pending' | 'in-progress' | 'completed' },

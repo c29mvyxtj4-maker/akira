@@ -91,7 +91,7 @@ export default function TaskTemplateModal({ isOpen, onClose, onSelectTemplate, l
                   Saltar por ahora
                 </button>
                 <p className="text-2xs text-text-5 flex-1 text-center">
-                  Puedes agregar tareas manualmente despuÃ©s
+                  Puedes agregar tareas manualmente después
                 </p>
               </div>
             </div>

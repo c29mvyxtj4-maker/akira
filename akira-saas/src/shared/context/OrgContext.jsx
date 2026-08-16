@@ -41,7 +41,7 @@ export function OrgProvider({ children }) {
         console.log('[OrgContext] Active workspace:', active, 'savedId:', savedId)
         setOrg(active)
         // Persistir SIEMPRE el workspace activo, para que los servicios (que leen
-        // localStorage vÃ­a getActiveOrgId) puedan filtrar por Ã©l desde el arranque.
+        // localStorage vía getActiveOrgId) puedan filtrar por él desde el arranque.
         try { if (active) localStorage.setItem(LS_KEY, active.id) } catch (_) { /* noop */ }
         return loadMembers(active.id, user.id)
       })

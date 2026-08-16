@@ -250,23 +250,23 @@ function formatShortcut(shortcut) {
     'alt': 'Alt',
     'enter': 'Enter',
     'escape': 'Esc',
-    'arrowup': 'â†‘',
-    'arrowdown': 'â†“',
-    'arrowleft': 'â†',
-    'arrowright': 'â†’',
+    'arrowup': '–†‘',
+    'arrowdown': '–†“',
+    'arrowleft': '–†',
+    'arrowright': '–†’',
   }
 
   // Platform-specific modifier
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform)
 
   if (shortcut.ctrlKey) {
-    parts.push(isMac ? 'âŒ˜' : 'Ctrl')
+    parts.push(isMac ? '–Œ˜' : 'Ctrl')
   }
   if (shortcut.altKey) {
-    parts.push(isMac ? 'âŒ¥' : 'Alt')
+    parts.push(isMac ? '–Œ¥' : 'Alt')
   }
   if (shortcut.shiftKey) {
-    parts.push(isMac ? 'â‡§' : 'Shift')
+    parts.push(isMac ? '–‡§' : 'Shift')
   }
 
   const displayKey = keyMap[shortcut.key.toLowerCase()] || shortcut.key.toUpperCase()

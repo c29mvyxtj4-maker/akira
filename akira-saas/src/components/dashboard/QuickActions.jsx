@@ -15,7 +15,7 @@ export default function QuickActions() {
 
   return (
     <div className="surface-card p-4">
-      <h3 className="text-sm font-semibold text-text-1 mb-3">Acceso rÃ¡pido</h3>
+      <h3 className="text-sm font-semibold text-text-1 mb-3">Acceso rápido</h3>
       <div className="grid grid-cols-2 gap-2">
         {ACTIONS.map((a, i) => {
           const Icon = a.icon

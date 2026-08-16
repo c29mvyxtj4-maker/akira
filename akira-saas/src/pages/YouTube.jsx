@@ -89,7 +89,7 @@ export default function YouTubePage() {
                     onClick={() => setShowForm(false)}
                     className="text-text-3 hover:text-text-1 transition-colors"
                   >
-                    âœ•
+                    –œ•
                   </button>
                 </div>
                 <YouTubeProjectForm projectId={currentOrg?.id} onSubmit={handleCreateProject} isLoading={loading} />

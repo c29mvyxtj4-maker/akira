@@ -27,14 +27,14 @@ import BorderGlow from '@/shared/components/ui/BorderGlow'
 import SearchModal from '@/shared/components/ui/SearchModal'
 import SettingsPanel from '@/pages/Settings'
 
-// Props de BorderGlow afinados para botones pequeÃ±os del top bar (tono de marca).
+// Props de BorderGlow afinados para botones pequeños del top bar (tono de marca).
 var GLOW = { className: 'glow-btn', borderRadius: 19, glowRadius: 15, glowIntensity: 1.4, coneSpread: 25, backgroundColor: 'transparent', glowColor: '355 78 62', colors: ['#e63946', '#ff5a66', '#a01f2b'], animated: true }
 
-// Fondo animado (three.js) â€” en diferido para no bloquear la carga inicial.
+// Fondo animado (three.js) –” en diferido para no bloquear la carga inicial.
 var Silk = lazy(function () { return import('@/shared/components/effects/Silk') })
 
 /*
- * Pantalla principal (hub). Sin sidebar: la navegaciÃ³n es esta pantalla + la
+ * Pantalla principal (hub). Sin sidebar: la navegación es esta pantalla + la
  * barra inferior global. Layout ancho para escritorio, rejillas responsive.
  */
 
@@ -143,7 +143,7 @@ export default function Inicio() {
   }, [])
 
   function handleAddAccount() {
-    window.alert('Sistema de mÃºltiples cuentas - pronto disponible')
+    window.alert('Sistema de mÀºltiples cuentas - pronto disponible')
     setMenuOpen(false)
   }
 
@@ -267,7 +267,7 @@ export default function Inicio() {
           })}
         </div>
 
-        {/* Resumen financiero â€” grÃ¡fica transparente (datos del workspace activo) */}
+        {/* Resumen financiero –” gráfica transparente (datos del workspace activo) */}
         {fin && fin.sparkline && (
           <>
             <p style={sectionLabel}>Resumen financiero</p>
@@ -280,7 +280,7 @@ export default function Inicio() {
                     {fmtEur(fin.monthIncome)}
                     {fin.incomeTrend !== null && fin.incomeTrend !== undefined && (
                       <span style={{ fontSize: '12px', fontWeight: 700, marginLeft: '8px', color: fin.incomeTrend >= 0 ? '#22c55e' : 'var(--brand)' }}>
-                        {fin.incomeTrend >= 0 ? 'â–²' : 'â–¼'} {Math.abs(fin.incomeTrend)}%
+                        {fin.incomeTrend >= 0 ? '––²' : '––¼'} {Math.abs(fin.incomeTrend)}%
                       </span>
                     )}
                   </p>
@@ -304,8 +304,8 @@ export default function Inicio() {
           </>
         )}
 
-        {/* Accesos rÃ¡pidos â€” rejilla (sin scroll horizontal: el escalado ya no recorta) */}
-        <p style={sectionLabel}>Accesos rÃ¡pidos</p>
+        {/* Accesos rápidos –” rejilla (sin scroll horizontal: el escalado ya no recorta) */}
+        <p style={sectionLabel}>Accesos rápidos</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {QUICK.map(function(q) {
             var Icon = q.icon
@@ -325,7 +325,7 @@ export default function Inicio() {
           })}
         </div>
 
-        {/* Secciones â€” 2 columnas en escritorio */}
+        {/* Secciones –” 2 columnas en escritorio */}
         <p style={sectionLabel}>Secciones</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
           {SECTIONS.map(function(s) {
@@ -346,7 +346,7 @@ export default function Inicio() {
         </div>
 
         <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-5)', marginTop: '28px' }}>
-          AKIRA Â· inicio Â· build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
+          AKIRA · inicio · build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
         </p>
       </div>
       </div>

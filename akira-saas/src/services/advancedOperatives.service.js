@@ -17,7 +17,7 @@
 
 /**
  * Automatically qualify and score leads
- * Steps: Analyze profile â†’ Calculate score â†’ Assign to sales â†’ Notify
+ * Steps: Analyze profile –†’ Calculate score –†’ Assign to sales –†’ Notify
  */
 export async function handleLeadQualification(params) {
   const { leadId, profile } = params
@@ -119,7 +119,7 @@ function calculateLeadScore(profile) {
 
 /**
  * Proactive customer success checks
- * Steps: Analyze usage â†’ Identify risks â†’ Send intervention â†’ Log action
+ * Steps: Analyze usage –†’ Identify risks –†’ Send intervention –†’ Log action
  */
 export async function handleCustomerSuccess(params) {
   const { customerId } = params
@@ -176,7 +176,7 @@ export async function handleCustomerSuccess(params) {
 
 /**
  * Intelligent support ticket routing
- * Steps: Analyze issue â†’ Categorize â†’ Find expert â†’ Route â†’ Notify
+ * Steps: Analyze issue –†’ Categorize –†’ Find expert –†’ Route –†’ Notify
  */
 export async function handleSupportRouting(params) {
   const { ticketId, issue, priority } = params
@@ -246,7 +246,7 @@ function categorizeIssue(issue) {
 
 /**
  * Forecast monthly revenue based on projections
- * Steps: Get active customers â†’ Calculate MRR â†’ Project growth â†’ Generate forecast
+ * Steps: Get active customers –†’ Calculate MRR –†’ Project growth –†’ Generate forecast
  */
 export async function handleRevenueForecast(params) {
   const { orgId } = params
@@ -291,7 +291,7 @@ export async function handleRevenueForecast(params) {
 
 /**
  * Predict at-risk customers for churn
- * Steps: Analyze behavior â†’ Calculate risk â†’ Identify patterns â†’ Alert CS team
+ * Steps: Analyze behavior –†’ Calculate risk –†’ Identify patterns –†’ Alert CS team
  */
 export async function handleChurnPrediction(params) {
   const { orgId } = params
@@ -334,7 +334,7 @@ export async function handleChurnPrediction(params) {
 
 /**
  * Identify upsell and cross-sell opportunities
- * Steps: Analyze usage â†’ Compare to tier â†’ Find gaps â†’ Generate recommendations
+ * Steps: Analyze usage –†’ Compare to tier –†’ Find gaps –†’ Generate recommendations
  */
 export async function handleExpansionOpportunity(params) {
   const { customerId } = params

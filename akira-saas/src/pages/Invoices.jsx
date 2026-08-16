@@ -23,7 +23,7 @@ import { PageSpinner } from '@/shared/components/ui/Spinner'
 import { SkeletonTableRow } from '@/shared/components/ui/Skeleton'
 import { useSearchParams } from 'react-router-dom'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'â‚¬' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '–‚¬' }
 function fmtDate(d) { if (!d) return '--'; return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 function makeItemId() { return 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6) }
 
@@ -33,7 +33,7 @@ var INP = {
   outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box',
 }
 
-/* â”€â”€ Editor de factura (cuadricula de lineas) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Editor de factura (cuadricula de lineas) –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loading }) {
   var today = new Date().toISOString().split('T')[0]
 
@@ -47,7 +47,7 @@ function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loa
     return [{ id: makeItemId(), description: '', quantity: 1, price: 0 }]
   })
 
-  // Servicios activos, para poder anadirlos como linea con un clic â€” NUEVO
+  // Servicios activos, para poder anadirlos como linea con un clic –” NUEVO
   var [services, setServices] = useState([])
   useEffect(function() {
     getServicesForSelect().then(setServices).catch(function() { setServices([]) })
@@ -109,7 +109,7 @@ function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loa
           <label className="label-base">Cliente</label>
           <select value={clientId} onChange={function(e) { setClientId(e.target.value) }} style={INP}>
             <option value="">Sin cliente</option>
-            {clients.map(function(c) { return <option key={c.id} value={c.id}>{c.name}{c.company ? ' â€” ' + c.company : ''}</option> })}
+            {clients.map(function(c) { return <option key={c.id} value={c.id}>{c.name}{c.company ? ' –” ' + c.company : ''}</option> })}
           </select>
         </div>
         <div>
@@ -162,9 +162,9 @@ function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loa
               <select defaultValue="" onChange={addFromService}
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', borderRadius: '7px', fontSize: '12px', padding: '6px 10px 6px 28px', outline: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
               >
-                <option value="">+ AÃ±adir servicio...</option>
+                <option value="">+ Añadir servicio...</option>
                 {services.map(function(s) {
-                  return <option key={s.id} value={s.id}>{s.name} â€” {fmtCur(s.price)}</option>
+                  return <option key={s.id} value={s.id}>{s.name} –” {fmtCur(s.price)}</option>
                 })}
               </select>
             </div>
@@ -205,7 +205,7 @@ function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loa
   )
 }
 
-/* â”€â”€ Vista previa de la factura â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Vista previa de la factura –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function InvoicePreview({ invoice, company, onBack }) {
   var items = Array.isArray(invoice.items) ? invoice.items : []
   var client = invoice.clients
@@ -226,9 +226,9 @@ function InvoicePreview({ invoice, company, onBack }) {
       var res = await supabase.functions.invoke('create-checkout', { body: { invoice_id: invoice.id } })
       if (res.error) throw res.error
       var url = res.data && res.data.url
-      if (!url) throw new Error((res.data && res.data.error) || 'No se recibiÃ³ el enlace de pago')
-      // En mÃ³vil, window.open tras un await lo bloquea el navegador. Redirigimos
-      // la pestaÃ±a actual a Stripe: funciona en mÃ³vil y escritorio.
+      if (!url) throw new Error((res.data && res.data.error) || 'No se recibió el enlace de pago')
+      // En móvil, window.open tras un await lo bloquea el navegador. Redirigimos
+      // la pestaña actual a Stripe: funciona en móvil y escritorio.
       window.location.href = url
     } catch (e) {
       window.alert('No se pudo generar el cobro: ' + (e.message || e))
@@ -279,7 +279,7 @@ function InvoicePreview({ invoice, company, onBack }) {
           <div style={{ textAlign: 'right' }}>
             <h1 style={{ fontSize: '26px', fontWeight: 900, margin: 0, letterSpacing: '-0.02em' }}>FACTURA</h1>
             <p style={{ fontSize: '14px', fontWeight: 700, color: '#e63946', margin: '4px 0' }}>{invoice.invoice_number}</p>
-            <p style={{ fontSize: '12px', color: '#666', margin: '2px 0' }}>EmisiÃ³n: {fmtDate(invoice.issue_date)}</p>
+            <p style={{ fontSize: '12px', color: '#666', margin: '2px 0' }}>Emisión: {fmtDate(invoice.issue_date)}</p>
             {invoice.due_date && <p style={{ fontSize: '12px', color: '#666', margin: '2px 0' }}>Vencimiento: {fmtDate(invoice.due_date)}</p>}
           </div>
         </div>
@@ -343,9 +343,9 @@ function InvoicePreview({ invoice, company, onBack }) {
   )
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    PAGINA PRINCIPAL
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 export default function Invoices() {
   var { addRecent } = useAddRecent()
   var { setCurrentItem } = useCurrentItem()
@@ -382,7 +382,7 @@ export default function Invoices() {
 
   useEffect(function() { loadAll() }, [loadAll])
 
-  // Abrir directamente una factura si venimos de la busqueda global â€” NUEVO
+  // Abrir directamente una factura si venimos de la busqueda global –” NUEVO
   var [searchParams] = useSearchParams()
   useEffect(function() {
     var openId = searchParams.get('open')
@@ -398,11 +398,11 @@ export default function Invoices() {
   function handleExport() {
     if (!invoices.length) return
     var columns = [
-      { key: 'number',      label: 'NÃºmero' },
+      { key: 'number',      label: 'NÀºmero' },
       { key: 'client',      label: 'Cliente' },
-      { key: 'issue_date',  label: 'EmisiÃ³n' },
+      { key: 'issue_date',  label: 'Emisión' },
       { key: 'due_date',    label: 'Vencimiento' },
-      { key: 'total',       label: 'Total (â‚¬)' },
+      { key: 'total',       label: 'Total (–‚¬)' },
       { key: 'status_label',label: 'Estado' },
     ]
     var rows = invoices.map(function(inv) {
@@ -451,7 +451,7 @@ export default function Invoices() {
   }
 
   function sendInvoiceEmail(id) {
-    showToast('Enviando factura al clienteâ€¦')
+    showToast('Enviando factura al cliente│')
     supabase.functions.invoke('send-invoice', { body: { invoice_id: id } })
       .then(function(res) {
         var err = (res.error && res.error.message) || (res.data && res.data.error)
@@ -464,13 +464,13 @@ export default function Invoices() {
   async function handleCharge(inv) {
     if (chargingId) return
     setChargingId(inv.id)
-    showToast('Generando enlace de cobroâ€¦')
+    showToast('Generando enlace de cobro│')
     try {
       var res = await supabase.functions.invoke('create-checkout', { body: { invoice_id: inv.id } })
       if (res.error) throw res.error
       var url = res.data && res.data.url
-      if (!url) throw new Error((res.data && res.data.error) || 'No se recibiÃ³ el enlace de pago')
-      // RedirecciÃ³n compatible con mÃ³vil (window.open se bloquea tras el await).
+      if (!url) throw new Error((res.data && res.data.error) || 'No se recibió el enlace de pago')
+      // Redirección compatible con móvil (window.open se bloquea tras el await).
       window.location.href = url
     } catch (e) {
       showToast('No se pudo generar el cobro: ' + (e.message || e), 'error')
@@ -540,7 +540,7 @@ export default function Invoices() {
       <div className="flex-1 overflow-y-auto p-6">
         {!company || !company.company_name ? (
           <div style={{ padding: '14px 18px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '10px', marginBottom: '20px', fontSize: '13px', color: '#f59e0b' }}>
-            Todavia no has rellenado tus datos fiscales. Ve a Configuracion â†’ Facturacion antes de crear tu primera factura.
+            Todavia no has rellenado tus datos fiscales. Ve a Configuracion –†’ Facturacion antes de crear tu primera factura.
           </div>
         ) : null}
 
@@ -558,7 +558,7 @@ export default function Invoices() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  {['NÃºmero', 'Cliente', 'EmisiÃ³n', 'Total', 'Estado', 'Acciones'].map(function(h, hi) {
+                  {['NÀºmero', 'Cliente', 'Emisión', 'Total', 'Estado', 'Acciones'].map(function(h, hi) {
                     var isActions = hi === 5
                     return <th key={h} style={{ padding: '10px 14px', textAlign: isActions ? 'right' : 'left', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap', position: isActions ? 'sticky' : undefined, right: isActions ? 0 : undefined, background: isActions ? 'var(--bg-2)' : undefined }}>{h}</th>
                   })}
@@ -584,8 +584,8 @@ export default function Invoices() {
                               <Eye style={{ width: '11px', height: '11px' }} /> Visible en portal
                             </div>
                           ) : (
-                            <div title="En borrador: solo tÃº la ves. PÃ¡sala a Enviada para que el cliente la reciba y la vea en el portal." style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px', fontSize: '10px', fontWeight: 600, color: 'var(--text-5)' }}>
-                              <EyeOff style={{ width: '11px', height: '11px' }} /> Solo tÃº (borrador)
+                            <div title="En borrador: solo tÀº la ves. Pásala a Enviada para que el cliente la reciba y la vea en el portal." style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px', fontSize: '10px', fontWeight: 600, color: 'var(--text-5)' }}>
+                              <EyeOff style={{ width: '11px', height: '11px' }} /> Solo tÀº (borrador)
                             </div>
                           )
                         )}
@@ -607,12 +607,12 @@ export default function Invoices() {
                               style={{ display: 'flex', alignItems: 'center', gap: '5px', height: '28px', padding: '0 10px', borderRadius: '6px', border: '1px solid rgba(34,197,94,0.35)', background: 'rgba(34,197,94,0.12)', color: '#22c55e', fontSize: '12px', fontWeight: 700, cursor: chargingId === inv.id ? 'not-allowed' : 'pointer', opacity: chargingId === inv.id ? 0.6 : 1, whiteSpace: 'nowrap' }}
                             >
                               <CreditCard style={{ width: '13px', height: '13px' }} />
-                              {chargingId === inv.id ? 'Generandoâ€¦' : 'Cobrar'}
+                              {chargingId === inv.id ? 'Generando│' : 'Cobrar'}
                             </button>
                           )}
                           <button type="button" onClick={function() { openEdit(inv) }}
                             style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', color: '#94a3b8' }}
-                          >âœŽ</button>
+                          >–œŽ</button>
                           <button type="button" onClick={function() { handleArchive(inv.id) }}
                             style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(239,68,68,0.1)', cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                           ><Archive style={{ width: '13px', height: '13px' }} /></button>

@@ -1,6 +1,6 @@
 ﻿import { supabase } from '@/shared/lib/supabase'
 
-// Tier a usar cuando una org no tiene 'plan' asignado (no deberÃ­a pasar, ya
+// Tier a usar cuando una org no tiene 'plan' asignado (no debería pasar, ya
 // que la columna tiene DEFAULT 'starter', pero por si acaso).
 var FALLBACK_TIER = 'starter'
 
@@ -53,14 +53,14 @@ export async function setUsageCount(orgId, featureName, count) {
 }
 
 // Resuelve si una org puede usar `featureName`. Si `currentUsage` se pasa,
-// tambiÃ©n valida contra el limit_value numerico de la tier (p.ej. max_projects).
+// también valida contra el limit_value numerico de la tier (p.ej. max_projects).
 // Devuelve { allowed, enabled, limit, tier, feature }.
 export async function checkFeatureAccess(orgId, featureName, currentUsage) {
   var tier  = await getOrgPlan(orgId)
   var limit = await getFeatureLimit(tier, featureName)
 
   // Sin fila de config para esta feature/tier: no bloqueamos (fail-open),
-  // ya que solo las features listadas en feature_limits estÃ¡n gateadas.
+  // ya que solo las features listadas en feature_limits están gateadas.
   if (!limit) return { allowed: true, enabled: true, limit: null, tier: tier, feature: featureName }
 
   if (!limit.enabled) {

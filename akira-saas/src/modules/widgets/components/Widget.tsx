@@ -43,7 +43,7 @@ export const Widget: React.FC<WidgetProps & { config: any }> = ({
                 className="p-1 hover:bg-surface-1 rounded text-text-3 hover:text-text-2 transition-colors"
                 title="Remove widget"
               >
-                âœ•
+                –œ•
               </button>
             )}
           </div>

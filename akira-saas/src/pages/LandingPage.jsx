@@ -31,21 +31,21 @@ export default function LandingPage() {
   const pricingTiers = [
     {
       name: 'Starter',
-      price: 'â‚¬29',
+      price: '–‚¬29',
       period: '/month',
       features: ['1 user account', 'Up to 5 clients', 'CRM + Projects + Invoicing', 'Client portal'],
       featured: false
     },
     {
       name: 'Professional',
-      price: 'â‚¬79',
+      price: '–‚¬79',
       period: '/month',
       features: ['3 user accounts', 'Unlimited clients', 'Everything in Starter +', 'Time Tracking + APIs', 'Priority support'],
       featured: true
     },
     {
       name: 'Enterprise',
-      price: 'â‚¬199+',
+      price: '–‚¬199+',
       period: '/month',
       features: ['5+ user accounts', 'Unlimited everything', 'Advanced analytics', 'White-label', 'Dedicated support'],
       featured: false
@@ -99,7 +99,7 @@ export default function LandingPage() {
               className="btn-primary"
               onClick={() => setShowForm(true)}
             >
-              Join the Beta â€” Free for 3 Months
+              Join the Beta –” Free for 3 Months
             </button>
             <button className="btn-secondary">Watch Demo</button>
           </div>
@@ -162,7 +162,7 @@ export default function LandingPage() {
               <ul className="features-list">
                 {tier.features.map((feat, i) => (
                   <li key={i}>
-                    <span className="checkmark">âœ“</span> {feat}
+                    <span className="checkmark">–œ“</span> {feat}
                   </li>
                 ))}
               </ul>

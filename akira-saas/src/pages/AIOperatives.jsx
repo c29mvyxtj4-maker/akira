@@ -110,9 +110,9 @@ export default function AIOperatives() {
 
       // Show result
       if (result.success) {
-        alert(`âœ… ${result.result.outcome}`)
+        alert(`–œ… ${result.result.outcome}`)
       } else {
-        alert(`âŒ Error: ${result.error}`)
+        alert(`–Œ Error: ${result.error}`)
       }
 
       setUserIntent('')
@@ -136,9 +136,9 @@ export default function AIOperatives() {
       await loadHistory()
 
       if (result.success) {
-        alert(`âœ… ${result.result.outcome}`)
+        alert(`–œ… ${result.result.outcome}`)
       } else {
-        alert(`âŒ ${result.error}`)
+        alert(`–Œ ${result.error}`)
       }
     } catch (error) {
       alert(`Error: ${error.message}`)
@@ -278,7 +278,7 @@ export default function AIOperatives() {
                       color: isSuccess ? '#22c55e' : '#ef4444',
                       margin: 0,
                     }}>
-                      {isSuccess ? 'âœ… Success' : 'âŒ Failed'}
+                      {isSuccess ? '–œ… Success' : '–Œ Failed'}
                     </p>
                     {data.duration && (
                       <p style={{ fontSize: '11px', color: 'var(--text-5)', margin: '4px 0 0 0' }}>

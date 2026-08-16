@@ -14,8 +14,8 @@ import { ROUTES } from '@/shared/config/constants'
 import { useResponsive } from '@/shared/hooks/useResponsive'
 
 /**
- * BottomNavigation - NavegaciÃ³n inferior para mÃ³vil y tablet
- * 5-6 items principales + botÃ³n "More" para opciones adicionales
+ * BottomNavigation - Navegación inferior para móvil y tablet
+ * 5-6 items principales + botón "More" para opciones adicionales
  * Solo visible en breakpoints <= lg (1024px)
  */
 
@@ -141,7 +141,7 @@ export function BottomNavigation({
           onClick={onMoreClick}
           className="flex-1 flex flex-col items-center justify-center py-2 px-1 text-text-3 hover:text-text-2 transition-colors duration-200 relative"
           whileTap={{ scale: 0.95 }}
-          aria-label="MÃ¡s opciones"
+          aria-label="Más opciones"
         >
           <div className="flex-1 flex items-center justify-center mb-1">
             <MoreHorizontal className="w-6 h-6" />
@@ -155,7 +155,7 @@ export function BottomNavigation({
               </motion.span>
             )}
           </div>
-          <span className="text-xs font-medium">MÃ¡s</span>
+          <span className="text-xs font-medium">Más</span>
         </motion.button>
       </div>
     </motion.nav>
@@ -184,7 +184,7 @@ export function BottomNavigationSpacer() {
 }
 
 /**
- * Badge Helper - Componente para mostrar badges en items de navegaciÃ³n
+ * Badge Helper - Componente para mostrar badges en items de navegación
  */
 
 interface NavBadgeProps {

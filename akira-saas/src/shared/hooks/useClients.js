@@ -27,7 +27,7 @@ export function useClients() {
     setTimeout(() => setToastMsg(null), 3500)
   }, [])
 
-  // â”€â”€ Cargar lista â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Cargar lista –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const loadList = useCallback(async () => {
     setLoading(true)
     setError(null)
@@ -66,7 +66,7 @@ export function useClients() {
     return () => clearTimeout(t)
   }, [loadList])
 
-  // â”€â”€ Cargar detalle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Cargar detalle –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   useEffect(() => {
     if (!selectedId) {
       setDetail(null)
@@ -107,12 +107,12 @@ export function useClients() {
     })
   }, [selectedId])
 
-  // â”€â”€ Tiempo real: recargar cuando cambia algo en otro dispositivo â”€â”€ â† NUEVO
+  // –”€–”€ Tiempo real: recargar cuando cambia algo en otro dispositivo –”€–”€ –† NUEVO
   useEffect(() => {
     const channel = supabase.channel('clients-store')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, (payload) => {
         loadList()
-        // Si el cliente que tienes abierto ahora mismo cambiÃ³ en otro dispositivo, lo refrescamos tambiÃ©n
+        // Si el cliente que tienes abierto ahora mismo cambió en otro dispositivo, lo refrescamos también
         if (selectedId && payload.new && payload.new.id === selectedId) {
           setDetail(prev => (prev ? { ...prev, ...payload.new } : prev))
         }
@@ -133,7 +133,7 @@ export function useClients() {
     return () => supabase.removeChannel(channel)
   }, [loadList, selectedId])
 
-  // â”€â”€ Acciones â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Acciones –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const openCreate = () => { setEditing(null); setModalOpen(true) }
   const openEdit   = (c) => { setEditing(c);   setModalOpen(true) }
   const closeModal = () => { setModalOpen(false); setEditing(null) }
@@ -247,7 +247,7 @@ export function useClients() {
         .update({ last_contact_at: occurred_at || new Date().toISOString() })
         .eq('id', selectedId)
 
-      showToast('Entrada aÃ±adida')
+      showToast('Entrada añadida')
     } catch (e) {
       showToast(e.message, 'error')
     }

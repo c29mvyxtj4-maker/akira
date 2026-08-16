@@ -169,7 +169,7 @@ export default function Automation() {
 
               <div style={{ fontSize: '12px', color: 'var(--text-4)', paddingTop: '8px', borderTop: '1px solid var(--surface-2)' }}>
                 <p>
-                  <strong>{template.steps.length}</strong> steps â€¢ ~<strong>{template.estimatedDuration}</strong> min
+                  <strong>{template.steps.length}</strong> steps –¢ ~<strong>{template.estimatedDuration}</strong> min
                 </p>
               </div>
 

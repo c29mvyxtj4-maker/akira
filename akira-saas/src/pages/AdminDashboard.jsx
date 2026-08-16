@@ -201,7 +201,7 @@ export default function AdminDashboard() {
             background: 'rgba(34,197,94,0.1)',
             border: '1px solid rgba(34,197,94,0.2)',
           }}>
-            <div style={{ color: '#22c55e' }}>âœ“</div>
+            <div style={{ color: '#22c55e' }}>–œ“</div>
             <div>
               <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-1)', margin: 0 }}>
                 All systems operational

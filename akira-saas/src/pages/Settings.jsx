@@ -36,7 +36,7 @@ export default function Settings({ onClose, initialTab }) {
   var isModal = typeof onClose === 'function'
   var [activeTab, setActiveTab] = useState(initialTab || 'profile')
 
-  // MÃ³vil: 'list' (ver las pestaÃ±as) | 'content' (ver el contenido de una pestaÃ±a) â€” NUEVO
+  // Móvil: 'list' (ver las pestañas) | 'content' (ver el contenido de una pestaña) –” NUEVO
   var [mobileStep, setMobileStep] = useState('list')
   var [isMobile, setIsMobile] = useState(false)
   useEffect(function() {
@@ -53,39 +53,39 @@ export default function Settings({ onClose, initialTab }) {
   }
 
   // Estructura por grupos (estilo Notion): cada grupo tiene un encabezado y sus
-  // pestaÃ±as. El mapa plano TABS se deriva para bÃºsquedas por id.
+  // pestañas. El mapa plano TABS se deriva para bÀºsquedas por id.
   var GROUPS = [
     { title: 'Cuenta', tabs: [
       { id: 'profile',       label: 'Mi perfil',       icon: User },
       { id: 'preferences',   label: 'Preferencias',    icon: SlidersHorizontal },
       { id: 'notifications', label: 'Notificaciones',  icon: Bell },
-      { id: 'account',       label: 'Cuenta y sesiÃ³n', icon: Database },
+      { id: 'account',       label: 'Cuenta y sesión', icon: Database },
       { id: 'legal',         label: 'Legal',           icon: Scale },
     ] },
     { title: 'Espacio de trabajo', tabs: [
       { id: 'workspace',   label: 'General',    icon: Building2 },
       { id: 'team',        label: 'Personas',   icon: Users2 },
       { id: 'data',        label: 'Importar',   icon: Download },
-      { id: 'categories',  label: 'CategorÃ­as', icon: Tag },
+      { id: 'categories',  label: 'Categorías', icon: Tag },
       { id: 'templates',   label: 'Plantillas', icon: FileText },
     ] },
     { title: 'Funciones', tabs: [
       { id: 'ai',          label: 'IA de AKIRA',      icon: Sparkles },
       { id: 'connections', label: 'Conexiones',       icon: Plug },
       { id: 'mcp',         label: 'MCP de AKIRA',     icon: Terminal },
-      { id: 'offline',     label: 'Sin conexiÃ³n',     icon: WifiOff },
-      { id: 'publicpages', label: 'PÃ¡ginas pÃºblicas', icon: Globe },
+      { id: 'offline',     label: 'Sin conexión',     icon: WifiOff },
+      { id: 'publicpages', label: 'Páginas pÀºblicas', icon: Globe },
       { id: 'automations', label: 'Automatizaciones', icon: Workflow },
     ] },
-    { title: 'AdministraciÃ³n', tabs: [
+    { title: 'Administración', tabs: [
       { id: 'teamspace', label: 'Espacio de equipo', icon: Boxes },
       { id: 'security',  label: 'Seguridad',         icon: Lock },
       { id: 'identity',  label: 'Identidad',         icon: Fingerprint },
-      { id: 'audit',     label: 'AuditorÃ­a',         icon: History },
+      { id: 'audit',     label: 'Auditoría',         icon: History },
       { id: 'danger',    label: 'Zona de peligro',   icon: AlertOctagon },
     ] },
-    { title: 'Acceso y facturaciÃ³n', tabs: [
-      { id: 'billing', label: 'Plan y facturaciÃ³n', icon: Receipt },
+    { title: 'Acceso y facturación', tabs: [
+      { id: 'billing', label: 'Plan y facturación', icon: Receipt },
     ] },
   ]
 
@@ -98,7 +98,7 @@ export default function Settings({ onClose, initialTab }) {
   var twoPane = (
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
 
-        {/* Sidebar de tabs, agrupada estilo Notion â€” en mÃ³vil, pantalla completa hasta elegir */}
+        {/* Sidebar de tabs, agrupada estilo Notion –” en móvil, pantalla completa hasta elegir */}
         {showListPane && (
           <div style={{ width: isMobile ? '100%' : '248px', flexShrink: 0, borderRight: '1px solid var(--border)', padding: '14px 10px', background: 'rgba(255,255,255,0.012)', overflowY: 'auto' }}>
             {GROUPS.map(function(group, gi) {
@@ -144,7 +144,7 @@ export default function Settings({ onClose, initialTab }) {
           <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '16px 20px' : '28px 36px' }}>
             <div style={{ maxWidth: '680px' }}>
 
-              {/* BotÃ³n volver, solo en mÃ³vil */}
+              {/* Botón volver, solo en móvil */}
               {isMobile && (
                 <button
                   type="button"
@@ -285,7 +285,7 @@ export default function Settings({ onClose, initialTab }) {
           style={{ width: 'min(96vw, 1000px)', height: 'min(88dvh, 760px)', display: 'flex', flexDirection: 'column', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-modal)', overflow: 'hidden' }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
-            <h2 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text-1)' }}>ConfiguraciÃ³n</h2>
+            <h2 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text-1)' }}>Configuración</h2>
             <button type="button" onClick={onClose} aria-label="Cerrar" style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', background: 'var(--bg-3)', color: 'var(--text-3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <X style={{ width: '16px', height: '16px' }} />
             </button>

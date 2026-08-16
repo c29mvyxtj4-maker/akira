@@ -126,7 +126,7 @@ export default function TopMenu() {
                     {org?.name || 'Workspace'}
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--text-3)' }}>
-                    Plan gratuito Â· 1 miembro
+                    Plan gratuito · 1 miembro
                   </div>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export default function TopMenu() {
                   textAlign: 'left',
                 }}
               >
-                â„¹ï¸ Mejorar tu plan
+                –„¹ï¸ Mejorar tu plan
               </motion.button>
 
               {/* Settings */}
@@ -172,7 +172,7 @@ export default function TopMenu() {
                 }}
               >
                 <Settings style={{ width: '16px', height: '16px' }} />
-                ConfiguraciÃ³n
+                Configuración
               </motion.button>
 
               {/* Invite */}
@@ -215,7 +215,7 @@ export default function TopMenu() {
                   textAlign: 'left',
                 }}
               >
-                ðŸ‘¤ AÃ±adir cuenta
+                ðŸ‘¤ Añadir cuenta
               </motion.button>
 
               <div style={{ height: '1px', background: 'var(--surface-2)', margin: '8px 0' }} />
@@ -272,7 +272,7 @@ export default function TopMenu() {
                         {ws.name?.charAt(0) || 'A'}
                       </div>
                       {ws.name}
-                      {org?.id === ws.id && ' âœ“'}
+                      {org?.id === ws.id && ' –œ“'}
                     </motion.button>
                   ))}
                 </>
@@ -333,7 +333,7 @@ export default function TopMenu() {
                 }}
               >
                 <LogOut style={{ width: '16px', height: '16px' }} />
-                Cerrar sesiÃ³n
+                Cerrar sesión
               </motion.button>
             </motion.div>
           )}
@@ -376,7 +376,7 @@ export default function TopMenu() {
         fontWeight: 500,
         color: 'var(--text-1)',
       }}>
-        âš™ï¸ {org?.name || 'AKIRA'}
+        –š™ï¸ {org?.name || 'AKIRA'}
       </div>
 
       {/* RIGHT: Navigation Controls + Plus + Window Controls */}
@@ -407,7 +407,7 @@ export default function TopMenu() {
             e.currentTarget.style.background = 'transparent'
             e.currentTarget.style.color = 'var(--text-2)'
           }}
-          title="AtrÃ¡s"
+          title="Atrás"
         >
           <ChevronLeft style={{ width: '16px', height: '16px' }} />
         </motion.button>

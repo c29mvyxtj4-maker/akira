@@ -23,7 +23,7 @@ export default function RevenueChart({ revenueSparkline = [], clientsByStatus = 
       <div className="flex items-center justify-between px-5 pt-4 pb-0">
         <div>
           <h3 className="text-sm font-semibold text-text-1">Resumen visual</h3>
-          <p className="text-xs text-text-4 mt-0.5">EvoluciÃ³n y distribuciÃ³n</p>
+          <p className="text-xs text-text-4 mt-0.5">Evolución y distribución</p>
         </div>
         {/* Tabs */}
         <div className="flex items-center gap-1 bg-surface-3 rounded-lg p-1">
@@ -52,7 +52,7 @@ export default function RevenueChart({ revenueSparkline = [], clientsByStatus = 
                 data={revenueSparkline}
                 lines={[{ key: 'value', color: '#e63946', name: 'Ingresos' }]}
                 height={180}
-                formatter={(v) => `${v.toLocaleString()}â‚¬`}
+                formatter={(v) => `${v.toLocaleString()}–‚¬`}
               />
             ) : (
               <div className="h-44 flex items-center justify-center text-text-4 text-sm">
@@ -93,7 +93,7 @@ export default function RevenueChart({ revenueSparkline = [], clientsByStatus = 
               </div>
             ) : (
               <div className="h-44 flex items-center justify-center text-text-4 text-sm">
-                Sin clientes todavÃ­a
+                Sin clientes todavía
               </div>
             )}
           </motion.div>
@@ -109,7 +109,7 @@ export default function RevenueChart({ revenueSparkline = [], clientsByStatus = 
               />
             ) : (
               <div className="h-44 flex items-center justify-center text-text-4 text-sm">
-                Sin proyectos todavÃ­a
+                Sin proyectos todavía
               </div>
             )}
           </motion.div>

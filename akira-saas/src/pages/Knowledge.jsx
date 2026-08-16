@@ -7,7 +7,7 @@ import {
 import { useKnowledge }   from '@/shared/hooks/useKnowledge'
 import FolderTree         from '@/components/knowledge/FolderTree'
 import DocList            from '@/components/knowledge/DocList'
-// TipTap pesa ~500KB: se carga solo al abrir un documento, no con la pÃ¡gina.
+// TipTap pesa ~500KB: se carga solo al abrir un documento, no con la página.
 const TipTapEditor = lazy(() => import('@/components/knowledge/TipTapEditor'))
 import { useSearchParams } from 'react-router-dom'
 import { KNOWLEDGE_TEMPLATES } from '@/shared/data/knowledgeTemplates'
@@ -39,7 +39,7 @@ var INP = {
   boxSizing: 'border-box',
 }
 
-/* â”€â”€ Panel de propiedades â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Panel de propiedades –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function DocMetaPanel({ doc, onMetaChange, onClose }) {
   var [tagInput, setTagInput] = useState('')
   if (!doc) return null
@@ -95,7 +95,7 @@ function DocMetaPanel({ doc, onMetaChange, onClose }) {
         </div>
 
         <div>
-          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>CategorÃ­a</p>
+          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Categoría</p>
           <input value={doc.category || ''} onChange={function(e) { onMetaChange(doc.id, { category: e.target.value }) }} placeholder="Ej: Procedimientos" style={INP} />
         </div>
 
@@ -125,7 +125,7 @@ function DocMetaPanel({ doc, onMetaChange, onClose }) {
         </div>
 
         <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.04)' }}>
-          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>EstadÃ­sticas</p>
+          <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Estadísticas</p>
           {[
             ['Palabras',  doc.word_count    || 0],
             ['Tiempo',    (doc.read_time_min || 1) + ' min'],
@@ -168,7 +168,7 @@ function DocMetaPanel({ doc, onMetaChange, onClose }) {
   )
 }
 
-/* â”€â”€ Panel historial â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Panel historial –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function VersionsPanel({ versions, onClose }) {
   return (
     <motion.div
@@ -245,9 +245,9 @@ function TemplatePickerModal({ onPick, onClose }) {
   )
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    PAGINA PRINCIPAL
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 export default function Knowledge() {
   var hook = useKnowledge()
   var [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -265,7 +265,7 @@ export default function Knowledge() {
     return function() { mq.removeEventListener('change', update) }
   }, [])
 
-  // Abrir directamente un documento si venimos de la busqueda global â€” NUEVO
+  // Abrir directamente un documento si venimos de la busqueda global –” NUEVO
   var [searchParams, setSearchParams] = useSearchParams()
   useEffect(function() {
     var openId = searchParams.get('open')
@@ -273,7 +273,7 @@ export default function Knowledge() {
       hook.openDocument(openId)
       setMobileStep('editor')
     }
-    // Crear una pÃ¡gina nueva directamente al llegar con ?new=1 (desde /inicio).
+    // Crear una página nueva directamente al llegar con ?new=1 (desde /inicio).
     if (searchParams.get('new')) {
       hook.handleCreateDoc()
       setMobileStep('editor')
@@ -301,7 +301,7 @@ export default function Knowledge() {
   }
 
   // Crear documento: SIEMPRE se llama sin argumentos, para no pasarle
-  // por error el propio clic del botÃ³n como si fuera el id de carpeta. â† CORREGIDO
+  // por error el propio clic del botón como si fuera el id de carpeta. –† CORREGIDO
   var [showTemplatePicker, setShowTemplatePicker] = useState(false)
 
   function handleNewDocMobile() {
@@ -421,7 +421,7 @@ export default function Knowledge() {
           )}
         </AnimatePresence>
 
-        {/* Boton colapsar â€” solo en escritorio */}
+        {/* Boton colapsar –” solo en escritorio */}
         {!isMobile && (
           <button type="button"
             onClick={function() { setSidebarCollapsed(function(v) { return !v }) }}
@@ -496,13 +496,13 @@ export default function Knowledge() {
                   <input
                     value={hook.activeDoc.subtitle || ''}
                     onChange={function(e) { hook.handleMetaChange(hook.activeDoc.id, { subtitle: e.target.value }) }}
-                    placeholder="SubtÃ­tulo opcional..."
+                    placeholder="Subtítulo opcional..."
                     style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: '16px', fontWeight: 400, color: 'rgba(255,255,255,0.35)', fontFamily: 'inherit', marginTop: '6px', boxSizing: 'border-box' }}
                   />
                   <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '16px 0 0' }} />
                 </div>
                 <div style={{ flex: 1, overflow: 'hidden' }}>
-                  <Suspense fallback={<div style={{ padding: '24px', color: 'rgba(255,255,255,0.35)', fontSize: '14px' }}>Cargando editorâ€¦</div>}>
+                  <Suspense fallback={<div style={{ padding: '24px', color: 'rgba(255,255,255,0.35)', fontSize: '14px' }}>Cargando editor│</div>}>
                   <TipTapEditor
                     doc={hook.activeDoc}
                     onChange={hook.handleContentChange}

@@ -6,7 +6,7 @@ export async function getUpcomingEventsFixed() {
   return []
 }
 
-// Obtener Ãºltimas 10 pÃ¡ginas abiertas
+// Obtener Àºltimas 10 páginas abiertas
 export async function getRecentPages() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -27,7 +27,7 @@ export async function getRecentPages() {
   }
 }
 
-// Obtener movimientos de las Ãºltimas 24h
+// Obtener movimientos de las Àºltimas 24h
 export async function getActivity24h() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -149,7 +149,7 @@ export async function getUserWorkspaces() {
 
     console.log('[getUserWorkspaces] Found org_id:', org_id)
 
-    // Obtener la organizaciÃ³n
+    // Obtener la organización
     const { data: org, error: orgError } = await supabase
       .from('organizations')
       .select('*')

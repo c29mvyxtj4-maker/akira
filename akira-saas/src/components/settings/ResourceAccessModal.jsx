@@ -80,7 +80,7 @@ export default function ResourceAccessModal({ member, orgId, onClose }) {
               ) : clients.map(function(c) {
                 return (
                   <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 4px', borderBottom: '1px solid var(--border)' }}>
-                    <span style={{ fontSize: '13px', color: 'var(--text-1)' }}>{c.name}{c.company ? ' â€” ' + c.company : ''}</span>
+                    <span style={{ fontSize: '13px', color: 'var(--text-1)' }}>{c.name}{c.company ? ' –” ' + c.company : ''}</span>
                     <Toggle checked={hasAccess('client', c.id)} onClick={function() { toggle('client', c.id) }} />
                   </div>
                 )

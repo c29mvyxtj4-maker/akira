@@ -91,7 +91,7 @@ export default function TimeEntriesList({
     return (
       <EmptyState
         icon={Clock}
-        emoji="â±ï¸"
+        emoji="–±ï¸"
         title="No time entries"
         description="Start tracking time with the timer to create your first entry."
         size="sm"

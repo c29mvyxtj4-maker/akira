@@ -3,10 +3,10 @@ import { useResponsive } from '@/shared/hooks/useResponsive'
 import { motion } from 'framer-motion'
 
 /**
- * ResponsiveTable - Tabla que se adapta a mÃ³vil/tablet/desktop
+ * ResponsiveTable - Tabla que se adapta a móvil/tablet/desktop
  * Desktop: Tabla HTML tradicional
  * Tablet: Tabla compacta
- * MÃ³vil: Cards apiladas (no tabla)
+ * Móvil: Cards apiladas (no tabla)
  */
 
 interface Column {
@@ -180,7 +180,7 @@ export function ResponsiveTable({
 }
 
 /**
- * CardRow - Tarjeta para renderizar fila en mÃ³vil
+ * CardRow - Tarjeta para renderizar fila en móvil
  */
 
 interface CardRowProps {

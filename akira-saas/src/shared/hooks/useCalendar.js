@@ -20,10 +20,10 @@ function toLocalTime(iso) {
 function combineDateTime(dateStr, timeStr) {
   if (!dateStr) return null
   // Construimos la fecha con los componentes de HORA LOCAL y devolvemos su ISO
-  // (UTC). AsÃ­, al guardarse en la columna timestamptz y volver a leerse con
+  // (UTC). Así, al guardarse en la columna timestamptz y volver a leerse con
   // new Date(...).getHours(), recuperamos exactamente la hora que puso el
-  // usuario (antes se guardaba texto "naÃ¯ve" -> Postgres lo tomaba como UTC y
-  // el evento se desplazaba segÃºn la zona horaria).
+  // usuario (antes se guardaba texto "naÀ¯ve" -> Postgres lo tomaba como UTC y
+  // el evento se desplazaba segÀºn la zona horaria).
   var dp = String(dateStr).split('-')
   var tp = String(timeStr || '00:00').split(':')
   var d = new Date(
@@ -52,7 +52,7 @@ function mapRow(row) {
 }
 
 function fmtCur(n) {
-  return Number(n).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'â‚¬'
+  return Number(n).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '–‚¬'
 }
 
 export function useCalendar() {
@@ -62,7 +62,7 @@ export function useCalendar() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
 
   const [dbEvents, setDbEvents] = useState([])   // eventos reales creados a mano
-  const [autoEvents, setAutoEvents] = useState([]) // â† NUEVO: cobros y renovaciones automÃ¡ticos
+  const [autoEvents, setAutoEvents] = useState([]) // –† NUEVO: cobros y renovaciones automáticos
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState(null)
 
@@ -79,7 +79,7 @@ export function useCalendar() {
     setTimeout(() => setToastMsg(null), 3500)
   }, [])
 
-  // â”€â”€ Cargar eventos reales â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Cargar eventos reales –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const loadEvents = useCallback(async () => {
     setLoading(true)
     setError(null)
@@ -116,7 +116,7 @@ export function useCalendar() {
     loadEvents()
   }, [loadEvents])
 
-  // â”€â”€ Cargar eventos automÃ¡ticos: facturas pendientes + renovaciones â”€â”€ â† NUEVO
+  // –”€–”€ Cargar eventos automáticos: facturas pendientes + renovaciones –”€–”€ –† NUEVO
   const loadAutoEvents = useCallback(async () => {
     try {
       const { data: userData } = await supabase.auth.getUser()
@@ -144,7 +144,7 @@ export function useCalendar() {
         var who = inv.clients ? (inv.clients.company || inv.clients.name) : inv.invoice_number
         return {
           id: 'invoice-' + inv.id,
-          title: 'Cobro: ' + who + ' â€” ' + fmtCur(inv.total),
+          title: 'Cobro: ' + who + ' –” ' + fmtCur(inv.total),
           event_date: inv.due_date,
           start_time: null,
           end_time: null,
@@ -184,7 +184,7 @@ export function useCalendar() {
     loadAutoEvents()
   }, [loadAutoEvents])
 
-  // â”€â”€ Cargar selectores â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Cargar selectores –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   useEffect(() => {
     supabase
       .from('clients')
@@ -198,16 +198,16 @@ export function useCalendar() {
       })
   }, [])
 
-  // â”€â”€ Tiempo real â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Tiempo real –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   useEffect(() => {
     const channel = supabase.channel('calendar-store')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'calendar_events' }, () => {
         loadEvents()
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'invoices' }, () => { // â† NUEVO
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'invoices' }, () => { // –† NUEVO
         loadAutoEvents()
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions' }, () => { // â† NUEVO
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions' }, () => { // –† NUEVO
         loadAutoEvents()
       })
       .subscribe()
@@ -215,7 +215,7 @@ export function useCalendar() {
     return () => supabase.removeChannel(channel)
   }, [loadEvents, loadAutoEvents])
 
-  // â”€â”€ NavegaciÃ³n de mes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Navegación de mes –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const prevMonth = useCallback(() => {
     setCurrentMonth((m) => {
       if (m === 0) {
@@ -242,16 +242,16 @@ export function useCalendar() {
     setCurrentMonth(t.getMonth())
   }, [])
 
-  // â”€â”€ Modal (crear) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Modal (crear) –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const openModal = useCallback((dateStr) => {
     setEditingEvent(null)
     setSelectedDate(dateStr)
     setModalOpen(true)
   }, [])
 
-  // â”€â”€ Modal (editar) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Modal (editar) –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const openEditModal = useCallback((event) => {
-    if (event.is_auto) return // â† NUEVO: los automÃ¡ticos no se editan
+    if (event.is_auto) return // –† NUEVO: los automáticos no se editan
     setEditingEvent(event)
     setSelectedDate(event.event_date)
     setModalOpen(true)
@@ -263,7 +263,7 @@ export function useCalendar() {
     setEditingEvent(null)
   }, [])
 
-  // â”€â”€ Crear evento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Crear evento –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const handleCreate = async (form) => {
     setFormLoading(true)
     try {
@@ -310,7 +310,7 @@ export function useCalendar() {
     }
   }
 
-  // â”€â”€ Editar evento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Editar evento –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const handleUpdate = async (id, form) => {
     setFormLoading(true)
     try {
@@ -352,9 +352,9 @@ export function useCalendar() {
     }
   }
 
-  // â”€â”€ Cambiar estado de evento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Cambiar estado de evento –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const updateEventStatus = async (id, status) => {
-    if (String(id).startsWith('invoice-') || String(id).startsWith('sub-')) return // â† NUEVO
+    if (String(id).startsWith('invoice-') || String(id).startsWith('sub-')) return // –† NUEVO
     try {
       const dbStatus = uiStatusToDb(status)
       const { error: updErr } = await supabase
@@ -370,9 +370,9 @@ export function useCalendar() {
     }
   }
 
-  // â”€â”€ Eliminar evento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // –”€–”€ Eliminar evento –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
   const deleteEvent = async (id) => {
-    if (String(id).startsWith('invoice-') || String(id).startsWith('sub-')) return // â† NUEVO
+    if (String(id).startsWith('invoice-') || String(id).startsWith('sub-')) return // –† NUEVO
     try {
       const { error: delErr } = await supabase
         .from('calendar_events')
@@ -388,7 +388,7 @@ export function useCalendar() {
     }
   }
 
-  // Union de eventos reales + automÃ¡ticos, lo que ve Calendar.jsx â† NUEVO
+  // Union de eventos reales + automáticos, lo que ve Calendar.jsx –† NUEVO
   const events = dbEvents.concat(autoEvents)
 
   return {

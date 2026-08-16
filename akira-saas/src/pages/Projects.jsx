@@ -38,7 +38,7 @@ function fmtDate(d) {
   if (!d) return '--'
   return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
 }
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'â‚¬' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '–‚¬' }
 function daysLeft(d) { if (!d) return null; return Math.ceil((new Date(d) - Date.now()) / 86400000) }
 
 var PRIO_COLOR = { low: '#6b7280', medium: '#3b82f6', high: '#f59e0b', urgent: '#ef4444' }
@@ -179,7 +179,7 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, o
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
-          {t.done && <span style={{ color: '#000', fontSize: '10px', fontWeight: 900 }}>âœ“</span>}
+          {t.done && <span style={{ color: '#000', fontSize: '10px', fontWeight: 900 }}>–œ“</span>}
         </button>
 
         <span style={{
@@ -231,7 +231,7 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, o
                 <button type="button" onClick={function() { onAssigneeChange(project.id, t.id, ''); setShowAssign(null) }}
                   style={{ display: 'block', width: '100%', textAlign: 'left', padding: '6px 10px', borderRadius: '6px', border: 'none', background: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: '12px' }}>Sin asignar</button>
                 {members.length === 0 ? (
-                  <p style={{ padding: '6px 10px', fontSize: '11px', color: '#64748b' }}>AÃ±ade miembros en la pestaÃ±a Equipo</p>
+                  <p style={{ padding: '6px 10px', fontSize: '11px', color: '#64748b' }}>Añade miembros en la pestaña Equipo</p>
                 ) : members.map(function(m) {
                   return (
                     <button key={m.id} type="button" onClick={function() { onAssigneeChange(project.id, t.id, m.user_id); createMention({ target_user: m.user_id, org_id: project.org_id, type: 'task_assigned', source_type: 'task', project_id: project.id, text: 'Te han asignado la tarea "' + t.text + '" en ' + (project.name || 'un proyecto') }).catch(function() {}); setShowAssign(null) }}
@@ -477,7 +477,7 @@ function TimePanel({ project }) {
       ) : (
         <button type="button" onClick={function() { setShowManual(true) }}
           style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', fontSize: '12px', fontWeight: 600, cursor: 'pointer', marginBottom: '16px' }}
-        >AÃ±adir tiempo manual</button>
+        >Añadir tiempo manual</button>
       )}
 
       {entries.length === 0 ? (
@@ -529,7 +529,7 @@ function ProgressBar({ progress, onUpdate, projectId }) {
   )
 }
 
-/* â”€â”€ Fase 1: equipo del proyecto (vincular personas) â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Fase 1: equipo del proyecto (vincular personas) –”€–”€–”€–”€–”€–”€–”€ */
 function TeamPanel({ project }) {
   var { org } = useOrg()
   var [members, setMembers] = useState([])
@@ -558,9 +558,9 @@ function TeamPanel({ project }) {
   function handleAdd(userId) {
     setBusy(true)
     addProjectMember(project.id, userId).then(function () {
-      createMention({ target_user: userId, org_id: project.org_id, type: 'project_added', source_type: 'project', source_id: project.id, project_id: project.id, text: 'Te han aÃ±adido al proyecto "' + (project.name || '') + '"' }).catch(function () {})
+      createMention({ target_user: userId, org_id: project.org_id, type: 'project_added', source_type: 'project', source_id: project.id, project_id: project.id, text: 'Te han añadido al proyecto "' + (project.name || '') + '"' }).catch(function () {})
       return load()
-    }).catch(function (e) { window.alert('No se pudo aÃ±adir: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+    }).catch(function (e) { window.alert('No se pudo añadir: ' + (e.message || e)) }).finally(function () { setBusy(false) })
   }
   function handleRemove(id) {
     setBusy(true)
@@ -572,9 +572,9 @@ function TeamPanel({ project }) {
       <div>
         <p className="text-xs font-semibold text-text-4 uppercase tracking-wide mb-2">Miembros del proyecto</p>
         {loading ? (
-          <p className="text-sm text-text-4">Cargandoâ€¦</p>
+          <p className="text-sm text-text-4">Cargando│</p>
         ) : members.length === 0 ? (
-          <p className="text-sm text-text-4">AÃºn no hay nadie asignado a este proyecto. AÃ±ade a alguien de tu equipo abajo.</p>
+          <p className="text-sm text-text-4">AÀºn no hay nadie asignado a este proyecto. Añade a alguien de tu equipo abajo.</p>
         ) : (
           <div className="flex flex-col gap-2">
             {members.map(function (m) {
@@ -594,9 +594,9 @@ function TeamPanel({ project }) {
       </div>
 
       <div>
-        <p className="text-xs font-semibold text-text-4 uppercase tracking-wide mb-2">AÃ±adir del equipo</p>
+        <p className="text-xs font-semibold text-text-4 uppercase tracking-wide mb-2">Añadir del equipo</p>
         {loading ? null : addable.length === 0 ? (
-          <p className="text-sm text-text-4">No hay mÃ¡s gente en tu organizaciÃ³n para aÃ±adir. Invita a mÃ¡s personas desde Ajustes.</p>
+          <p className="text-sm text-text-4">No hay más gente en tu organización para añadir. Invita a más personas desde Ajustes.</p>
         ) : (
           <div className="flex flex-col gap-2">
             {addable.map(function (t) {
@@ -604,7 +604,7 @@ function TeamPanel({ project }) {
                 <div key={t.user_id} className="flex items-center gap-3 p-2.5 rounded-lg border border-border">
                   <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--bg-4)', color: 'var(--text-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '12px', flexShrink: 0 }}>{initialOf(t.profile)}</div>
                   <span className="text-sm text-text-1 flex-1 min-w-0 truncate">{nameOf(t.profile)}</span>
-                  <button type="button" disabled={busy} onClick={function () { handleAdd(t.user_id) }} className="btn-base bg-brand-500 hover:bg-brand-600 text-white text-xs h-8 px-3">AÃ±adir</button>
+                  <button type="button" disabled={busy} onClick={function () { handleAdd(t.user_id) }} className="btn-base bg-brand-500 hover:bg-brand-600 text-white text-xs h-8 px-3">Añadir</button>
                 </div>
               )
             })}
@@ -632,14 +632,14 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
   var days   = daysLeft(project.due_date)
   var over   = days !== null && days < 0 && project.status !== 'completed' && project.status !== 'cancelled'
 
-  // Contexto para Akira â€” se calcula aqui, DENTRO de ProjectDetail, donde "project" si existe â† CORREGIDO
+  // Contexto para Akira –” se calcula aqui, DENTRO de ProjectDetail, donde "project" si existe –† CORREGIDO
   var akiraContext = [
     'Proyecto: ' + project.name,
     'Cliente: ' + (project.clients ? project.clients.name : 'Sin cliente'),
     'Estado: ' + (sc ? sc.label : project.status),
     'Etapa: ' + (sgc ? sgc.label : project.stage),
     'Progreso: ' + (project.progress || 0) + '%',
-    budget > 0 ? 'Presupuesto: ' + budget + 'â‚¬, coste real: ' + cost + 'â‚¬' : null,
+    budget > 0 ? 'Presupuesto: ' + budget + '–‚¬, coste real: ' + cost + '–‚¬' : null,
     tasks.length > 0 ? 'Tareas: ' + doneT + ' completadas de ' + tasks.length : null,
     project.due_date ? 'Entrega prevista: ' + project.due_date : null,
     project.description ? 'Descripcion: ' + project.description : null,
@@ -647,7 +647,7 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
 
   var TABS = [
     { id: 'overview', label: 'Resumen' },
-    { id: 'page',     label: 'PÃ¡gina' },
+    { id: 'page',     label: 'Página' },
     { id: 'tasks',    label: 'Tareas (' + tasks.length + ')' },
     { id: 'team',     label: 'Equipo' },
     { id: 'files',    label: 'Archivos' },
@@ -730,12 +730,12 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
           <div className="space-y-4">
             {project.description && (
               <div>
-                <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-2">DescripciÃ³n</h4>
+                <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-2">Descripción</h4>
                 <div className="surface-card p-4"><p className="text-sm text-text-2 leading-relaxed whitespace-pre-wrap">{project.description}</p></div>
               </div>
             )}
             <div>
-              <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-2">InformaciÃ³n</h4>
+              <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-2">Información</h4>
               <div className="surface-card divide-y divide-border">
                 {[
                   ['Cliente',   project.clients ? project.clients.name : '--'],
@@ -944,7 +944,7 @@ function ProjectForm({ initial, clients, onSave, onCancel, loading }) {
               {opts.map(function(o) { return <option key={o.value} value={o.value}>{o.label}</option> })}
             </select>
           </div>
-          <div><label className="label-base">DescripciÃ³n</label><textarea value={form.description} onChange={set('description')} rows={2} placeholder="Brief..." style={Object.assign({}, I, { resize: 'vertical' })} /></div>
+          <div><label className="label-base">Descripción</label><textarea value={form.description} onChange={set('description')} rows={2} placeholder="Brief..." style={Object.assign({}, I, { resize: 'vertical' })} /></div>
         </div>
       </div>
       <div>

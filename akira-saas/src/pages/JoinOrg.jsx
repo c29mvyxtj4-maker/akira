@@ -33,7 +33,7 @@ export default function JoinOrg() {
         var inv = res.data
         setOrgName(inv.organizations.name)
 
-        // Verificar si el usuario estÃ¡ logueado
+        // Verificar si el usuario está logueado
         return supabase.auth.getSession().then(function(sessionRes) {
           if (!sessionRes.data || !sessionRes.data.session) {
             // Pedir login primero
@@ -43,7 +43,7 @@ export default function JoinOrg() {
 
           var userId = sessionRes.data.session.user.id
 
-          // Aceptar invitaciÃ³n
+          // Aceptar invitación
           return supabase.from('org_members').insert({
             org_id:    inv.org_id,
             user_id:   userId,

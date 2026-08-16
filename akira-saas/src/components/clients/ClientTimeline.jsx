@@ -44,7 +44,7 @@ export default function ClientTimeline({ timeline = [], onAdd, onDelete }) {
           icon={<Plus className="w-3 h-3" />}
           onClick={() => setOpen(v => !v)}
         >
-          AÃ±adir
+          Añadir
         </Button>
       </div>
 
@@ -75,7 +75,7 @@ export default function ClientTimeline({ timeline = [], onAdd, onDelete }) {
               <textarea
                 value={content}
                 onChange={e => setContent(e.target.value)}
-                placeholder="DescripciÃ³n del eventoâ€¦"
+                placeholder="Descripción del evento│"
                 rows={2}
                 className="input-base text-xs w-full resize-none"
               />
@@ -97,7 +97,7 @@ export default function ClientTimeline({ timeline = [], onAdd, onDelete }) {
         <p className="text-xs text-text-4 text-center py-6">Sin entradas en el timeline</p>
       ) : (
         <div className="relative">
-          {/* LÃ­nea vertical */}
+          {/* Línea vertical */}
           <div className="absolute left-3.5 top-0 bottom-0 w-px bg-border" />
 
           <div className="space-y-3">

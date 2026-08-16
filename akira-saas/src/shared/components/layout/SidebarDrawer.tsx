@@ -4,9 +4,9 @@ import { Menu, X } from 'lucide-react'
 import { useResponsive } from '@/shared/hooks/useResponsive'
 
 /**
- * SidebarDrawer - Envuelve el Sidebar para hacerlo drawer en mÃ³vil
+ * SidebarDrawer - Envuelve el Sidebar para hacerlo drawer en móvil
  * Desktop: Sidebar normal permanente
- * Tablet/MÃ³vil: Sidebar como drawer modal
+ * Tablet/Móvil: Sidebar como drawer modal
  */
 
 interface SidebarDrawerProps {
@@ -54,10 +54,10 @@ export function SidebarDrawer({
     )
   }
 
-  // Mobile/Tablet: Drawer + contenido + botÃ³n toggle
+  // Mobile/Tablet: Drawer + contenido + botón toggle
   return (
     <div style={{ display: 'flex', height: '100%', width: '100%', flexDirection: 'column' }}>
-      {/* Header con botÃ³n de menu */}
+      {/* Header con botón de menu */}
       {showToggleButton && (
         <div
           style={{

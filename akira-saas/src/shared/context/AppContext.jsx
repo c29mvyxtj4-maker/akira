@@ -69,7 +69,7 @@ export function AppProvider({ children }) {
 
   useEffect(function() { fetchAll() }, [fetchAll])
 
-  // Realtime â€” escucha cambios en todas las tablas principales
+  // Realtime –” escucha cambios en todas las tablas principales
   useEffect(function() {
     if (!isAuthenticated) return
     var channel = supabase.channel('akira-store')
@@ -143,7 +143,7 @@ export function AppProvider({ children }) {
     var now2       = new Date()
     var monthStart = new Date(now2.getFullYear(), now2.getMonth(), 1)
 
-    // â† CAMBIO AQUÃ: una factura "confirmed" tambiÃ©n cuenta como ingreso real
+    // –† CAMBIO AQUÀ: una factura "confirmed" también cuenta como ingreso real
     var monthIncome = finance
       .filter(function(e) {
         var esIngresoReal = ['income','payment'].includes(e.type) || (e.type === 'invoice' && e.status === 'confirmed')
@@ -171,7 +171,7 @@ export function AppProvider({ children }) {
       return { name: d.toLocaleDateString('es-ES', { month: 'short' }), year: d.getFullYear(), month: d.getMonth() }
     })
 
-    // â† CAMBIO AQUÃ tambiÃ©n: el grÃ¡fico de ingresos usa la misma regla nueva
+    // –† CAMBIO AQUÀ también: el gráfico de ingresos usa la misma regla nueva
     var revenueSparkline = months.map(function(m) {
       return {
         name: m.name,

@@ -59,7 +59,7 @@ export async function downloadExport() {
   return payload
 }
 
-/* â”€â”€ Exportar una sola tabla como CSV (mas facil de abrir en Excel) â”€â”€ */
+/* –”€–”€ Exportar una sola tabla como CSV (mas facil de abrir en Excel) –”€–”€ */
 function toCsvValue(v) {
   if (v === null || v === undefined) return ''
   if (typeof v === 'object') v = JSON.stringify(v)

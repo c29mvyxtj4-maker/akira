@@ -42,7 +42,7 @@ function fmtDate(d, opts) {
   })
 }
 function fmtCur(n) {
-  return (Number(n) || 0).toLocaleString('es-ES') + 'â‚¬'
+  return (Number(n) || 0).toLocaleString('es-ES') + '–‚¬'
 }
 function incomeSign(type) {
   return ['income', 'payment'].includes(type) ? '+' : '-'
@@ -59,7 +59,7 @@ const SOURCES = {
   unknown:       'Desconocido',
 }
 
-/* â”€â”€ Boton "Plantilla de email" con menu desplegable â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* –”€–”€ Boton "Plantilla de email" con menu desplegable –”€–”€–”€–”€–”€–”€–”€–”€ */
 function EmailTemplateButton({ client }) {
   var [open, setOpen] = useState(false)
   var [templates, setTemplates] = useState([])
@@ -109,7 +109,7 @@ function EmailTemplateButton({ client }) {
             <div style={{ padding: '14px', fontSize: '12px', color: 'var(--text-4)', textAlign: 'center' }}>Cargando...</div>
           ) : templates.length === 0 ? (
             <div style={{ padding: '14px', fontSize: '12px', color: 'var(--text-4)', textAlign: 'center' }}>
-              Sin plantillas todavia.<br />Crea una en Configuracion â†’ Plantillas.
+              Sin plantillas todavia.<br />Crea una en Configuracion –†’ Plantillas.
             </div>
           ) : (
             templates.map(function(t) {
@@ -161,7 +161,7 @@ function ClientKpis({ clients }) {
     { label: 'Activos',   value: active,                              icon: UserCheck,     color: 'text-status-success', bg: 'bg-status-success/10' },
     { label: 'Leads',     value: leads,                               icon: Users,         color: 'text-brand-400',      bg: 'bg-brand-500/10' },
     { label: 'En riesgo', value: atRisk,                              icon: AlertTriangle, color: 'text-status-danger',  bg: 'bg-status-danger/10' },
-    { label: 'MRV total', value: mrv.toLocaleString('es-ES') + 'â‚¬',  icon: TrendingUp,    color: 'text-status-warning', bg: 'bg-status-warning/10' },
+    { label: 'MRV total', value: mrv.toLocaleString('es-ES') + '–‚¬',  icon: TrendingUp,    color: 'text-status-warning', bg: 'bg-status-warning/10' },
   ]
 
   return (
@@ -286,11 +286,11 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
    { id: 'portal',    label: 'Portal' },
 ]
 
-  // Contexto para Akira â€” calculado aqui, dentro de ClientDetail, donde "client" si existe
+  // Contexto para Akira –” calculado aqui, dentro de ClientDetail, donde "client" si existe
   var akiraContext = [
     'Cliente: ' + client.name + (client.company ? ' (' + client.company + ')' : ''),
     'Estado: ' + (cfg ? cfg.label : client.status),
-    client.monthly_value > 0 ? 'Valor mensual: ' + client.monthly_value + 'â‚¬' : null,
+    client.monthly_value > 0 ? 'Valor mensual: ' + client.monthly_value + '–‚¬' : null,
     client.niche ? 'Nicho: ' + client.niche : null,
     'Proyectos vinculados: ' + projects.length,
     finance ? 'Ingresos totales de este cliente: ' + fmtCur(finance.income) : null,
@@ -311,7 +311,7 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
       {/* Header */}
       <div className="flex-shrink-0 p-3 sm:p-5 border-b border-border bg-surface-1">
 
-        {/* BotÃ³n volver, solo en mÃ³vil */}
+        {/* Botón volver, solo en móvil */}
         <button
           type="button"
           onClick={onBack}
@@ -437,7 +437,7 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
               )}
 
               <div>
-                <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-3">InformaciÃ³n</h4>
+                <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-3">Información</h4>
                 <div className="surface-card divide-y divide-border">
                   {[
                     ['Origen',          SOURCES[client.source] || '--'],
@@ -553,11 +553,11 @@ export default function Clients() {
       { key: 'name',          label: 'Nombre' },
       { key: 'company',       label: 'Empresa' },
       { key: 'email',         label: 'Email' },
-      { key: 'phone',         label: 'TelÃ©fono' },
+      { key: 'phone',         label: 'Teléfono' },
       { key: 'status_label',  label: 'Estado' },
       { key: 'niche',         label: 'Nicho' },
       { key: 'source',        label: 'Origen' },
-      { key: 'monthly_value', label: 'Valor mensual (â‚¬)' },
+      { key: 'monthly_value', label: 'Valor mensual (–‚¬)' },
     ]
     const rows = clients.map(c => ({
       name:          c.name || '',
@@ -591,7 +591,7 @@ export default function Clients() {
 
       <div className="flex flex-1 overflow-hidden">
 
-        {/* SIDEBAR â€” en mÃ³vil ocupa toda la pantalla y se oculta al seleccionar un cliente */}
+        {/* SIDEBAR –” en móvil ocupa toda la pantalla y se oculta al seleccionar un cliente */}
         <div className={clsx(
           'w-full md:w-72 flex-shrink-0 flex-col border-r border-border bg-surface-1 overflow-hidden',
           selectedId ? 'hidden md:flex' : 'flex'
@@ -713,7 +713,7 @@ export default function Clients() {
           </div>
         </div>
 
-        {/* PANEL DERECHO â€” en mÃ³vil solo se muestra cuando hay un cliente seleccionado */}
+        {/* PANEL DERECHO –” en móvil solo se muestra cuando hay un cliente seleccionado */}
         <div className={clsx(
           'flex-1 flex-col overflow-hidden bg-surface-0',
           selectedId ? 'flex' : 'hidden md:flex'
@@ -738,7 +738,7 @@ export default function Clients() {
         open={modalOpen}
         onClose={closeModal}
         title={editing ? 'Editar cliente' : 'Nuevo cliente'}
-        description={editing ? 'Modifica los datos del cliente' : 'AÃ±ade un nuevo cliente a tu CRM'}
+        description={editing ? 'Modifica los datos del cliente' : 'Añade un nuevo cliente a tu CRM'}
         size="lg"
       >
         <ClientForm

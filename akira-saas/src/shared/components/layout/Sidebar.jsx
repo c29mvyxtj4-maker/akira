@@ -46,7 +46,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
   const accountButtonRef = useRef(null)
 
-  // Estado para datos dinÃ¡micos
+  // Estado para datos dinámicos
   const [upcomingEvents, setUpcomingEvents] = useState([])
   const [recentPages, setRecentPages] = useState([])
   const [favorites, setFavorites] = useState([])
@@ -177,7 +177,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
           type: 'event',
           id: e.id,
           icon: Calendar,
-          label: e.title || 'Sin tÃ­tulo',
+          label: e.title || 'Sin título',
           route: '/calendar',
           data: e,
           isEvent: true,
@@ -268,7 +268,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
     { icon: MessageCircle, label: 'Chat', route: '/brain' },
     { icon: FileText, label: 'Documentos', route: ROUTES.DOCUMENTS },
     { icon: Mail, label: 'Correo', route: '/messages' },
-    { icon: Search, label: 'BÃºsqueda', route: '/search' },
+    { icon: Search, label: 'BÀºsqueda', route: '/search' },
   ]
 
   const sections = {
@@ -280,7 +280,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
               const eventType = EVENT_TYPES[event.type] || EVENT_TYPES.other
               return {
                 icon: Calendar,
-                label: event.title || 'Sin tÃ­tulo',
+                label: event.title || 'Sin título',
                 route: '/calendar',
                 color: eventType.color,
                 isEvent: true,
@@ -290,7 +290,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
             { icon: ChevronRight, label: 'Ver todo', arrow: true, route: '/calendar' },
           ]
         : [
-            { icon: Calendar, label: 'No hay prÃ³ximos eventos', disabled: true },
+            { icon: Calendar, label: 'No hay próximos eventos', disabled: true },
             { icon: ChevronRight, label: 'Ver todo', arrow: true, route: '/calendar' },
           ],
     },
@@ -306,7 +306,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
               eventData: item.eventData,
               color: item.isEvent ? (EVENT_TYPES[item.eventData?.type]?.color || '#64748b') : undefined,
             })),
-            { icon: Plus, label: 'MÃ¡s', dots: true, route: '/activity' },
+            { icon: Plus, label: 'Más', dots: true, route: '/activity' },
           ]
         : [
             { icon: Clock, label: 'Sin elementos recientes', disabled: true },
@@ -321,7 +321,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
             route: fav.item_route,
           }))
         : [
-            { icon: Star, label: 'Sin favoritos aÃºn', disabled: true },
+            { icon: Star, label: 'Sin favoritos aÀºn', disabled: true },
           ],
     },
     equipo: {
@@ -404,12 +404,12 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
             whiteSpace: 'nowrap',
             flex: 1,
           }}>
-            Marc RosÃ³n MartÃ­'s ...
+            Marc Rosón Martí's ...
           </div>
           <ChevronDown size={14} style={{ color: 'var(--text-3)' }} />
         </motion.button>
 
-        {/* Account Menu - IdÃ©ntico al Topbar */}
+        {/* Account Menu - Idéntico al Topbar */}
         {showAccountMenu && (
           <AccountMenu
             anchor={accountButtonRef.current ? {
@@ -427,8 +427,8 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
             onCreateWorkspace={() => alert('Crear nuevo espacio de trabajo')}
             onSettings={onOpenSettings}
             onInvite={() => alert('Invitar a miembros')}
-            onAddAccount={() => alert('AÃ±adir cuenta')}
-            onSignOut={() => alert('Cerrando sesiÃ³n...')}
+            onAddAccount={() => alert('Añadir cuenta')}
+            onSignOut={() => alert('Cerrando sesión...')}
             onClose={() => setShowAccountMenu(false)}
           />
         )}

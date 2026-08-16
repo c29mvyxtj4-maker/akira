@@ -14,7 +14,7 @@ import EmptyState      from '@/shared/components/ui/EmptyState'
 import { PageSpinner } from '@/shared/components/ui/Spinner'
 import clsx            from 'clsx'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + 'â‚¬' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '–‚¬' }
 function fmtDate(d) { if (!d) return '--'; return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 function daysLeft(d) { if (!d) return null; return Math.ceil((new Date(d) - Date.now()) / 86400000) }
 
@@ -96,7 +96,7 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
           <input type="date" value={form.start_date} onChange={set('start_date')} style={INP} />
         </div>
         <div>
-          <label className="label-base">PrÃ³ximo cobro</label>
+          <label className="label-base">Próximo cobro</label>
           <input type="date" value={form.next_billing} onChange={set('next_billing')} style={INP} />
         </div>
         <div className="col-span-2">

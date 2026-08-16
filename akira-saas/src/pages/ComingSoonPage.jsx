@@ -4,8 +4,8 @@ import { ChevronLeft } from 'lucide-react'
 import { DUR, EASE } from '@/shared/config/motion'
 
 /*
- * PÃ¡gina base para funciones planificadas pero aÃºn sin backend. Deja el botÃ³n
- * llevando a un sitio real (no a un enlace roto) y explica quÃ© harÃ¡.
+ * Página base para funciones planificadas pero aÀºn sin backend. Deja el botón
+ * llevando a un sitio real (no a un enlace roto) y explica qué hará.
  */
 export default function ComingSoonPage({ icon: Icon, title, description, bullets }) {
   var navigate = useNavigate()
@@ -23,7 +23,7 @@ export default function ComingSoonPage({ icon: Icon, title, description, bullets
             {Icon && <Icon style={{ width: '26px', height: '26px', color: 'var(--brand)' }} />}
           </div>
           <h1 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.02em' }}>{title}</h1>
-          <span style={{ marginTop: '10px', fontSize: '11px', fontWeight: 700, color: 'var(--brand)', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 10px', borderRadius: '999px', background: 'var(--brand-dim)', border: '1px solid var(--brand-border)' }}>En construcciÃ³n</span>
+          <span style={{ marginTop: '10px', fontSize: '11px', fontWeight: 700, color: 'var(--brand)', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '4px 10px', borderRadius: '999px', background: 'var(--brand-dim)', border: '1px solid var(--brand-border)' }}>En construcción</span>
           <p style={{ fontSize: '14px', color: 'var(--text-3)', lineHeight: 1.6, marginTop: '16px', maxWidth: '440px' }}>{description}</p>
         </motion.div>
 

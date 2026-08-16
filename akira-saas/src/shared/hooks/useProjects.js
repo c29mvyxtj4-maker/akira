@@ -259,7 +259,7 @@ export function useProjects() {
       })
   }
 
-  // â† NUEVO: cambiar la etapa de un proyecto sin abrir el formulario (para el Kanban)
+  // –† NUEVO: cambiar la etapa de un proyecto sin abrir el formulario (para el Kanban)
   function handleUpdateStage(projectId, newStage) {
     setProjects(function(prev) {
       return prev.map(function(p) { return p.id === projectId ? Object.assign({}, p, { stage: newStage }) : p })
@@ -278,10 +278,10 @@ export function useProjects() {
       })
   }
 
-  // Guarda el contenido de la "pÃ¡gina" (editor tipo Notion) del proyecto.
+  // Guarda el contenido de la "página" (editor tipo Notion) del proyecto.
   function savePage(projectId, content) {
     supabase.from('projects').update({ page_content: content }).eq('id', projectId).then(function(res) {
-      if (res.error) { showToast('No se pudo guardar la pÃ¡gina', 'error'); return }
+      if (res.error) { showToast('No se pudo guardar la página', 'error'); return }
       setDetail(function(prev) {
         if (!prev || prev.id !== projectId) return prev
         return Object.assign({}, prev, { page_content: content })

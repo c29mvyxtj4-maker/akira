@@ -4,7 +4,7 @@ import { ResponsiveGrid, ResponsiveSection } from '@/components/responsive'
 
 /**
  * DashboardResponsive - Wrapper para hacer el dashboard completamente responsivo
- * Maneja layout adaptativo para diferentes tamaÃ±os de pantalla
+ * Maneja layout adaptativo para diferentes tamaños de pantalla
  */
 
 interface DashboardResponsiveProps {
@@ -49,7 +49,7 @@ export function KpiCardGrid({ children, gap = 'md' }: KpiCardGridProps) {
 
 /**
  * DashboardPanel - Tarjeta de panel con estilos responsivos
- * Padding adaptativo segÃºn breakpoint
+ * Padding adaptativo segÀºn breakpoint
  */
 
 interface DashboardPanelProps {
@@ -103,8 +103,8 @@ export function DashboardPanel({
 }
 
 /**
- * DashboardGrid - Grid genÃ©rica para layouts de dashboard
- * Adapta columnas segÃºn breakpoint
+ * DashboardGrid - Grid genérica para layouts de dashboard
+ * Adapta columnas segÀºn breakpoint
  */
 
 interface DashboardGridProps {
@@ -136,8 +136,8 @@ export function DashboardGrid({
 }
 
 /**
- * ChartContainer - Container responsivo para grÃ¡ficos
- * Ajusta tamaÃ±o y altura segÃºn breakpoint
+ * ChartContainer - Container responsivo para gráficos
+ * Ajusta tamaño y altura segÀºn breakpoint
  */
 
 interface ChartContainerProps {
@@ -168,7 +168,7 @@ export function ChartContainer({
 }
 
 /**
- * DashboardSidebar - Panel lateral que se convierte en drawer en mÃ³vil
+ * DashboardSidebar - Panel lateral que se convierte en drawer en móvil
  */
 
 interface DashboardSidebarProps {
@@ -179,7 +179,7 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ children, title }: DashboardSidebarProps) {
   const { isDesktop } = useResponsive()
 
-  // En mÃ³vil, mostrar como parte del flujo normal
+  // En móvil, mostrar como parte del flujo normal
   // En desktop, renderizar en sidebar
   if (!isDesktop) {
     return (
@@ -205,7 +205,7 @@ export function DashboardSidebar({ children, title }: DashboardSidebarProps) {
 }
 
 /**
- * Stats - Componente para mostrar estadÃ­sticas numÃ©ricas
+ * Stats - Componente para mostrar estadísticas numéricas
  * Responsive text sizing
  */
 

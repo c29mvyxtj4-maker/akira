@@ -8,7 +8,7 @@ export const useYouTube = (projectId?: string) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Obtener un proyecto especÃ­fico
+  // Obtener un proyecto específico
   const getProject = async (id: string) => {
     setLoading(true)
     setError(null)
@@ -54,7 +54,7 @@ export const useYouTube = (projectId?: string) => {
     }
   }
 
-  // Actualizar fecha de publicaciÃ³n
+  // Actualizar fecha de publicación
   const updatePublishingDate = async (id: string, newDate: Date) => {
     setLoading(true)
     setError(null)

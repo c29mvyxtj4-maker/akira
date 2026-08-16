@@ -1,10 +1,10 @@
-import { AlertTriangle, UserX, CheckCircle, X } from 'lucide-react'
-import { buildInvoiceReminderMailto } from '@/hooks/useNotifications'
+﻿import { AlertTriangle, UserX, CheckCircle, X } from 'lucide-react'
+import { buildInvoiceReminderMailto } from '@/shared/hooks/useNotifications'
 import { getCompanySettings } from '@/services/company.service'
 import { useState, useEffect } from 'react'
 
 function fmtCur(n) {
-  return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '€'
+  return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'â‚¬'
 }
 function fmtDate(d) {
   if (!d) return '--'
@@ -55,7 +55,7 @@ export default function NotificationsPanel({ overdueInvoices, staleClients, urge
       {!hasAnything ? (
         <div style={{ padding: '32px 16px', textAlign: 'center' }}>
           <CheckCircle style={{ width: '28px', height: '28px', color: 'var(--text-5)', margin: '0 auto 8px' }} />
-          <p style={{ fontSize: '12px', color: 'var(--text-4)' }}>Todo al día, sin avisos pendientes</p>
+          <p style={{ fontSize: '12px', color: 'var(--text-4)' }}>Todo al dÃ­a, sin avisos pendientes</p>
         </div>
       ) : (
         <div style={{ padding: '8px' }}>
@@ -72,11 +72,11 @@ export default function NotificationsPanel({ overdueInvoices, staleClients, urge
                       Factura vencida: {inv.invoice_number}
                     </p>
                     <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '2px' }}>
-                      {client ? (client.company || client.name) : 'Sin cliente'} · {fmtCur(inv.total)} · venció el {fmtDate(inv.due_date)}
+                      {client ? (client.company || client.name) : 'Sin cliente'} Â· {fmtCur(inv.total)} Â· venciÃ³ el {fmtDate(inv.due_date)}
                     </p>
                     <button type="button" onClick={function() { handleSendReminder(inv) }}
                       style={{ marginTop: '6px', fontSize: '11px', fontWeight: 600, color: '#f59e0b', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                    >Enviar recordatorio por email →</button>
+                    >Enviar recordatorio por email â†’</button>
                   </div>
                 </div>
               </div>
@@ -95,7 +95,7 @@ export default function NotificationsPanel({ overdueInvoices, staleClients, urge
                       {c.company || c.name}
                     </p>
                     <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '2px' }}>
-                      {d === null ? 'Nunca contactado' : 'Sin contacto desde hace ' + d + ' días'}
+                      {d === null ? 'Nunca contactado' : 'Sin contacto desde hace ' + d + ' dÃ­as'}
                     </p>
                   </div>
                 </div>

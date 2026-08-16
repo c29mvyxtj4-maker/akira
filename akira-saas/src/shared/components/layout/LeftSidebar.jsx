@@ -1,5 +1,5 @@
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useLayout } from '@/hooks/useLayout';
+﻿import { useNavigate, useLocation } from 'react-router-dom';
+import { useLayout } from '@/shared/hooks/useLayout';
 import {
   SidebarItem,
   SidebarSection,
@@ -119,3 +119,4 @@ export const LeftSidebar = () => {
     </aside>
   );
 };
+

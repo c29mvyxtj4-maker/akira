@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { ChevronDown, Settings, UserPlus, Plus, LogOut } from 'lucide-react'
-import { useAuth } from '@/context/AuthContext'
-import { useOrg } from '@/context/OrgContext'
+import { useAuth } from '@/shared/context/AuthContext'
+import { useOrg } from '@/shared/context/OrgContext'
 
 export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRef, switchWorkspace }) {
   const { user } = useAuth()
@@ -68,7 +68,7 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
               fontSize: '12px',
               color: 'var(--text-3)',
             }}>
-              Plan gratuito · 1 miembro
+              Plan gratuito Â· 1 miembro
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
       <div style={{
         padding: '8px',
       }}>
-        {/* Configuración */}
+        {/* ConfiguraciÃ³n */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           onClick={() => {
@@ -109,7 +109,7 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
           }}
         >
           <Settings size={16} />
-          Configuración
+          ConfiguraciÃ³n
         </motion.button>
 
         {/* Invitar a miembros */}
@@ -146,11 +146,11 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
           Invitar a miembros
         </motion.button>
 
-        {/* Añadir cuenta */}
+        {/* AÃ±adir cuenta */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           onClick={() => {
-            alert('Añadir cuenta - Funcionalidad en desarrollo')
+            alert('AÃ±adir cuenta - Funcionalidad en desarrollo')
             onClose()
           }}
           style={{
@@ -177,7 +177,7 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
           }}
         >
           <Plus size={16} />
-          Añadir cuenta
+          AÃ±adir cuenta
         </motion.button>
       </div>
 
@@ -306,14 +306,14 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
         margin: '8px 0',
       }} />
 
-      {/* Cerrar sesión */}
+      {/* Cerrar sesiÃ³n */}
       <div style={{
         padding: '8px',
       }}>
         <motion.button
           whileHover={{ scale: 1.02 }}
           onClick={() => {
-            alert('Cerrando sesión...')
+            alert('Cerrando sesiÃ³n...')
             onClose()
           }}
           style={{
@@ -340,9 +340,10 @@ export default function UserDropdown({ isOpen, onClose, onOpenSettings, buttonRe
           }}
         >
           <LogOut size={16} />
-          Cerrar sesión
+          Cerrar sesiÃ³n
         </motion.button>
       </div>
     </motion.div>
   )
 }
+

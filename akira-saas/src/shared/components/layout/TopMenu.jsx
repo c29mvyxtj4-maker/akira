@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Settings, Users, LogOut, Plus, Home, MessageSquare, Video, Inbox, Search, Minus, X, Zap } from 'lucide-react'
-import { useAuth } from '@/context/AuthContext'
-import { useOrg } from '@/context/OrgContext'
+import { useAuth } from '@/shared/context/AuthContext'
+import { useOrg } from '@/shared/context/OrgContext'
 import { useNavigate } from 'react-router-dom'
 
 export default function TopMenu() {
@@ -126,7 +126,7 @@ export default function TopMenu() {
                     {org?.name || 'Workspace'}
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--text-3)' }}>
-                    Plan gratuito · 1 miembro
+                    Plan gratuito Â· 1 miembro
                   </div>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export default function TopMenu() {
                   textAlign: 'left',
                 }}
               >
-                ℹ️ Mejorar tu plan
+                â„¹ï¸ Mejorar tu plan
               </motion.button>
 
               {/* Settings */}
@@ -172,7 +172,7 @@ export default function TopMenu() {
                 }}
               >
                 <Settings style={{ width: '16px', height: '16px' }} />
-                Configuración
+                ConfiguraciÃ³n
               </motion.button>
 
               {/* Invite */}
@@ -215,7 +215,7 @@ export default function TopMenu() {
                   textAlign: 'left',
                 }}
               >
-                👤 Añadir cuenta
+                ðŸ‘¤ AÃ±adir cuenta
               </motion.button>
 
               <div style={{ height: '1px', background: 'var(--surface-2)', margin: '8px 0' }} />
@@ -272,7 +272,7 @@ export default function TopMenu() {
                         {ws.name?.charAt(0) || 'A'}
                       </div>
                       {ws.name}
-                      {org?.id === ws.id && ' ✓'}
+                      {org?.id === ws.id && ' âœ“'}
                     </motion.button>
                   ))}
                 </>
@@ -333,7 +333,7 @@ export default function TopMenu() {
                 }}
               >
                 <LogOut style={{ width: '16px', height: '16px' }} />
-                Cerrar sesión
+                Cerrar sesiÃ³n
               </motion.button>
             </motion.div>
           )}
@@ -376,7 +376,7 @@ export default function TopMenu() {
         fontWeight: 500,
         color: 'var(--text-1)',
       }}>
-        ⚙️ {org?.name || 'AKIRA'}
+        âš™ï¸ {org?.name || 'AKIRA'}
       </div>
 
       {/* RIGHT: Navigation Controls + Plus + Window Controls */}
@@ -407,7 +407,7 @@ export default function TopMenu() {
             e.currentTarget.style.background = 'transparent'
             e.currentTarget.style.color = 'var(--text-2)'
           }}
-          title="Atrás"
+          title="AtrÃ¡s"
         >
           <ChevronLeft style={{ width: '16px', height: '16px' }} />
         </motion.button>
@@ -532,3 +532,4 @@ export default function TopMenu() {
     </div>
   )
 }
+

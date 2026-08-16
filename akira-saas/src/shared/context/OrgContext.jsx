@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { useAuth } from '@/context/AuthContext'
+﻿import { createContext, useContext, useState, useEffect } from 'react'
+import { useAuth } from '@/shared/context/AuthContext'
 import { ensureOrg, getOrgMembers, getMyWorkspaces, createOrg } from '@/services/org.service'
 
 var LS_KEY = 'akira-active-org'
@@ -41,7 +41,7 @@ export function OrgProvider({ children }) {
         console.log('[OrgContext] Active workspace:', active, 'savedId:', savedId)
         setOrg(active)
         // Persistir SIEMPRE el workspace activo, para que los servicios (que leen
-        // localStorage vía getActiveOrgId) puedan filtrar por él desde el arranque.
+        // localStorage vÃ­a getActiveOrgId) puedan filtrar por Ã©l desde el arranque.
         try { if (active) localStorage.setItem(LS_KEY, active.id) } catch (_) { /* noop */ }
         return loadMembers(active.id, user.id)
       })
@@ -98,3 +98,4 @@ export function useOrg() {
   if (!ctx) throw new Error('useOrg debe usarse dentro de OrgProvider')
   return ctx
 }
+

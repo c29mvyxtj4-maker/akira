@@ -13,6 +13,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@db': path.resolve(__dirname, '../packages/database/src'),
+      '@ui': path.resolve(__dirname, '../packages/ui/src'),
+      '@config': path.resolve(__dirname, '../packages/config/src'),
     },
   },
   server: {

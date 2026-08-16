@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { useApp } from '@/context/AppContext'
-import { useAuth } from '@/context/AuthContext'
+﻿import { useState, useEffect } from 'react'
+import { useApp } from '@/shared/context/AppContext'
+import { useAuth } from '@/shared/context/AuthContext'
 import { motion } from 'framer-motion'
 import {
   Users, FolderKanban, TrendingUp, AlertTriangle,
@@ -11,18 +11,18 @@ import RevenueChart  from '@/components/dashboard/RevenueChart'
 import ActivityFeed  from '@/components/dashboard/ActivityFeed'
 import QuickActions  from '@/components/dashboard/QuickActions'
 import ForecastCard  from '@/components/dashboard/ForecastCard'
-import { SkeletonText, SkeletonCard, SkeletonPageHeader } from '@/components/ui/Skeleton'
-import { useNotifications, buildInvoiceReminderMailto } from '@/hooks/useNotifications'
+import { SkeletonText, SkeletonCard, SkeletonPageHeader } from '@/shared/components/ui/Skeleton'
+import { useNotifications, buildInvoiceReminderMailto } from '@/shared/hooks/useNotifications'
 import { getCompanySettings } from '@/services/company.service'
 import { useNavigate } from 'react-router-dom'
 import { WidgetGrid, useWidgets } from '@/modules/widgets'
 import { useGlobalSync } from '@/modules/sync'
 import { KpiCardGrid, DashboardGrid, DashboardPanel } from '@/components/dashboard'
-import { useResponsive } from '@/hooks/useResponsive'
+import { useResponsive } from '@/shared/hooks/useResponsive'
 
 function fmtCur(n) {
   if (!n && n !== 0) return '--'
-  return Number(n).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '€'
+  return Number(n).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + 'â‚¬'
 }
 function fmtDate(d) {
   if (!d) return '--'
@@ -35,12 +35,12 @@ function daysAgo(d) {
 
 var GREETING = (function() {
   var h = new Date().getHours()
-  if (h < 12) return 'Buenos días'
+  if (h < 12) return 'Buenos dÃ­as'
   if (h < 20) return 'Buenas tardes'
   return 'Buenas noches'
 })()
 
-/* ── Capa 1: tarjetas de "esto necesita tu atencion hoy" ──── */
+/* â”€â”€ Capa 1: tarjetas de "esto necesita tu atencion hoy" â”€â”€â”€â”€ */
 function AttentionCard({ color, icon: Icon, title, subtitle, actionLabel, onAction }) {
   return (
     <motion.div
@@ -75,7 +75,7 @@ function AttentionSection({ notifs, urgentTasks, company, navigate }) {
     items.push({
       key: 'inv-' + inv.id, color: '#f59e0b', icon: AlertTriangle,
       title: 'Factura vencida: ' + inv.invoice_number,
-      subtitle: (client ? (client.company || client.name) : 'Sin cliente') + ' · ' + fmtCur(inv.total),
+      subtitle: (client ? (client.company || client.name) : 'Sin cliente') + ' Â· ' + fmtCur(inv.total),
       actionLabel: client && client.email ? 'Enviar recordatorio' : null,
       onAction: function() {
         var url = buildInvoiceReminderMailto(inv, company || {})
@@ -89,7 +89,7 @@ function AttentionSection({ notifs, urgentTasks, company, navigate }) {
     items.push({
       key: 'cli-' + c.id, color: '#3b82f6', icon: UserX,
       title: c.company || c.name,
-      subtitle: d === null ? 'Nunca contactado' : 'Sin contacto desde hace ' + d + ' días',
+      subtitle: d === null ? 'Nunca contactado' : 'Sin contacto desde hace ' + d + ' dÃ­as',
       actionLabel: 'Ver cliente',
       onAction: function() { navigate('/clients') },
     })
@@ -111,7 +111,7 @@ function AttentionSection({ notifs, urgentTasks, company, navigate }) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px', borderRadius: '12px', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', marginBottom: '24px' }}>
         <CheckCircle style={{ width: '18px', height: '18px', color: '#22c55e', flexShrink: 0 }} />
-        <p style={{ fontSize: '13px', color: '#22c55e', fontWeight: 600 }}>Todo al día — sin nada urgente que atender ahora mismo</p>
+        <p style={{ fontSize: '13px', color: '#22c55e', fontWeight: 600 }}>Todo al dÃ­a â€” sin nada urgente que atender ahora mismo</p>
       </div>
     )
   }
@@ -119,7 +119,7 @@ function AttentionSection({ notifs, urgentTasks, company, navigate }) {
   return (
     <div style={{ marginBottom: '24px' }}>
       <h2 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-3)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-        Esto necesita tu atención hoy
+        Esto necesita tu atenciÃ³n hoy
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {items.slice(0, 6).map(function(item) {
@@ -134,7 +134,7 @@ function AttentionSection({ notifs, urgentTasks, company, navigate }) {
   )
 }
 
-/* ── Capa 3: oportunidades simples, sin inventar nada ─────── */
+/* â”€â”€ Capa 3: oportunidades simples, sin inventar nada â”€â”€â”€â”€â”€â”€â”€ */
 function OpportunitiesSection({ clients, projects, navigate }) {
   var ACTIVE_ST = ['pending', 'active', 'review']
   var clientsWithActiveProject = new Set(
@@ -157,7 +157,7 @@ function OpportunitiesSection({ clients, projects, navigate }) {
           return (
             <AttentionCard key={c.id} color="#a855f7" icon={Sparkles}
               title={c.company || c.name}
-              subtitle="Cliente activo sin ningún proyecto en curso — podría ser buen momento para proponerle algo nuevo"
+              subtitle="Cliente activo sin ningÃºn proyecto en curso â€” podrÃ­a ser buen momento para proponerle algo nuevo"
               actionLabel="Ver cliente"
               onAction={function() { navigate('/clients') }}
             />
@@ -190,7 +190,7 @@ export default function Dashboard() {
     if (prevMonth > 0) revenueTrend = Math.round(((lastMonth - prevMonth) / prevMonth) * 100)
   }
 
-  // Iconos KPI: un único rojo de marca (coherente con la línea de acento
+  // Iconos KPI: un Ãºnico rojo de marca (coherente con la lÃ­nea de acento
   // "siempre roja" de KpiCard). El sparkline recibe hex porque va a un
   // atributo SVG (stroke), donde var() no resuelve.
   var KPI_CARDS = [
@@ -208,7 +208,7 @@ export default function Dashboard() {
     {
       title:     'Clientes activos',
       value:     loading ? '...' : (kpis ? kpis.activeClients : 0),
-      subtitle:  (kpis ? kpis.leads : 0) + ' leads · ' + (kpis ? kpis.atRisk : 0) + ' en riesgo',
+      subtitle:  (kpis ? kpis.leads : 0) + ' leads Â· ' + (kpis ? kpis.atRisk : 0) + ' en riesgo',
       icon:      Users,
       delay: 0.05,
     },
@@ -238,7 +238,7 @@ export default function Dashboard() {
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
           <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
-            {GREETING}, {name} 👋
+            {GREETING}, {name} ðŸ‘‹
           </h1>
           <button
             onClick={() => setShowWidgets(!showWidgets)}
@@ -282,13 +282,13 @@ export default function Dashboard() {
         </motion.div>
       )}
 
-      {/* CAPA 1 — atencion hoy */}
+      {/* CAPA 1 â€” atencion hoy */}
       <AttentionSection notifs={notifs} urgentTasks={kpis && kpis.urgentTasksList} company={company} navigate={navigate} />
 
-      {/* CAPA 3 — oportunidades */}
+      {/* CAPA 3 â€” oportunidades */}
       {data && <OpportunitiesSection clients={data.clients} projects={data.projects} navigate={navigate} />}
 
-      {/* CAPA 2 — como va tu negocio (Responsive: xs:1 md:2 lg:3 xl:4) */}
+      {/* CAPA 2 â€” como va tu negocio (Responsive: xs:1 md:2 lg:3 xl:4) */}
       <KpiCardGrid gap="md">
         {loading ? (
           // Show skeleton loading state for KPI cards
@@ -315,7 +315,7 @@ export default function Dashboard() {
         )}
       </KpiCardGrid>
 
-      {/* Charts, previsión y acciones rapidas (Responsive: xs:1 md:1 lg:2) */}
+      {/* Charts, previsiÃ³n y acciones rapidas (Responsive: xs:1 md:1 lg:2) */}
       <DashboardGrid variant="charts" gap="md" style={{ marginBottom: '24px' }}>
         <DashboardPanel title="Revenue" className="dashboard-chart-panel">
           <RevenueChart
@@ -332,7 +332,7 @@ export default function Dashboard() {
             transition={{ delay: 0.35 }}
             className="dash-panel"
           >
-            <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '14px' }}>Acciones rápidas</h3>
+            <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '14px' }}>Acciones rÃ¡pidas</h3>
             <QuickActions />
           </motion.div>
         </div>
@@ -347,7 +347,7 @@ export default function Dashboard() {
         style={{ marginBottom: '24px' }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-          <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-1)' }}>Próximas entregas</h3>
+          <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-1)' }}>PrÃ³ximas entregas</h3>
           <button type="button" onClick={function() { navigate('/projects') }}
             style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--brand)', fontSize: '11px', fontWeight: 600 }}
           >Ver todos <ArrowRight style={{ width: '12px', height: '12px' }} /></button>
@@ -365,7 +365,7 @@ export default function Dashboard() {
           </div>
         ) : !kpis || !kpis.upcomingProjects || kpis.upcomingProjects.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-5)', fontSize: '13px' }}>
-            Sin entregas próximas
+            Sin entregas prÃ³ximas
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -390,7 +390,7 @@ export default function Dashboard() {
                   </div>
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
                     <p style={{ fontSize: '11px', fontWeight: 700, color: isUrgent ? 'var(--brand)' : 'var(--text-3)' }}>
-                      {daysLeft <= 0 ? 'Vencido' : daysLeft === 1 ? 'Mañana' : daysLeft + 'd'}
+                      {daysLeft <= 0 ? 'Vencido' : daysLeft === 1 ? 'MaÃ±ana' : daysLeft + 'd'}
                     </p>
                     <p style={{ fontSize: '10px', color: 'var(--text-5)', marginTop: '1px' }}>{fmtDate(p.due_date)}</p>
                   </div>
@@ -414,3 +414,6 @@ export default function Dashboard() {
     </div>
   )
 }
+
+
+

@@ -1,7 +1,7 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Download, RefreshCw } from 'lucide-react'
-import { usePWA } from '@/hooks/usePWA'
+import { usePWA } from '@/shared/hooks/usePWA'
 
 export default function InstallBanner() {
   var { canInstall, isIOS, isInstalled, updateAvailable, install, applyUpdate } = usePWA()
@@ -91,7 +91,7 @@ export default function InstallBanner() {
 
         {isIOS ? (
           <div style={{ background: 'var(--bg-4)', borderRadius: '10px', padding: '12px', fontSize: '12px', color: 'var(--text-3)', lineHeight: 1.7 }}>
-            <p>1. Pulsa el icono <strong style={{ color: 'var(--text-1)' }}>Compartir</strong> en Safari ⬆️</p>
+            <p>1. Pulsa el icono <strong style={{ color: 'var(--text-1)' }}>Compartir</strong> en Safari â¬†ï¸</p>
             <p>2. Toca <strong style={{ color: 'var(--text-1)' }}>"Agregar a pantalla de inicio"</strong></p>
             <p>3. Pulsa <strong style={{ color: 'var(--text-1)' }}>"Agregar"</strong></p>
           </div>

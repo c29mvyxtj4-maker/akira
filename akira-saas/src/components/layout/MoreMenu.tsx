@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react'
+﻿import React, { ReactNode, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -11,11 +11,11 @@ import {
   LogOut,
 } from 'lucide-react'
 import { ROUTES } from '@/config/constants'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '@/shared/context/AuthContext'
 
 /**
  * MoreMenu - Drawer con opciones adicionales
- * Se muestra en móvil/tablet cuando el usuario hace click en "Más"
+ * Se muestra en mÃ³vil/tablet cuando el usuario hace click en "MÃ¡s"
  */
 
 interface MenuOption {
@@ -196,3 +196,4 @@ export function useMoreMenu() {
     toggle: () => setOpen((prev) => !prev),
   }
 }
+

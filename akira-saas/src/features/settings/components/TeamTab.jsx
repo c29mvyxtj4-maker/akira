@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Trash2 } from 'lucide-react'
 import { cancelInvitation, createInvitation, getInvitations, removeMember, sendInvitationEmail, updateMemberRole } from '@/services/org.service'
-import { useOrg } from '@/context/OrgContext'
+import { useOrg } from '@/shared/context/OrgContext'
 import ResourceAccessModal from './ResourceAccessModal'
 import { INP, Section, Toast, onBlur, onFocus } from './_shared'
 
 function TeamTab() {
   var { org, members, myRole, refreshOrg } = useOrg()
-  var [managingAccess, setManagingAccess] = useState(null) // ← NUEVO
+  var [managingAccess, setManagingAccess] = useState(null) // â† NUEVO
   var [invitations, setInvitations] = useState([])
   var [loading,     setLoading]     = useState(true)
   var [email,       setEmail]       = useState('')
@@ -87,7 +87,7 @@ function TeamTab() {
           <div>
             <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-1)' }}>{org.name}</p>
             <p style={{ fontSize: '12px', color: 'var(--text-4)', marginTop: '2px' }}>
-              {members.length} miembro{members.length !== 1 ? 's' : ''} · Plan {org.plan}
+              {members.length} miembro{members.length !== 1 ? 's' : ''} Â· Plan {org.plan}
             </p>
           </div>
         </div>
@@ -187,12 +187,12 @@ function TeamTab() {
               return (
                 <div key={inv.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', background: 'var(--bg-3)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '10px' }}>
                   <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', flexShrink: 0 }}>
-                    ✉️
+                    âœ‰ï¸
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{inv.email}</p>
                     <p style={{ fontSize: '11px', color: 'var(--text-4)', marginTop: '1px' }}>
-                      Rol: {inv.role} · Expira: {new Date(inv.expires_at).toLocaleDateString('es-ES')}
+                      Rol: {inv.role} Â· Expira: {new Date(inv.expires_at).toLocaleDateString('es-ES')}
                     </p>
                   </div>
                   <button type="button" onClick={function() { handleCancelInvite(inv.id) }}
@@ -213,3 +213,4 @@ function TeamTab() {
 
 
 export default TeamTab
+

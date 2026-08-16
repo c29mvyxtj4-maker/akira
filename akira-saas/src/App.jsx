@@ -1,47 +1,47 @@
 import { useState, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '@/shared/context/AuthContext'
 import { ROUTES }  from '@/config/constants'
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+import { useKeyboardShortcuts } from '@/shared/hooks/useKeyboardShortcuts'
 
 // Auth pages — eager so the login screen paints instantly on first load
-import Login         from '@/pages/auth/Login'
-import ResetPassword from '@/pages/auth/ResetPassword'
+import Login         from '@/features/auth/pages/Login'
+import ResetPassword from '@/features/auth/pages/ResetPassword'
 
 // Layout
-import { AppLayoutContainer } from '@/components/layout/AppLayoutContainer'
+import { AppLayoutContainer } from '@/shared/components/layout'
 import '@/styles/layout.css'
 
 // Components
-import KeyboardShortcutsModal from '@/components/ui/KeyboardShortcutsModal'
+import { KeyboardShortcutsModal } from '@/shared/components/ui'
 
 // Pages — lazy-loaded so each route ships its own chunk (keeps the initial bundle small)
-const Dashboard     = lazy(() => import('@/pages/Dashboard'))
-const Clients       = lazy(() => import('@/pages/Clients'))
-const Projects      = lazy(() => import('@/pages/Projects'))
-const Services      = lazy(() => import('@/pages/Services'))
-const Subscriptions = lazy(() => import('@/pages/Subscriptions'))
-const Finance       = lazy(() => import('@/pages/Finance'))
-const Invoices      = lazy(() => import('@/pages/Invoices'))
-const Calendar      = lazy(() => import('@/pages/Calendar'))
-const Knowledge     = lazy(() => import('@/pages/Knowledge'))
-const Brain         = lazy(() => import('@/pages/Brain'))
-const Settings      = lazy(() => import('@/pages/Settings'))
+const Dashboard     = lazy(() => import('@/features/dashboard/pages/Dashboard'))
+const Clients       = lazy(() => import('@/features/crm/pages/Clients'))
+const Projects      = lazy(() => import('@/features/projects/pages/Projects'))
+const Services      = lazy(() => import('@/features/services/pages/Services'))
+const Subscriptions = lazy(() => import('@/features/subscriptions/pages/Subscriptions'))
+const Finance       = lazy(() => import('@/features/finance/pages/Finance'))
+const Invoices      = lazy(() => import('@/features/finance/pages/Invoices'))
+const Calendar      = lazy(() => import('@/features/calendar/pages/Calendar'))
+const Knowledge     = lazy(() => import('@/features/knowledge/pages/Knowledge'))
+const Brain         = lazy(() => import('@/features/ai-assistant/pages/Brain'))
+const Settings      = lazy(() => import('@/features/settings/pages/Settings'))
 const PortalLogin     = lazy(() => import('@/pages/portal/PortalLogin'))
 const PortalDashboard = lazy(() => import('@/pages/portal/PortalDashboard'))
 const JoinOrg       = lazy(() => import('@/pages/JoinOrg'))
 const Legal         = lazy(() => import('@/pages/Legal'))
-const Quotes        = lazy(() => import('@/pages/Quotes'))
-const Offers        = lazy(() => import('@/pages/Offers'))
+const Quotes        = lazy(() => import('@/features/finance/pages/Quotes'))
+const Offers        = lazy(() => import('@/features/finance/pages/Offers'))
 const Documents     = lazy(() => import('@/pages/Documents'))
-const TimeTracking  = lazy(() => import('@/pages/TimeTracking'))
-const AIOperatives  = lazy(() => import('@/pages/AIOperatives'))
+const TimeTracking  = lazy(() => import('@/features/time-tracking/pages/TimeTracking'))
+const AIOperatives  = lazy(() => import('@/features/automation/pages/AIOperatives'))
 const Inicio        = lazy(() => import('@/pages/Inicio')) // PRUEBA: home experimental
-const Mensajes      = lazy(() => import('@/pages/Mensajes'))
-const InboxPage     = lazy(() => import('@/pages/InboxPage'))
+const Mensajes      = lazy(() => import('@/features/messages/pages/Mensajes'))
+const InboxPage     = lazy(() => import('@/features/inbox/pages/InboxPage'))
 const LandingPage   = lazy(() => import('@/pages/LandingPage'))
-const Automation    = lazy(() => import('@/pages/Automation')) // v2.0 Automation workflows
-const YouTube       = lazy(() => import('@/pages/YouTube')) // YouTube project management
+const Automation    = lazy(() => import('@/features/automation/pages/Automation')) // v2.0 Automation workflows
+const YouTube       = lazy(() => import('@/features/youtube/pages/YouTube')) // YouTube project management
 const DocumentsNotion = lazy(() => import('@/pages/DocumentsNotion')) // Notion-style documents
 
 function ComingSoon({ name }) {

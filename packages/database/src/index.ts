@@ -1,0 +1,20 @@
+// Database Queries Barrel Export
+// Re-export all query functions from a central location
+
+export * from './queries/clients.service'
+export * from './queries/projects.service'
+export * from './queries/invoices.service'
+export * from './queries/finance.service'
+export * from './queries/calendar.service'
+export * from './queries/knowledge.service'
+export * from './queries/time.service'
+export * from './queries/messages.service'
+export * from './queries/aiOperatives.service'
+export * from './queries/brain.service'
+export * from './queries/brainActions.service'
+export * from './queries/audit.service'
+export * from './queries/org.service'
+export * from './queries/settings.service'
+export * from './queries/categories.service'
+export * from './queries/company.service'
+export * from './queries/billing.service'

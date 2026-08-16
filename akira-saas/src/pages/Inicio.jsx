@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+﻿import { useState, useEffect, lazy, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -7,39 +7,39 @@ import {
   ChevronRight, TrendingUp, Search, Mail, Bell, Video,
 } from 'lucide-react'
 import { WidgetGrid, useWidgets } from '@/modules/widgets'
-import { useApp } from '@/context/AppContext'
-import { useAuth } from '@/context/AuthContext'
-import { useOrg } from '@/context/OrgContext'
+import { useApp } from '@/shared/context/AppContext'
+import { useAuth } from '@/shared/context/AuthContext'
+import { useOrg } from '@/shared/context/OrgContext'
 import { ROUTES } from '@/config/constants'
 import { DUR, EASE, SPRING } from '@/config/motion'
 import { getUnreadMentionCount } from '@/services/mentions.service'
 import { getFinanceKpis } from '@/services/finance.service'
-import { getPref } from '@/hooks/usePreferences'
-import TransparentArea from '@/components/charts/TransparentArea'
+import { getPref } from '@/shared/hooks/usePreferences'
+import TransparentArea from '@/shared/components/charts/TransparentArea'
 import { fmtEuro, numberLocale } from '@/lib/format'
 
 function fmtEur(n) {
   return fmtEuro(n)
 }
-import AccountMenu from '@/components/layout/AccountMenu'
-import BorderGlow from '@/components/ui/BorderGlow'
-import SearchModal from '@/components/ui/SearchModal'
+import AccountMenu from '@/shared/components/layout/AccountMenu'
+import BorderGlow from '@/shared/components/ui/BorderGlow'
+import SearchModal from '@/shared/components/ui/SearchModal'
 import SettingsPanel from '@/pages/Settings'
 
-// Props de BorderGlow afinados para botones pequeños del top bar (tono de marca).
+// Props de BorderGlow afinados para botones pequeÃ±os del top bar (tono de marca).
 var GLOW = { className: 'glow-btn', borderRadius: 19, glowRadius: 15, glowIntensity: 1.4, coneSpread: 25, backgroundColor: 'transparent', glowColor: '355 78 62', colors: ['#e63946', '#ff5a66', '#a01f2b'], animated: true }
 
-// Fondo animado (three.js) — en diferido para no bloquear la carga inicial.
+// Fondo animado (three.js) â€” en diferido para no bloquear la carga inicial.
 var Silk = lazy(function () { return import('@/components/effects/Silk') })
 
 /*
- * Pantalla principal (hub). Sin sidebar: la navegación es esta pantalla + la
+ * Pantalla principal (hub). Sin sidebar: la navegaciÃ³n es esta pantalla + la
  * barra inferior global. Layout ancho para escritorio, rejillas responsive.
  */
 
 function fmtCur(n) {
   if (!n && n !== 0) return '--'
-  return Number(n).toLocaleString(numberLocale(), { maximumFractionDigits: 0 }) + '€'
+  return Number(n).toLocaleString(numberLocale(), { maximumFractionDigits: 0 }) + 'â‚¬'
 }
 
 export default function Inicio() {
@@ -92,14 +92,14 @@ export default function Inicio() {
   ]
 
   var KPIS = [
-    { label: 'MRR',              value: loading ? '—' : fmtCur(kpis && kpis.mrr),          icon: TrendingUp },
-    { label: 'Clientes activos', value: loading ? '—' : (kpis ? kpis.activeClients : 0),   icon: Users },
-    { label: 'Proyectos',        value: loading ? '—' : (kpis ? kpis.activeProjects : 0),  icon: FolderKanban },
-    { label: 'Ingresos mes',     value: loading ? '—' : fmtCur(kpis && kpis.monthIncome),  icon: Wallet },
+    { label: 'MRR',              value: loading ? 'â€”' : fmtCur(kpis && kpis.mrr),          icon: TrendingUp },
+    { label: 'Clientes activos', value: loading ? 'â€”' : (kpis ? kpis.activeClients : 0),   icon: Users },
+    { label: 'Proyectos',        value: loading ? 'â€”' : (kpis ? kpis.activeProjects : 0),  icon: FolderKanban },
+    { label: 'Ingresos mes',     value: loading ? 'â€”' : fmtCur(kpis && kpis.monthIncome),  icon: Wallet },
   ]
 
   var QUICK = [
-    { label: 'Centro de mando', sub: 'KPIs y atención hoy', icon: LayoutDashboard, to: '/dashboard' },
+    { label: 'Centro de mando', sub: 'KPIs y atenciÃ³n hoy', icon: LayoutDashboard, to: '/dashboard' },
     { label: 'Clientes',   sub: 'Cuentas y portal',   icon: Users,        to: ROUTES.CLIENTS },
     { label: 'Proyectos',  sub: 'Kanban y entregas',  icon: FolderKanban, to: ROUTES.PROJECTS },
     { label: 'Finanzas',   sub: 'Ingresos y gastos',  icon: Wallet,       to: ROUTES.FINANCE },
@@ -138,7 +138,7 @@ export default function Inicio() {
   }, [])
 
   function handleAddAccount() {
-    window.alert('Sistema de múltiples cuentas - pronto disponible')
+    window.alert('Sistema de mÃºltiples cuentas - pronto disponible')
     setMenuOpen(false)
   }
 
@@ -262,7 +262,7 @@ export default function Inicio() {
           })}
         </div>
 
-        {/* Resumen financiero — gráfica transparente (datos del workspace activo) */}
+        {/* Resumen financiero â€” grÃ¡fica transparente (datos del workspace activo) */}
         {fin && fin.sparkline && (
           <>
             <p style={sectionLabel}>Resumen financiero</p>
@@ -275,7 +275,7 @@ export default function Inicio() {
                     {fmtEur(fin.monthIncome)}
                     {fin.incomeTrend !== null && fin.incomeTrend !== undefined && (
                       <span style={{ fontSize: '12px', fontWeight: 700, marginLeft: '8px', color: fin.incomeTrend >= 0 ? '#22c55e' : 'var(--brand)' }}>
-                        {fin.incomeTrend >= 0 ? '▲' : '▼'} {Math.abs(fin.incomeTrend)}%
+                        {fin.incomeTrend >= 0 ? 'â–²' : 'â–¼'} {Math.abs(fin.incomeTrend)}%
                       </span>
                     )}
                   </p>
@@ -299,8 +299,8 @@ export default function Inicio() {
           </>
         )}
 
-        {/* Accesos rápidos — rejilla (sin scroll horizontal: el escalado ya no recorta) */}
-        <p style={sectionLabel}>Accesos rápidos</p>
+        {/* Accesos rÃ¡pidos â€” rejilla (sin scroll horizontal: el escalado ya no recorta) */}
+        <p style={sectionLabel}>Accesos rÃ¡pidos</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {QUICK.map(function(q) {
             var Icon = q.icon
@@ -320,7 +320,7 @@ export default function Inicio() {
           })}
         </div>
 
-        {/* Secciones — 2 columnas en escritorio */}
+        {/* Secciones â€” 2 columnas en escritorio */}
         <p style={sectionLabel}>Secciones</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
           {SECTIONS.map(function(s) {
@@ -341,7 +341,7 @@ export default function Inicio() {
         </div>
 
         <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-5)', marginTop: '28px' }}>
-          AKIRA · inicio · build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
+          AKIRA Â· inicio Â· build {typeof __BUILD_ID__ !== 'undefined' ? __BUILD_ID__ : 'dev'}
         </p>
       </div>
       </div>
@@ -372,3 +372,8 @@ export default function Inicio() {
     </div>
   )
 }
+
+
+
+
+

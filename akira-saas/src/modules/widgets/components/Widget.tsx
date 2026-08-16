@@ -1,7 +1,7 @@
-import React, { Suspense } from 'react'
+﻿import React, { Suspense } from 'react'
 import { WidgetProps } from '../types'
 import { widgetRegistry } from '../WidgetRegistry'
-import Spinner from '@/components/ui/Spinner'
+import Spinner from '@/shared/components/ui/Spinner'
 
 export const Widget: React.FC<WidgetProps & { config: any }> = ({
   config,
@@ -43,7 +43,7 @@ export const Widget: React.FC<WidgetProps & { config: any }> = ({
                 className="p-1 hover:bg-surface-1 rounded text-text-3 hover:text-text-2 transition-colors"
                 title="Remove widget"
               >
-                ✕
+                âœ•
               </button>
             )}
           </div>
@@ -84,3 +84,4 @@ export const Widget: React.FC<WidgetProps & { config: any }> = ({
 }
 
 export default Widget
+

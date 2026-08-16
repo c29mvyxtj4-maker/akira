@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import { useAuth } from '@/context/AuthContext'
-import { useOrg } from '@/context/OrgContext'
+﻿import React, { useState, useEffect } from 'react'
+import { useAuth } from '@/shared/context/AuthContext'
+import { useOrg } from '@/shared/context/OrgContext'
 import { motion } from 'framer-motion'
 import { Play, History, AlertCircle } from 'lucide-react'
 import { workflowTemplates, workflowEngine } from '@/modules/automation'
@@ -169,7 +169,7 @@ export default function Automation() {
 
               <div style={{ fontSize: '12px', color: 'var(--text-4)', paddingTop: '8px', borderTop: '1px solid var(--surface-2)' }}>
                 <p>
-                  <strong>{template.steps.length}</strong> steps • ~<strong>{template.estimatedDuration}</strong> min
+                  <strong>{template.steps.length}</strong> steps â€¢ ~<strong>{template.estimatedDuration}</strong> min
                 </p>
               </div>
 
@@ -295,3 +295,4 @@ export default function Automation() {
     </div>
   )
 }
+

@@ -1,12 +1,12 @@
-import { useState, useEffect, ReactNode } from 'react'
+﻿import { useState, useEffect, ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
-import { useResponsive } from '@/hooks/useResponsive'
+import { useResponsive } from '@/shared/hooks/useResponsive'
 
 /**
- * SidebarDrawer - Envuelve el Sidebar para hacerlo drawer en móvil
+ * SidebarDrawer - Envuelve el Sidebar para hacerlo drawer en mÃ³vil
  * Desktop: Sidebar normal permanente
- * Tablet/Móvil: Sidebar como drawer modal
+ * Tablet/MÃ³vil: Sidebar como drawer modal
  */
 
 interface SidebarDrawerProps {
@@ -54,10 +54,10 @@ export function SidebarDrawer({
     )
   }
 
-  // Mobile/Tablet: Drawer + contenido + botón toggle
+  // Mobile/Tablet: Drawer + contenido + botÃ³n toggle
   return (
     <div style={{ display: 'flex', height: '100%', width: '100%', flexDirection: 'column' }}>
-      {/* Header con botón de menu */}
+      {/* Header con botÃ³n de menu */}
       {showToggleButton && (
         <div
           style={{
@@ -162,3 +162,4 @@ export function useSidebarDrawer() {
     toggle: () => !isDesktop && setOpen((prev) => !prev),
   }
 }
+

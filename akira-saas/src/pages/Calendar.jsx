@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronLeft, ChevronRight, Plus, X,
   Clock, MapPin, Tag, Calendar as CalendarIcon,
   AlertCircle, CheckCircle, Circle, Edit3, ListTodo,
 } from 'lucide-react'
-import { useCalendar } from '@/hooks/useCalendar'
-import PageHeader from '@/components/layout/PageHeader'
-import Button from '@/components/ui/Button'
-import Modal from '@/components/ui/Modal'
-import { getPref } from '@/hooks/usePreferences'
+import { useCalendar } from '@/shared/hooks/useCalendar'
+import PageHeader from '@/shared/components/layout/PageHeader'
+import Button from '@/shared/components/ui/Button'
+import Modal from '@/shared/components/ui/Modal'
+import { getPref } from '@/shared/hooks/usePreferences'
 import clsx from 'clsx'
 
 // Respeta la preferencia "Comenzar la semana el lunes".
@@ -19,10 +19,10 @@ var DAYS_SUN = ['DOM','LUN','MAR','MIE','JUE','VIE','SAB']
 function daysArr() { return weekStartsMonday() ? DAYS_MON : DAYS_SUN }
 var MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
 
-// Categorías de evento (una sola fuente): etiqueta + color distintivo para
+// CategorÃ­as de evento (una sola fuente): etiqueta + color distintivo para
 // poder categorizar los eventos por color en todas las vistas.
 var CATEGORIES = {
-  meeting:  { label: 'Reunión',      color: '#e63946' },
+  meeting:  { label: 'ReuniÃ³n',      color: '#e63946' },
   call:     { label: 'Llamada',      color: '#3b82f6' },
   deadline: { label: 'Deadline',     color: '#f59e0b' },
   delivery: { label: 'Entrega',      color: '#22c55e' },
@@ -33,7 +33,7 @@ var CATEGORIES = {
 function catStyle(color) {
   return { color: color, bg: color + '22', border: color + '55', text: color, dot: color }
 }
-// Estilos derivados por categoría; los tipos desconocidos caen en 'other'.
+// Estilos derivados por categorÃ­a; los tipos desconocidos caen en 'other'.
 var EVENT_COLORS = Object.keys(CATEGORIES).reduce(function(acc, k) {
   acc[k] = catStyle(CATEGORIES[k].color)
   return acc
@@ -45,10 +45,10 @@ var STATUS_CFG = {
   cancelled: { icon: X,           color: 'rgba(255,255,255,0.25)', label: 'Cancelado' },
 }
 
-var WEEK_HOUR_START = 0      // vista de semana: todas las horas del día
+var WEEK_HOUR_START = 0      // vista de semana: todas las horas del dÃ­a
 var WEEK_HOUR_END   = 23
 var ROW_HEIGHT       = 48
-var WEEK_SCROLL_TO_HOUR = 7  // al abrir, desplaza hasta la mañana
+var WEEK_SCROLL_TO_HOUR = 7  // al abrir, desplaza hasta la maÃ±ana
 
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate()
@@ -76,7 +76,7 @@ function toDateStr(d) {
   return y + '-' + m + '-' + day
 }
 
-// Inicio de la semana (lunes o domingo según preferencia).
+// Inicio de la semana (lunes o domingo segÃºn preferencia).
 function getMonday(date) {
   var d = new Date(date)
   var day = d.getDay()
@@ -93,8 +93,8 @@ function timeToMinutes(t) {
 }
 
 /* Reparte eventos solapados en columnas lado a lado (estilo Notion/Google):
-   agrupa los que se pisan en un "clúster" y a cada uno le asigna una columna;
-   todos los de un clúster comparten el mismo nº de columnas para repartir el
+   agrupa los que se pisan en un "clÃºster" y a cada uno le asigna una columna;
+   todos los de un clÃºster comparten el mismo nÂº de columnas para repartir el
    ancho por igual. Devuelve [{ event, start, end, col, cols }]. */
 function layoutDayEvents(timedEvents) {
   var items = timedEvents.map(function(e) {
@@ -108,8 +108,8 @@ function layoutDayEvents(timedEvents) {
   })
 
   var out = []
-  var cluster = []       // items del clúster actual
-  var colEnds = []       // fin del último evento de cada columna
+  var cluster = []       // items del clÃºster actual
+  var colEnds = []       // fin del Ãºltimo evento de cada columna
   var clusterEnd = -1
 
   function flush() {
@@ -121,7 +121,7 @@ function layoutDayEvents(timedEvents) {
   }
 
   items.forEach(function(it) {
-    // si no se solapa con nada del clúster abierto, cerramos el clúster
+    // si no se solapa con nada del clÃºster abierto, cerramos el clÃºster
     if (cluster.length && it.start >= clusterEnd) flush()
     var placed = -1
     for (var c = 0; c < colEnds.length; c++) {
@@ -140,15 +140,15 @@ function layoutDayEvents(timedEvents) {
 function hhmmLabel(m) {
   return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0')
 }
-// Minuto (desde medianoche) ajustado a 15' según la Y del cursor dentro de una
-// columna de día, descontando dónde agarró el usuario el evento.
+// Minuto (desde medianoche) ajustado a 15' segÃºn la Y del cursor dentro de una
+// columna de dÃ­a, descontando dÃ³nde agarrÃ³ el usuario el evento.
 function dropMinutesFrom(clientY, rectTop, grabMin, dur) {
   var minutes = ((clientY - rectTop) / ROW_HEIGHT) * 60 - grabMin
   minutes = Math.round(minutes / 15) * 15
   return Math.max(0, Math.min(24 * 60 - dur, minutes)) + WEEK_HOUR_START * 60
 }
 
-/* ── Chip de evento en el calendario (vista mes) ──────────── */
+/* â”€â”€ Chip de evento en el calendario (vista mes) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function EventChip({ event, onClick }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
   return (
@@ -165,9 +165,9 @@ function EventChip({ event, onClick }) {
   )
 }
 
-/* ── Bloque de evento en la vista semanal ─────────────────── */
-/* Bloque-guía que se pinta en el destino mientras arrastras: contorno de
-   marca + la hora a la que caerá el evento (como en apps de calendario). */
+/* â”€â”€ Bloque de evento en la vista semanal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Bloque-guÃ­a que se pinta en el destino mientras arrastras: contorno de
+   marca + la hora a la que caerÃ¡ el evento (como en apps de calendario). */
 function DropGhost({ startMin, dur, label }) {
   var top = ((startMin - WEEK_HOUR_START * 60) / 60) * ROW_HEIGHT
   var height = Math.max((dur / 60) * ROW_HEIGHT, 20)
@@ -193,13 +193,13 @@ function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, 
   var height = Math.max(((endMin - startMin) / 60) * ROW_HEIGHT, 20)
 
   // Reparto horizontal cuando hay solapes (estilo Notion): cada columna ocupa
-  // 1/cols del ancho, con un pequeño hueco entre eventos contiguos.
+  // 1/cols del ancho, con un pequeÃ±o hueco entre eventos contiguos.
   var gap = 3
   var widthCalc = 'calc((100% - 4px) / ' + cols + ' - ' + gap + 'px)'
   var leftCalc  = 'calc(2px + (100% - 4px) * ' + col + ' / ' + cols + ')'
   var compact = height < 34
 
-  // Arrastre con pointer events (funciona con ratón Y dedo, a diferencia de
+  // Arrastre con pointer events (funciona con ratÃ³n Y dedo, a diferencia de
   // HTML5 drag). El padre distingue tap (editar) de arrastre (mover).
   function onPointerDown(e) {
     if (e.pointerType === 'mouse' && e.button !== 0) return
@@ -212,7 +212,7 @@ function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, 
     <button type="button"
       onClick={function(e) { e.stopPropagation(); if (!canDrag) onClick(event) }}
       onPointerDown={canDrag ? onPointerDown : undefined}
-      title={(canDrag ? 'Arrastra para mover · ' : '') + event.title + ' · ' + fmtTime(event.start_time) + (event.end_time ? '–' + fmtTime(event.end_time) : '')}
+      title={(canDrag ? 'Arrastra para mover Â· ' : '') + event.title + ' Â· ' + fmtTime(event.start_time) + (event.end_time ? 'â€“' + fmtTime(event.end_time) : '')}
       style={{
         position: 'absolute', left: leftCalc, width: widthCalc, top: top + 'px', height: height + 'px',
         background: cfg.bg, border: '1px solid ' + cfg.border, borderLeft: '3px solid ' + cfg.dot,
@@ -228,14 +228,14 @@ function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, 
       </span>
       {!compact && (
         <span style={{ fontSize: '9px', color: cfg.text, opacity: 0.8, display: 'block' }}>
-          {fmtTime(event.start_time)}{event.end_time ? '–' + fmtTime(event.end_time) : ''}
+          {fmtTime(event.start_time)}{event.end_time ? 'â€“' + fmtTime(event.end_time) : ''}
         </span>
       )}
     </button>
   )
 }
 
-/* ── Panel detalle de evento ──────────────────────────────── */
+/* â”€â”€ Panel detalle de evento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function EventDetail({ event, onClose, onEdit, onStatusChange, onDelete, isMobile }) {
   if (!event) return null
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
@@ -285,7 +285,7 @@ function EventDetail({ event, onClose, onEdit, onStatusChange, onDelete, isMobil
             <p style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff' }}>{fmtDate(event.event_date)}</p>
             {(event.start_time || event.end_time) && (
               <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>
-                {fmtTime(event.start_time)}{event.end_time ? ' — ' + fmtTime(event.end_time) : ''}
+                {fmtTime(event.start_time)}{event.end_time ? ' â€” ' + fmtTime(event.end_time) : ''}
               </p>
             )}
           </div>
@@ -311,7 +311,7 @@ function EventDetail({ event, onClose, onEdit, onStatusChange, onDelete, isMobil
 
         {event.is_auto && (
           <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', fontSize: '11px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
-            Este evento se genera solo desde {event.auto_kind === 'invoice' ? 'tus facturas' : 'tus suscripciones'}. Para cambiarlo, ve a esa sección.
+            Este evento se genera solo desde {event.auto_kind === 'invoice' ? 'tus facturas' : 'tus suscripciones'}. Para cambiarlo, ve a esa secciÃ³n.
           </div>
         )}
 
@@ -345,7 +345,7 @@ function EventDetail({ event, onClose, onEdit, onStatusChange, onDelete, isMobil
   )
 }
 
-/* ── Panel agenda lateral ─────────────────────────────────── */
+/* â”€â”€ Panel agenda lateral â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function AgendaPanel({ events, onEventClick, isMobile, onBack }) {
   var today     = new Date()
   var upcoming  = events
@@ -428,12 +428,12 @@ function AgendaPanel({ events, onEventClick, isMobile, onBack }) {
   )
 }
 
-/* ── Vista semanal ─────────────────────────────────────────── */
+/* â”€â”€ Vista semanal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent }) {
   var [dropHint, setDropHint] = useState(null)
 
-  // Arrastre táctil/ratón: sigue el dedo por las 7 columnas usando
-  // elementFromPoint, pinta el bloque-guía y, al soltar, mueve el evento.
+  // Arrastre tÃ¡ctil/ratÃ³n: sigue el dedo por las 7 columnas usando
+  // elementFromPoint, pinta el bloque-guÃ­a y, al soltar, mueve el evento.
   function beginDrag(e, event, grabMin, dur, blockEl) {
     e.stopPropagation()
     var startX = e.clientX, startY = e.clientY
@@ -487,13 +487,13 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent })
     return events.filter(function(e) { return e.event_date === dateStr })
   }
 
-  // Al montar, desplaza la cuadrícula hasta la mañana (no arrancar en 00:00).
+  // Al montar, desplaza la cuadrÃ­cula hasta la maÃ±ana (no arrancar en 00:00).
   var scrollRef = useRef(null)
   useEffect(function() {
     if (scrollRef.current) scrollRef.current.scrollTop = WEEK_SCROLL_TO_HOUR * ROW_HEIGHT
   }, [])
 
-  // Línea de "ahora" para el día de hoy.
+  // LÃ­nea de "ahora" para el dÃ­a de hoy.
   var now = new Date()
   var nowTop = ((now.getHours() * 60 + now.getMinutes()) - WEEK_HOUR_START * 60) / 60 * ROW_HEIGHT
 
@@ -597,7 +597,7 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent })
   )
 }
 
-/* ── Modal de nuevo/editar evento ─────────────────────────── */
+/* â”€â”€ Modal de nuevo/editar evento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial }) {
   var [form, setForm] = useState({
     title:      initial ? (initial.title || '') : '',
@@ -621,7 +621,7 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
       <div>
-        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Título *</label>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>TÃ­tulo *</label>
         <input value={form.title} onChange={set('title')} placeholder="Nombre del evento" style={INP} autoFocus />
       </div>
 
@@ -631,7 +631,7 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
       </div>
 
       <div>
-        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Categoría</label>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>CategorÃ­a</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
           {Object.keys(CATEGORIES).map(function(key) {
             var c = CATEGORIES[key]
@@ -674,12 +674,12 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
       )}
 
       <div>
-        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Ubicación</label>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>UbicaciÃ³n</label>
         <input value={form.location} onChange={set('location')} placeholder="Direccion o enlace" style={INP} />
       </div>
 
       <div>
-        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>Descripción</label>
+        <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '5px' }}>DescripciÃ³n</label>
         <textarea value={form.description} onChange={set('description')} placeholder="Notas adicionales..." rows={3} style={Object.assign({}, INP, { resize: 'vertical' })} />
       </div>
 
@@ -695,10 +695,10 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    PAGINA PRINCIPAL
-═══════════════════════════════════════════════════════════ */
-/* ── Vista de día (al entrar en un día desde el mes) ───────── */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* â”€â”€ Vista de dÃ­a (al entrar en un dÃ­a desde el mes) â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate }) {
   var hours = []
   for (var h = WEEK_HOUR_START; h <= WEEK_HOUR_END; h++) hours.push(h)
@@ -812,9 +812,9 @@ export default function Calendar() {
   var [selectedEvent, setSelectedEvent] = useState(null)
   var [viewMode, setViewMode] = useState('month')
   var [weekStart, setWeekStart] = useState(function() { return getMonday(new Date()) })
-  var [dayView, setDayView] = useState(null) // fecha (YYYY-MM-DD) al entrar en un día desde el mes
+  var [dayView, setDayView] = useState(null) // fecha (YYYY-MM-DD) al entrar en un dÃ­a desde el mes
 
-  // Navegación móvil: 'calendar' | 'agenda' | 'detail'
+  // NavegaciÃ³n mÃ³vil: 'calendar' | 'agenda' | 'detail'
   var [mobileStep, setMobileStep] = useState('calendar')
   var [isMobile, setIsMobile] = useState(false)
   useEffect(function() {
@@ -842,7 +842,7 @@ export default function Calendar() {
   function handleDayClick(day) {
     var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0')
     setSelectedEvent(null)
-    setDayView(dateStr) // entrar en el día para ver sus eventos
+    setDayView(dateStr) // entrar en el dÃ­a para ver sus eventos
   }
 
   function isAutoEvent(event) {
@@ -850,7 +850,7 @@ export default function Calendar() {
   }
 
   function handleEventClick(event) {
-    // Click en un evento manual = editar directamente. Los automáticos
+    // Click en un evento manual = editar directamente. Los automÃ¡ticos
     // (deadlines de proyecto, cobros) no son editables: se muestran en detalle.
     if (isAutoEvent(event)) {
       setSelectedEvent(event)
@@ -860,8 +860,8 @@ export default function Calendar() {
     }
   }
 
-  // Mover un evento (arrastrando en la vista de semana/día) a otro día/hora,
-  // conservando su duración. Sin tocar la fecha a mano.
+  // Mover un evento (arrastrando en la vista de semana/dÃ­a) a otro dÃ­a/hora,
+  // conservando su duraciÃ³n. Sin tocar la fecha a mano.
   function moveEvent(eventId, newDateStr, newStartMin) {
     var ev = (hook.events || []).find(function(e) { return e.id === eventId })
     if (!ev || isAutoEvent(ev)) return
@@ -897,8 +897,8 @@ export default function Calendar() {
   weekEnd.setDate(weekEnd.getDate() + 6)
   var sameMonth = weekStart.getMonth() === weekEnd.getMonth()
   var weekLabel = sameMonth
-    ? weekStart.getDate() + ' – ' + weekEnd.getDate() + ' ' + MONTHS[weekStart.getMonth()].slice(0, 3) + ' ' + weekStart.getFullYear()
-    : weekStart.getDate() + ' ' + MONTHS[weekStart.getMonth()].slice(0, 3) + ' – ' + weekEnd.getDate() + ' ' + MONTHS[weekEnd.getMonth()].slice(0, 3) + ' ' + weekEnd.getFullYear()
+    ? weekStart.getDate() + ' â€“ ' + weekEnd.getDate() + ' ' + MONTHS[weekStart.getMonth()].slice(0, 3) + ' ' + weekStart.getFullYear()
+    : weekStart.getDate() + ' ' + MONTHS[weekStart.getMonth()].slice(0, 3) + ' â€“ ' + weekEnd.getDate() + ' ' + MONTHS[weekEnd.getMonth()].slice(0, 3) + ' ' + weekEnd.getFullYear()
 
   var showCalendarPane = !isMobile || mobileStep === 'calendar'
   var showSidePane     = !isMobile || mobileStep === 'agenda' || mobileStep === 'detail'
@@ -1042,7 +1042,7 @@ export default function Calendar() {
                               return <EventChip key={event.id} event={event} onClick={handleEventClick} />
                             })}
                             {dayEvents.length > (isMobile ? 2 : 3) && (
-                              <span style={{ display: 'block', fontSize: '9px', color: 'var(--brand)', fontWeight: 600, paddingLeft: '4px' }}>+{dayEvents.length - (isMobile ? 2 : 3)} más</span>
+                              <span style={{ display: 'block', fontSize: '9px', color: 'var(--brand)', fontWeight: 600, paddingLeft: '4px' }}>+{dayEvents.length - (isMobile ? 2 : 3)} mÃ¡s</span>
                             )}
                           </div>
                         </div>
@@ -1097,7 +1097,7 @@ export default function Calendar() {
         open={hook.modalOpen || false}
         onClose={hook.closeModal}
         title={hook.editingEvent ? 'Editar evento' : 'Nuevo evento'}
-        description={hook.editingEvent ? 'Modifica los datos del evento' : 'Añade un evento a tu calendario'}
+        description={hook.editingEvent ? 'Modifica los datos del evento' : 'AÃ±ade un evento a tu calendario'}
         size="md"
       >
         <EventForm
@@ -1118,3 +1118,5 @@ export default function Calendar() {
     </div>
   )
 }
+
+

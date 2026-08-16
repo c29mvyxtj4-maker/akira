@@ -1,7 +1,7 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import { useLayout } from '@/hooks/useLayout';
+import { useAuth } from '@/shared/context/AuthContext';
+import { useLayout } from '@/shared/hooks/useLayout';
 import { UserDropdown } from './UserDropdown';
 import { Menu, Home, ChevronDown } from 'lucide-react';
 
@@ -56,3 +56,5 @@ export const TopNavBar = ({ title }) => {
     </nav>
   );
 };
+
+

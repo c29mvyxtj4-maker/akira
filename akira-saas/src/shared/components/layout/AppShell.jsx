@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react'
+﻿import { Suspense, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import BottomBar from './BottomBar'
@@ -7,10 +7,10 @@ import TopMenu from './TopMenu'
 import { BottomNavigation, BottomNavigationSpacer } from './BottomNavigation'
 import { MoreMenu } from './MoreMenu'
 import InstallBanner from '@/components/pwa/InstallBanner'
-import { PageSpinner } from '@/components/ui/Spinner'
-import { useApp } from '@/context/AppContext'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
+import { useApp } from '@/shared/context/AppContext'
 import { DUR, EASE } from '@/config/motion'
-import { useResponsive } from '@/hooks/useResponsive'
+import { useResponsive } from '@/shared/hooks/useResponsive'
 
 export default function AppShell() {
   var { toasts, removeToast } = useApp()
@@ -94,3 +94,6 @@ export default function AppShell() {
     </div>
   )
 }
+
+
+

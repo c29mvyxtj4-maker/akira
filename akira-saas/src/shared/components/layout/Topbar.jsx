@@ -1,13 +1,13 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, PanelLeft, Plus, FileText, Users, Briefcase, Star } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useCurrentItem } from '@/context/CurrentItemContext'
-import { useFavorite } from '@/hooks/useFavorite'
+import { useCurrentItem } from '@/shared/context/CurrentItemContext'
+import { useFavorite } from '@/shared/hooks/useFavorite'
 
 /**
- * TopBar — Barra superior con estructura Notion-like
- * Izq: Menú hamburguesa + Flechas | Centro: Título/Breadcrumb | Der: Botón +
+ * TopBar â€” Barra superior con estructura Notion-like
+ * Izq: MenÃº hamburguesa + Flechas | Centro: TÃ­tulo/Breadcrumb | Der: BotÃ³n +
  */
 export default function TopBar({ onToggleSidebar }) {
   const location = useLocation()
@@ -18,7 +18,7 @@ export default function TopBar({ onToggleSidebar }) {
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 })
   const [showSettings, setShowSettings] = useState(false)
 
-  // Mapeo de rutas a títulos
+  // Mapeo de rutas a tÃ­tulos
   const getTitleFromRoute = () => {
     const routeTitles = {
       '/': 'Inicio',
@@ -113,7 +113,7 @@ export default function TopBar({ onToggleSidebar }) {
           }}
           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-2)'}
           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-          title="Atrás"
+          title="AtrÃ¡s"
         >
           <ChevronLeft size={18} />
         </button>
@@ -140,7 +140,7 @@ export default function TopBar({ onToggleSidebar }) {
         </button>
       </div>
 
-      {/* Center: Título + Icono */}
+      {/* Center: TÃ­tulo + Icono */}
       <div style={{
         flex: 1,
         display: 'flex',
@@ -162,7 +162,7 @@ export default function TopBar({ onToggleSidebar }) {
           color: 'white',
           flexShrink: 0,
         }}>
-          📎
+          ðŸ“Ž
         </div>
         <span style={{
           fontSize: '16px',
@@ -203,7 +203,7 @@ export default function TopBar({ onToggleSidebar }) {
           }}
           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-2)'}
           onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-          title="Añadir"
+          title="AÃ±adir"
         >
           <Plus size={20} />
         </motion.button>
@@ -299,3 +299,5 @@ export default function TopBar({ onToggleSidebar }) {
     </div>
   )
 }
+
+

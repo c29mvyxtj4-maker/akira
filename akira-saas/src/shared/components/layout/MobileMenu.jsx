@@ -1,4 +1,4 @@
-import { useLayout } from '@/hooks/useLayout';
+﻿import { useLayout } from '@/shared/hooks/useLayout';
 import { LeftSidebar } from './LeftSidebar';
 import { X } from 'lucide-react';
 
@@ -29,3 +29,4 @@ export const MobileMenu = () => {
     </div>
   );
 };
+

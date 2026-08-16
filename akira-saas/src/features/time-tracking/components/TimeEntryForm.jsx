@@ -1,10 +1,10 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Plus, X, Clock } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import Modal from '@/components/ui/Modal'
-import Input from '@/components/ui/Input'
-import Select from '@/components/ui/Select'
+import Button from '@/shared/components/ui/Button'
+import Modal from '@/shared/components/ui/Modal'
+import Input from '@/shared/components/ui/Input'
+import Select from '@/shared/components/ui/Select'
 
 /**
  * TimeEntryForm component - Modal form for adding time entries
@@ -264,3 +264,4 @@ export default function TimeEntryForm({
     </Modal>
   )
 }
+

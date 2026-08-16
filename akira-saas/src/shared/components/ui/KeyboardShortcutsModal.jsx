@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { GLOBAL_SHORTCUTS, CONTEXT_SHORTCUTS } from '@/hooks/useKeyboardShortcuts'
+import { GLOBAL_SHORTCUTS, CONTEXT_SHORTCUTS } from '@/shared/hooks/useKeyboardShortcuts'
 
 /**
  * Modal showing all available keyboard shortcuts
@@ -250,23 +250,23 @@ function formatShortcut(shortcut) {
     'alt': 'Alt',
     'enter': 'Enter',
     'escape': 'Esc',
-    'arrowup': '↑',
-    'arrowdown': '↓',
-    'arrowleft': '←',
-    'arrowright': '→',
+    'arrowup': 'â†‘',
+    'arrowdown': 'â†“',
+    'arrowleft': 'â†',
+    'arrowright': 'â†’',
   }
 
   // Platform-specific modifier
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform)
 
   if (shortcut.ctrlKey) {
-    parts.push(isMac ? '⌘' : 'Ctrl')
+    parts.push(isMac ? 'âŒ˜' : 'Ctrl')
   }
   if (shortcut.altKey) {
-    parts.push(isMac ? '⌥' : 'Alt')
+    parts.push(isMac ? 'âŒ¥' : 'Alt')
   }
   if (shortcut.shiftKey) {
-    parts.push(isMac ? '⇧' : 'Shift')
+    parts.push(isMac ? 'â‡§' : 'Shift')
   }
 
   const displayKey = keyMap[shortcut.key.toLowerCase()] || shortcut.key.toUpperCase()
@@ -274,3 +274,4 @@ function formatShortcut(shortcut) {
 
   return parts.join(isMac ? ' ' : '+')
 }
+

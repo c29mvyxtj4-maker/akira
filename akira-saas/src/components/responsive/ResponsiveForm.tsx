@@ -1,10 +1,10 @@
-import { ReactNode, CSSProperties } from 'react'
-import { useResponsive } from '@/hooks/useResponsive'
+﻿import { ReactNode, CSSProperties } from 'react'
+import { useResponsive } from '@/shared/hooks/useResponsive'
 import { motion } from 'framer-motion'
 
 /**
  * ResponsiveForm - Contenedor de formulario responsivo
- * Ajusta layout, spacing, y tamaños de campos según breakpoint
+ * Ajusta layout, spacing, y tamaÃ±os de campos segÃºn breakpoint
  */
 
 interface ResponsiveFormProps {
@@ -138,7 +138,7 @@ export function FormField({
 
 /**
  * FormInput - Input responsivo
- * Font-size mínimo 16px en móvil para evitar zoom iOS
+ * Font-size mÃ­nimo 16px en mÃ³vil para evitar zoom iOS
  */
 
 interface FormInputProps
@@ -324,7 +324,7 @@ export function FormCheckbox({ label, error, ...props }: FormCheckboxProps) {
 }
 
 /**
- * FormGroup - Grupo de campos lado a lado (desktop) / apilados (móvil)
+ * FormGroup - Grupo de campos lado a lado (desktop) / apilados (mÃ³vil)
  */
 
 interface FormGroupProps {
@@ -410,3 +410,4 @@ export function FormActions({
     </div>
   )
 }
+

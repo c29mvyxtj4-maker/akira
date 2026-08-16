@@ -1,8 +1,8 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Mail, ArrowLeft, Loader2, CheckCircle } from 'lucide-react'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '@/shared/context/AuthContext'
 import { ROUTES } from '@/config/constants'
 
 export default function ResetPassword() {
@@ -46,14 +46,14 @@ export default function ResetPassword() {
             </div>
             <h2 className="text-xl font-bold text-text-1 mb-2">Email enviado</h2>
             <p className="text-text-3 text-sm">
-              Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.
+              Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseÃ±a.
             </p>
           </div>
         ) : (
           <>
-            <h2 className="text-2xl font-black text-text-1 mb-1">Restablecer contraseña</h2>
+            <h2 className="text-2xl font-black text-text-1 mb-1">Restablecer contraseÃ±a</h2>
             <p className="text-text-3 text-sm mb-8">
-              Introduce tu email y te enviaremos un enlace de recuperación.
+              Introduce tu email y te enviaremos un enlace de recuperaciÃ³n.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">

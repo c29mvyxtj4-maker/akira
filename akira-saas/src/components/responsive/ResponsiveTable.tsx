@@ -1,12 +1,12 @@
-import { ReactNode, CSSProperties } from 'react'
-import { useResponsive } from '@/hooks/useResponsive'
+﻿import { ReactNode, CSSProperties } from 'react'
+import { useResponsive } from '@/shared/hooks/useResponsive'
 import { motion } from 'framer-motion'
 
 /**
- * ResponsiveTable - Tabla que se adapta a móvil/tablet/desktop
+ * ResponsiveTable - Tabla que se adapta a mÃ³vil/tablet/desktop
  * Desktop: Tabla HTML tradicional
  * Tablet: Tabla compacta
- * Móvil: Cards apiladas (no tabla)
+ * MÃ³vil: Cards apiladas (no tabla)
  */
 
 interface Column {
@@ -180,7 +180,7 @@ export function ResponsiveTable({
 }
 
 /**
- * CardRow - Tarjeta para renderizar fila en móvil
+ * CardRow - Tarjeta para renderizar fila en mÃ³vil
  */
 
 interface CardRowProps {
@@ -331,3 +331,4 @@ export function ResponsiveList({
     </div>
   )
 }
+

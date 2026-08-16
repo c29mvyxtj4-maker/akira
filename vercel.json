@@ -4,12 +4,6 @@
   "nodeVersion": "20.x",
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
   "headers": [
     {
       "source": "/index.html",
@@ -30,15 +24,18 @@
       ]
     }
   ],
-  "env": {
-    "NODE_ENV": "production",
-    "VITE_API_URL": "https://akira-os-dun.vercel.app"
-  },
-  "regions": ["sfo1"],
-  "functions": {
-    "api/**/*.js": {
-      "memory": 1024,
-      "maxDuration": 60
+  "routes": [
+    {
+      "src": "^/assets/(.*)$",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": ".*",
+      "dest": "/index.html"
     }
-  }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "regions": ["sfo1"]
 }

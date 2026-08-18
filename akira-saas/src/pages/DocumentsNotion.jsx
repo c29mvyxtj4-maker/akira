@@ -13,17 +13,6 @@ export default function DocumentsNotion() {
     icon: '📝'
   })
 
-  if (showEditor) {
-    return (
-      <Suspense fallback={<div style={{ padding: '20px', color: '#fff' }}>Cargando editor...</div>}>
-        <TipTapEditor
-          doc={demoDoc}
-          onClose={() => setShowEditor(false)}
-        />
-      </Suspense>
-    )
-  }
-
   return (
     <div style={{ height: '100vh', background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}

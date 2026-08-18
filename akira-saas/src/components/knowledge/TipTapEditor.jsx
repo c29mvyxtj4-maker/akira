@@ -412,6 +412,7 @@ function AttachmentsPanel({ attachments, onAdd, onDelete }) {
    EDITOR PRINCIPAL
 –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 export default function TipTapEditor({ doc, onChange, attachments, onAttachFile, onDeleteAttachment, showAttachments }) {
+  var [isFocused, setIsFocused] = useState(false)
   var docIdRef    = useRef(null)
   var onChangeRef = useRef(onChange)
 
@@ -442,6 +443,7 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
     ],
     content: { type: 'doc', content: [] },
     onUpdate: function(params) {
+      setIsFocused(true)
       var id = docIdRef.current
       if (!id) return
       try {
@@ -510,6 +512,20 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
     return function() { el.removeEventListener('paste', onPaste) }
   }, [editor])
 
+  /* Detectar focus en el editor */
+  useEffect(function() {
+    if (!editor) return
+    var el = editor.view.dom
+    var handleFocus = function() { setIsFocused(true) }
+    var handleBlur = function() { setIsFocused(false) }
+    el.addEventListener('focus', handleFocus)
+    el.addEventListener('blur', handleBlur)
+    return function() {
+      el.removeEventListener('focus', handleFocus)
+      el.removeEventListener('blur', handleBlur)
+    }
+  }, [editor])
+
   /* Drag & drop de imagenes */
   useEffect(function() {
     if (!editor) return
@@ -540,9 +556,13 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
     }
   } catch (e) {}
 
+  // Mostrar toolbar solo cuando hay contenido (usuario escribió algo)
+  var hasContent = editor && editor.storage && editor.storage.characterCount && editor.storage.characterCount.characters() > 0
+  var showToolbar = hasContent || isFocused
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      <Toolbar editor={editor} docId={doc ? doc.id : null} />
+      {showToolbar && <Toolbar editor={editor} docId={doc ? doc.id : null} />}
       <div style={{ flex: 1, overflow: 'auto' }}>
         <EditorContent editor={editor} style={{ minHeight: '100%' }} />
         {showAttachments && (

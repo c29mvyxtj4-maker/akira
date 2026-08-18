@@ -558,7 +558,7 @@ export default function TipTapEditor({ doc, onChange, attachments, onAttachFile,
 
   // Mostrar toolbar solo cuando hay contenido (usuario escribió algo)
   var hasContent = editor && editor.storage && editor.storage.characterCount && editor.storage.characterCount.characters() > 0
-  var showToolbar = hasContent || isFocused
+  var showToolbar = hasContent
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>

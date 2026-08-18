@@ -1,34 +1,96 @@
+import { useState, useEffect, lazy, Suspense } from 'react'
+import { motion } from 'framer-motion'
+import { Plus, Save, FileText, Settings } from 'lucide-react'
+import { useKnowledge } from '@/shared/hooks/useKnowledge'
+
+// TipTap pesa ~500KB: se carga solo al abrir un documento
+const TipTapEditor = lazy(() => import('@/components/knowledge/TipTapEditor'))
+
 export default function DocumentsNotion() {
-  return (
-    <div style={{ padding: '40px', textAlign: 'center', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <h1 style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '20px', color: '#e63946' }}>✨ DOCUMENTOS EN VIVO ✨</h1>
-      <p style={{ fontSize: '18px', color: '#666', marginBottom: '30px', fontWeight: 500 }}>
-        🎉 ¡La página de Documentos está FUNCIONANDO!
-      </p>
-      <div style={{
-        background: 'linear-gradient(135deg, #e63946 0%, #f1faee 100%)',
-        border: '3px solid #e63946',
-        borderRadius: '12px',
-        padding: '40px',
-        maxWidth: '700px',
-        margin: '0 auto',
-        boxShadow: '0 8px 32px rgba(230, 57, 70, 0.2)'
-      }}>
-        <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '20px', color: '#1a1a1a' }}>🚀 FUNCIONES LISTA</h2>
-        <ul style={{ textAlign: 'left', listStyle: 'none', padding: 0, color: '#1a1a1a', lineHeight: '2' }}>
-          <li style={{ marginBottom: '15px', fontSize: '16px' }}>✅ Página /documents COMPLETAMENTE FUNCIONAL</li>
-          <li style={{ marginBottom: '15px', fontSize: '16px' }}>✅ Routing en React Router configurado</li>
-          <li style={{ marginBottom: '15px', fontSize: '16px' }}>✅ Vercel.json con rewrites y routes</li>
-          <li style={{ marginBottom: '15px', fontSize: '16px' }}>✅ 404.html para fallback de SPA</li>
-          <li style={{ marginBottom: '15px', fontSize: '16px' }}>✅ Build exitosa - ZERO errores</li>
-          <li style={{ fontSize: '16px' }}>✅ DEPLOYMENT COMPLETO</li>
-        </ul>
-        <div style={{ marginTop: '30px', padding: '20px', background: 'rgba(255,255,255,0.9)', borderRadius: '8px' }}>
-          <p style={{ fontSize: '14px', color: '#333', margin: 0 }}>
-            Versión: <strong>1.0.0-documents-live</strong>
-          </p>
+  const { documents, loading, currentDoc, setCurrentDoc, updateDocument } = useKnowledge()
+  const [showNewForm, setShowNewForm] = useState(false)
+  const [newDocTitle, setNewDocTitle] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  // Si no hay documento actual, mostramos la lista
+  if (!currentDoc) {
+    return (
+      <div style={{ height: '100vh', background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', display: 'flex', flexDirection: 'column' }}>
+        {/* Header */}
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <FileText size={24} style={{ color: '#e63946' }} />
+            <div>
+              <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#f1f1f4' }}>Documentos</h1>
+              <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Editor Notion-like integrado</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowNewForm(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '8px 16px', background: '#e63946', border: 'none',
+              borderRadius: '8px', color: '#fff', fontSize: '13px', fontWeight: 600,
+              cursor: 'pointer', transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = '#d62828'}
+            onMouseLeave={(e) => e.currentTarget.style.background = '#e63946'}
+          >
+            <Plus size={16} />
+            Nuevo documento
+          </button>
+        </div>
+
+        {/* Lista de documentos */}
+        <div style={{ flex: 1, overflow: 'auto', padding: '24px' }}>
+          {loading ? (
+            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: '40px' }}>
+              Cargando documentos...
+            </div>
+          ) : documents && documents.length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+              {documents.map((doc) => (
+                <motion.div
+                  key={doc.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -4 }}
+                  onClick={() => setCurrentDoc(doc)}
+                  style={{
+                    padding: '16px', background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px',
+                    cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                >
+                  <div style={{ fontSize: '28px', marginBottom: '8px' }}>{doc.icon || '📄'}</div>
+                  <h3 style={{ margin: '0 0 6px 0', fontSize: '14px', fontWeight: 600, color: '#f1f1f4' }}>{doc.title}</h3>
+                  <p style={{ margin: 0, fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
+                    {doc.updated_at ? new Date(doc.updated_at).toLocaleDateString() : 'Sin fecha'}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: '40px' }}>
+              <FileText size={48} style={{ opacity: 0.3, marginBottom: '16px' }} />
+              <p>No hay documentos aún</p>
+              <p style={{ fontSize: '12px' }}>Crea tu primer documento para empezar</p>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    )
+  }
+
+  // Si hay documento actual, mostramos el editor
+  return (
+    <Suspense fallback={<div style={{ padding: '20px', color: '#fff' }}>Cargando editor...</div>}>
+      <TipTapEditor
+        doc={currentDoc}
+        onClose={() => setCurrentDoc(null)}
+      />
+    </Suspense>
   )
 }

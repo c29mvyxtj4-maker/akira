@@ -43,6 +43,10 @@ const LandingPage   = lazy(() => import('@/pages/LandingPage'))
 const Automation    = lazy(() => import('@/pages/Automation')) // v2.0 Automation workflows
 const YouTube       = lazy(() => import('@/pages/YouTube')) // YouTube project management
 const DocumentsNotion = lazy(() => import('@/pages/DocumentsNotion')) // Notion-style documents
+const AuditLog      = lazy(() => import('@/pages/AuditLog')) // Audit trail
+const DocumentVersions = lazy(() => import('@/pages/DocumentVersions')) // Document history
+const DashboardBuilder = lazy(() => import('@/pages/DashboardBuilder')) // Custom dashboards
+const ReportBuilder = lazy(() => import('@/pages/ReportBuilder')) // Custom reports
 
 function ComingSoon({ name }) {
   return (
@@ -138,6 +142,10 @@ export default function App() {
           <Route path="brain/*"         element={<Brain />} />
           <Route path="automation/*"    element={<Automation />} />
           <Route path="youtube/*"       element={<YouTube />} />
+          <Route path="audit-log/*"     element={<AuditLog />} />
+          <Route path="documents/:id/versions" element={<DocumentVersions />} />
+          <Route path="dashboard-builder/*" element={<DashboardBuilder />} />
+          <Route path="reports/*"       element={<ReportBuilder />} />
           <Route path="settings/*"      element={<Settings />} />
           <Route path="offers/*"        element={<Offers />} />
         </Route>

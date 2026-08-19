@@ -21,6 +21,10 @@ import {
   LogOut,
   Clock,
   Star,
+  BarChart3,
+  FileBarChart,
+  History,
+  Shield,
 } from 'lucide-react'
 import { ROUTES } from '@/shared/config/constants'
 import { supabase } from '@/shared/lib/supabase'
@@ -41,6 +45,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
     favoritos: true,
     equipo: false,
     privado: true,
+    analytics: true,
   })
   const [showAccountMenu, setShowAccountMenu] = useState(false)
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
@@ -339,6 +344,15 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, onOpenSettings 
         : [
             { icon: Users, label: 'Sin workspaces', disabled: true },
           ],
+    },
+    analytics: {
+      label: 'Análisis & Reportes',
+      items: [
+        { icon: BarChart3, label: 'Dashboards', route: '/dashboard-builder' },
+        { icon: FileBarChart, label: 'Reportes', route: '/reports' },
+        { icon: History, label: 'Auditoría', route: '/audit-log' },
+        { icon: Shield, label: 'Seguridad 2FA', route: '/settings?tab=security' },
+      ],
     },
   }
 

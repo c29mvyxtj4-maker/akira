@@ -154,11 +154,42 @@ npm run test:a11y
 - Color contrast audit en todas las páginas
 - Heading hierarchy en todas las páginas
 
-**⏳ FASE 8 (Futuro)**
-- Automated testing con Axe Core
+**✅ FASE 8 (Actual)**
+- Automated testing con Axe Core (vitest + Playwright)
 - ARIA attributes completeness audit
-- Keyboard navigation testing
-- Lector de pantalla testing (NVDA/JAWS)
+- Keyboard navigation testing  
+- E2E accessibility tests para 6 páginas principales
+
+### Scripts Disponibles
+
+```bash
+# Unit tests de accesibilidad
+npm run test:a11y
+
+# Auditoría completa con Axe Core + HTML report
+npm run a11y:audit
+
+# E2E tests con Playwright
+npx playwright test
+
+# Ver reporte interactivo
+npx playwright show-report
+```
+
+### Archivos Nuevos (FASE 8)
+
+```
+src/__tests__/
+├── accessibility.test.js       # Unit tests de componentes
+└── e2e/
+    └── pages-accessibility.spec.js  # E2E tests Playwright
+
+scripts/
+└── axe-audit.mjs               # Script de auditoría con reporte HTML
+
+axe.config.js                   # Configuración de reglas Axe
+playwright.config.js            # Configuración de Playwright
+```
 
 ---
 

@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, PanelLeft, Plus, FileText, Users, Briefcase,
 import { motion } from 'framer-motion'
 import { useCurrentItem } from '@/shared/context/CurrentItemContext'
 import { useFavorite } from '@/shared/hooks/useFavorite'
+import NotificationCenter from '@/components/NotificationCenter'
 
 /**
  * TopBar –” Barra superior con estructura Notion-like
@@ -176,7 +177,7 @@ export default function TopBar({ onToggleSidebar }) {
         </span>
       </div>
 
-      {/* Right: Add Button */}
+      {/* Right: Notifications + Add Button */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -184,6 +185,8 @@ export default function TopBar({ onToggleSidebar }) {
         flexShrink: 0,
         position: 'relative',
       }}>
+        <NotificationCenter />
+
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

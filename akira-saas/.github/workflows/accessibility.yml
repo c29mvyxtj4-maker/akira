@@ -1,0 +1,99 @@
+name: 🔍 Accessibility Tests
+
+on:
+  push:
+    branches: [main, master, feature/**]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  accessibility:
+    name: Run Accessibility Audits
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: ✅ Run unit accessibility tests
+        run: npm run test:a11y
+        continue-on-error: true
+
+      - name: 🚀 Start dev server
+        run: npm run dev &
+        env:
+          CI: true
+
+      - name: ⏳ Wait for dev server
+        run: |
+          npx wait-on http://localhost:5173 --timeout 30000
+
+      - name: 🔍 Run Axe Core audit
+        run: npm run a11y:audit
+        continue-on-error: true
+
+      - name: 📊 Upload Axe reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-reports
+          path: a11y-reports/
+          retention-days: 30
+
+      - name: 📋 Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: 💬 Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'a11y-reports/accessibility-audit.json';
+
+            if (fs.existsSync(reportPath)) {
+              const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+              const { summary } = report;
+
+              const comment = `## ♿ Accessibility Audit Report
+
+- Total Pages: ${summary.total}
+- ✅ Passed: ${summary.passed}
+- ❌ Failed: ${summary.failed}
+- ⚠️ Violations: ${summary.violations.length}
+
+${summary.violations.length === 0
+  ? '✅ All pages passed accessibility audit!'
+  : `⚠️ Found ${summary.violations.length} violation(s). View full report in artifacts.`
+}
+
+[View HTML Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+              `;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }

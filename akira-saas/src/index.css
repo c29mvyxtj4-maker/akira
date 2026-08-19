@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 /* Responsive design system for mobile & tablet */
-@import './styles/responsive.css';
+/* @import './styles/responsive.css'; */
 
 /* ════════════════════════════════════════════════════════════
    TOKENS CSS — DARK MODE (default)

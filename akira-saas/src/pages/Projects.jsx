@@ -5,6 +5,8 @@ import {
   Edit3, ChevronRight, ChevronLeft, AlertTriangle, CheckCircle2,
   Calendar, DollarSign, TrendingUp, Flag,
 } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useProjects } from '@/shared/hooks/useProjects'
 import { useAddRecent } from '@/shared/hooks/useAddRecent'
 import { useCurrentItem } from '@/shared/context/CurrentItemContext'
@@ -334,7 +336,7 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, o
   )
 }
 
-function TimePanel({ project }) {
+function TimePanel({ project, show }) {
   var [entries, setEntries] = useState([])
   var [running, setRunning] = useState(null)
   var [loading, setLoading] = useState(true)
@@ -391,14 +393,28 @@ function TimePanel({ project }) {
     if (!manualHours || Number(manualHours) <= 0) return
     setBusy(true)
     addManualEntry(project.id, { hours: manualHours, description: manualDesc, date: manualDate })
-      .then(function() { setManualHours(''); setManualDesc(''); setShowManual(false); load() })
-      .catch(function(e) { window.alert(e.message) })
+      .then(function() { setManualHours(''); setManualDesc(''); setShowManual(false); load(); show('Entrada añadida', 'success', 3000) })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000) })
       .finally(function() { setBusy(false) })
   }
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
+  const { toasts, show, dismiss } = useToast()
+
   function handleDelete(id) {
-    if (!window.confirm('Eliminar esta entrada de tiempo?')) return
-    deleteTimeEntry(id).then(load)
+    setShowDeleteConfirm(id)
+  }
+
+  function confirmDelete() {
+    if (!showDeleteConfirm) return
+    deleteTimeEntry(showDeleteConfirm).then(() => {
+      setShowDeleteConfirm(null)
+      load()
+      show('Entrada eliminada', 'success', 3000)
+    }).catch((e) => {
+      show('Error al eliminar: ' + (e.message || e), 'error', 3000)
+      setShowDeleteConfirm(null)
+    })
   }
 
   function fmtElapsed(sec) {
@@ -530,7 +546,7 @@ function ProgressBar({ progress, onUpdate, projectId }) {
 }
 
 /* –”€–”€ Fase 1: equipo del proyecto (vincular personas) –”€–”€–”€–”€–”€–”€–”€ */
-function TeamPanel({ project }) {
+function TeamPanel({ project, show }) {
   var { org } = useOrg()
   var [members, setMembers] = useState([])
   var [team, setTeam] = useState([])
@@ -560,11 +576,11 @@ function TeamPanel({ project }) {
     addProjectMember(project.id, userId).then(function () {
       createMention({ target_user: userId, org_id: project.org_id, type: 'project_added', source_type: 'project', source_id: project.id, project_id: project.id, text: 'Te han añadido al proyecto "' + (project.name || '') + '"' }).catch(function () {})
       return load()
-    }).catch(function (e) { window.alert('No se pudo añadir: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+    }).catch(function (e) { show('No se pudo añadir: ' + (e.message || e), 'error', 3000) }).finally(function () { setBusy(false) })
   }
   function handleRemove(id) {
     setBusy(true)
-    removeProjectMember(id).then(load).catch(function (e) { window.alert('No se pudo quitar: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+    removeProjectMember(id).then(load).catch(function (e) { show('No se pudo quitar: ' + (e.message || e), 'error', 3000) }).finally(function () { setBusy(false) })
   }
 
   return (
@@ -779,7 +795,7 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
         </div>
 
         <div style={{ display: tab === 'team' ? 'block' : 'none' }}>
-          {tab === 'team' && <TeamPanel project={project} />}
+          {tab === 'team' && <TeamPanel project={project} show={show} />}
         </div>
 
         <div style={{ display: tab === 'files' ? 'block' : 'none' }}>
@@ -787,7 +803,7 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
         </div>
 
         <div style={{ display: tab === 'time' ? 'block' : 'none' }}>
-          {tab === 'time' && <TimePanel project={project} />}
+          {tab === 'time' && <TimePanel project={project} show={show} />}
         </div>
 
         <div style={{ display: tab === 'dates' ? 'block' : 'none' }}>
@@ -1145,6 +1161,21 @@ export default function Projects() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm !== null}
+        title="Eliminar entrada de tiempo"
+        message="¿Estás seguro de que deseas eliminar esta entrada? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteConfirm(null)}
+      />
     </div>
   )
 }

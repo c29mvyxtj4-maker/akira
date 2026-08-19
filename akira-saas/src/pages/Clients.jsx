@@ -1,3 +1,4 @@
+import { ResponsiveGrid } from '@/components/responsive'
 ﻿import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -6,6 +7,7 @@ import {
   Instagram, TrendingUp, FolderKanban, AlertTriangle,
   Clock, CalendarCheck, Users, UserCheck, FileText, Download,
 } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
 import { exportToCsv } from '@/shared/utils/exportCsv'
 import { useClients } from '@/shared/hooks/useClients'
 import { useAddRecent } from '@/shared/hooks/useAddRecent'
@@ -81,10 +83,12 @@ function EmailTemplateButton({ client }) {
     }
   }
 
+  const { toasts, show, dismiss } = useToast()
+
   function handlePick(t) {
     var url = buildTemplateMailto(t, client)
     if (!url) {
-      window.alert('Este cliente no tiene email guardado.')
+      show('Este cliente no tiene email guardado.', 'info', 3000)
       return
     }
     window.location.href = url
@@ -165,7 +169,7 @@ function ClientKpis({ clients }) {
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-2 p-3 border-b border-border">
+    <ResponsiveGrid cols={2} gap="gap-2" className="p-3 border-b border-border">
       {items.map((item, i) => {
         const Icon = item.icon
         return (
@@ -413,7 +417,7 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
               {finance && (
                 <div>
                   <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-3">Economico</h4>
-                  <div className="grid grid-cols-3 gap-3">
+                  <ResponsiveGrid cols={3} gap="gap-3">
                     {[
                       { label: 'Ingresos',  value: fmtCur(finance.income),  color: 'text-status-success' },
                       { label: 'Gastos',    value: fmtCur(finance.expense), color: 'text-status-danger' },
@@ -767,6 +771,9 @@ export default function Clients() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notifications (New) */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }

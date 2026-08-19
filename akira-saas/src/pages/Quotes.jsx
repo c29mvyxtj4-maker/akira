@@ -1,6 +1,8 @@
 ﻿import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Trash2, FileSignature, Archive, ChevronLeft, Building2, ArrowRightCircle, Wrench } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import {
   getQuotes, getQuoteById, createQuote, updateQuote,
   updateQuoteStatus, archiveQuote, convertQuoteToInvoice, QUOTE_STATUS,
@@ -184,11 +186,13 @@ function QuotePreview({ quote, company, onBack, onConvert, converting }) {
   var items = Array.isArray(quote.items) ? quote.items : []
   var client = quote.clients
   var [downloading, setDownloading] = useState(false)
+  const { toasts, show, dismiss } = useToast()
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false)
 
   function handleDownload() {
     setDownloading(true)
     downloadQuotePdf(quote, company)
-      .catch(function(e) { window.alert('Error al generar el PDF: ' + e.message) })
+      .catch(function(e) { show('Error al generar el PDF: ' + (e.message || e), 'error', 3000) })
       .finally(function() { setDownloading(false) })
   }
 
@@ -371,13 +375,18 @@ export default function Quotes() {
   }
 
   function handleArchive(id) {
-    if (!window.confirm('Archivar este presupuesto?')) return
-    archiveQuote(id)
+    setShowArchiveConfirm(id)
+  }
+
+  function confirmArchive() {
+    if (!showArchiveConfirm) return
+    archiveQuote(showArchiveConfirm)
       .then(function() {
-        setQuotes(function(prev) { return prev.filter(function(q) { return q.id !== id }) })
-        showToast('Presupuesto archivado')
+        setQuotes(function(prev) { return prev.filter(function(q) { return q.id !== showArchiveConfirm }) })
+        show('Presupuesto archivado', 'success', 3000)
+        setShowArchiveConfirm(false)
       })
-      .catch(function(e) { showToast(e.message, 'error') })
+      .catch(function(e) { show(e.message || e, 'error', 3000); setShowArchiveConfirm(false) })
   }
 
   function openPreview(q) {
@@ -513,6 +522,9 @@ export default function Quotes() {
           >{toastMsg.msg}</motion.div>
         )}
       </AnimatePresence>
+
+      <Toast toasts={toasts} onDismiss={dismiss} />
+      <ConfirmDialog isOpen={showArchiveConfirm !== false} title="Archivar presupuesto" message="¿Estás seguro?" confirmText="Archivar" cancelText="Cancelar" isDangerous onConfirm={confirmArchive} onCancel={() => setShowArchiveConfirm(false)} />
     </div>
   )
 }

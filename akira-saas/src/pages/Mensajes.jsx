@@ -1,6 +1,8 @@
 ﻿import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Send, Megaphone, MessageSquare, Trash2 } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useOrg } from '@/shared/context/OrgContext'
 import { useAuth } from '@/shared/context/AuthContext'
 import { getOrgTeam } from '@/services/projectMembers.service'
@@ -69,21 +71,31 @@ export default function Mensajes() {
   function nameOf(uid) { var p = team[uid]; return (p && p.full_name) || (uid === me ? 'TÀº' : 'Miembro') }
   function initialOf(uid) { var n = nameOf(uid); return (n[0] || '?').toUpperCase() }
 
+  const { toasts, show, dismiss } = useToast()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
+
   function send() {
     var t = draft.trim()
     if (!t || !orgId) return
     setDraft('')
-    sendTeamMessage(orgId, t).catch(function (e) { window.alert('No se pudo enviar: ' + (e.message || e)) })
+    sendTeamMessage(orgId, t).catch(function (e) { show('No se pudo enviar: ' + (e.message || e), 'error', 3000) })
   }
   function publish() {
     var b = annBody.trim()
     if (!b || !orgId) return
     setAnnTitle(''); setAnnBody('')
-    postAnnouncement(orgId, annTitle.trim(), b).catch(function (e) { window.alert('No se pudo publicar: ' + (e.message || e)) })
+    postAnnouncement(orgId, annTitle.trim(), b).catch(function (e) { show('No se pudo publicar: ' + (e.message || e), 'error', 3000) })
   }
   function removeAnn(id) {
-    if (!window.confirm('¿Eliminar este anuncio?')) return
-    deleteAnnouncement(id).then(function () { setAnns(function (prev) { return prev.filter(function (a) { return a.id !== id }) }) }).catch(function () {})
+    setShowDeleteConfirm(id)
+  }
+  function confirmRemoveAnn() {
+    if (!showDeleteConfirm) return
+    deleteAnnouncement(showDeleteConfirm).then(function () {
+      setAnns(function (prev) { return prev.filter(function (a) { return a.id !== showDeleteConfirm }) })
+      show('Anuncio eliminado', 'success', 3000)
+      setShowDeleteConfirm(null)
+    }).catch(function () { setShowDeleteConfirm(null) })
   }
 
   var TABS = [{ id: 'chat', label: 'Chat', icon: MessageSquare }, { id: 'announce', label: 'Anuncios', icon: Megaphone }]
@@ -169,6 +181,21 @@ export default function Mensajes() {
           </div>
         )}
       </div>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm !== null}
+        title="Eliminar anuncio"
+        message="¿Estás seguro de que deseas eliminar este anuncio?"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmRemoveAnn}
+        onCancel={() => setShowDeleteConfirm(null)}
+      />
     </div>
   )
 }

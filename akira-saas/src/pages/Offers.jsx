@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, Wrench, TrendingUp, Package, CreditCard } from 'lucide-react'
+import { ResponsiveGrid } from '@/components/responsive'
 import {
   getServices, createService, updateService, archiveService,
   SERVICE_CATEGORIES,
@@ -52,7 +53,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
   var margin = price > 0 ? Math.round(((price - cost) / price) * 100) : null
   return (
     <form onSubmit={function(e) { e.preventDefault(); if (!form.name.trim()) return; onSave(form) }} className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+      <ResponsiveGrid cols={2} gap="gap-3">
         <div className="col-span-2">
           <label className="label-base">Nombre del servicio *</label>
           <input value={form.name} onChange={set('name')} placeholder="Pack de video corporativo" style={INP} />
@@ -187,7 +188,7 @@ function CatalogTab({ services, loading, error, search, setSearch, category, set
           action={!search && <Button onClick={onCreate} icon={<Plus className="w-4 h-4" />}>Crear servicio</Button>}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <ResponsiveGrid cols={3} gap="gap-4">
           {services.map(function(s) { return <ServiceCard key={s.id} service={s} onEdit={onEdit} onArchive={onArchive} /> })}
         </div>
       )}
@@ -225,7 +226,7 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
   var monthly = calcMonthlyValue(form.price, form.period)
   return (
     <form onSubmit={function(e) { e.preventDefault(); if (!form.name.trim()) return; onSave(form) }} className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+      <ResponsiveGrid cols={2} gap="gap-3">
         <div className="col-span-2">
           <label className="label-base">Nombre de la suscripcion *</label>
           <input value={form.name} onChange={set('name')} placeholder="Pack mensual video" style={INP} />
@@ -364,7 +365,7 @@ function SubscriptionsTab({ subs, clients, loading, error, search, setSearch, st
           action={!search && <Button onClick={onCreate} icon={<Plus className="w-4 h-4" />}>Crear suscripcion</Button>}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <ResponsiveGrid cols={3} gap="gap-4">
           {subs.map(function(s) { return <SubCard key={s.id} sub={s} onEdit={onEdit} onArchive={onArchive} /> })}
         </div>
       )}
@@ -526,7 +527,7 @@ export default function Offers() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
           {/* KPIs combinados */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <ResponsiveGrid cols={4} gap="gap-4" className="mb-6">
             {[
               { icon: Package,       label: 'Servicios activos',    value: services.filter(function(s) { return s.active }).length, color: 'text-brand-400' },
               { icon: TrendingUp,    label: 'Margen promedio',      value: avgMargin + '%',       color: avgMargin >= 50 ? 'text-status-success' : 'text-status-warning' },

@@ -4,6 +4,8 @@ import {
   Plus, Trash2, FileText, Archive, ChevronLeft,
   Building2, Wrench, Download, CreditCard, Eye, EyeOff,
 } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { exportToCsv } from '@/shared/utils/exportCsv'
 import {
   getInvoices, getInvoiceById, createInvoice, updateInvoice,
@@ -213,10 +215,12 @@ function InvoicePreview({ invoice, company, onBack }) {
   var [charging, setCharging] = useState(false)
   var canCharge = invoice.status !== 'paid' && invoice.status !== 'void'
 
+  const { toasts, show, dismiss } = useToast()
+
   function handleDownload() {
     setDownloading(true)
     downloadInvoicePdf(invoice, company)
-      .catch(function(e) { window.alert('Error al generar el PDF: ' + e.message) })
+      .catch(function(e) { show('Error al generar el PDF: ' + (e.message || e), 'error', 3000) })
       .finally(function() { setDownloading(false) })
   }
 
@@ -231,7 +235,7 @@ function InvoicePreview({ invoice, company, onBack }) {
       // la pestaña actual a Stripe: funciona en móvil y escritorio.
       window.location.href = url
     } catch (e) {
-      window.alert('No se pudo generar el cobro: ' + (e.message || e))
+      show('No se pudo generar el cobro: ' + (e.message || e), 'error', 3000)
     } finally {
       setCharging(false)
     }
@@ -479,14 +483,21 @@ export default function Invoices() {
     }
   }
 
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(null)
+
   function handleArchive(id) {
-    if (!window.confirm('Archivar esta factura?')) return
-    archiveInvoice(id)
+    setShowArchiveConfirm(id)
+  }
+
+  function confirmArchive() {
+    if (!showArchiveConfirm) return
+    archiveInvoice(showArchiveConfirm)
       .then(function() {
-        setInvoices(function(prev) { return prev.filter(function(i) { return i.id !== id }) })
-        showToast('Factura archivada')
+        setInvoices(function(prev) { return prev.filter(function(i) { return i.id !== showArchiveConfirm }) })
+        show('Factura archivada', 'success', 3000)
+        setShowArchiveConfirm(null)
       })
-      .catch(function(e) { showToast(e.message, 'error') })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000); setShowArchiveConfirm(null) })
   }
 
   function openPreview(inv) {
@@ -656,6 +667,21 @@ export default function Invoices() {
           >{toastMsg.msg}</motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Archive Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showArchiveConfirm !== null}
+        title="Archivar factura"
+        message="¿Estás seguro de que deseas archivar esta factura?"
+        confirmText="Archivar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmArchive}
+        onCancel={() => setShowArchiveConfirm(null)}
+      />
     </div>
   )
 }

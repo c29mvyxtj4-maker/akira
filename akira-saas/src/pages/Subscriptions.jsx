@@ -1,6 +1,9 @@
 ﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, CreditCard, TrendingUp, Users } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { ResponsiveGrid } from '@/components/responsive'
 import {
   getSubscriptions, createSubscription, updateSubscription, archiveSubscription,
   getClientsForSelect, getServicesForSelect,
@@ -56,8 +59,8 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
 
   return (
     <form onSubmit={function(e) { e.preventDefault(); if (!form.name.trim()) return; onSave(form) }} className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
+      <ResponsiveGrid cols={2} gap="gap-3">
+        <div className="lg:col-span-2">
           <label className="label-base">Nombre de la suscripcion *</label>
           <input value={form.name} onChange={set('name')} placeholder="Pack mensual video" style={INP} />
         </div>
@@ -99,11 +102,11 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
           <label className="label-base">Próximo cobro</label>
           <input type="date" value={form.next_billing} onChange={set('next_billing')} style={INP} />
         </div>
-        <div className="col-span-2">
+        <div className="lg:col-span-2">
           <label className="label-base">Notas</label>
           <textarea value={form.notes} onChange={set('notes')} rows={2} placeholder="Notas adicionales..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
-      </div>
+      </ResponsiveGrid>
 
       {/* Preview MRR */}
       {Number(form.price) > 0 && (
@@ -194,6 +197,8 @@ export default function Subscriptions() {
   var [editing,     setEditing]     = useState(null)
   var [formLoading, setFormLoading] = useState(false)
   var [toastMsg,    setToastMsg]    = useState(null)
+  var [showArchiveConfirm, setShowArchiveConfirm] = useState(false)
+  var { toasts, show, dismiss } = useToast()
 
   function showToast(msg, type) {
     setToastMsg({ msg: msg, type: type || 'success' })
@@ -241,13 +246,17 @@ export default function Subscriptions() {
   }
 
   function handleArchive(id) {
-    if (!window.confirm('Archivar esta suscripcion?')) return
-    archiveSubscription(id)
+    setShowArchiveConfirm(id)
+  }
+
+  function confirmArchive() {
+    archiveSubscription(showArchiveConfirm)
       .then(function() {
-        setSubs(function(prev) { return prev.filter(function(s) { return s.id !== id }) })
-        showToast('Suscripcion archivada')
+        setSubs(function(prev) { return prev.filter(function(s) { return s.id !== showArchiveConfirm }) })
+        show('Suscripción archivada', 'success', 3000)
+        setShowArchiveConfirm(false)
       })
-      .catch(function(e) { showToast(e.message, 'error') })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000); setShowArchiveConfirm(false) })
   }
 
   // KPIs
@@ -270,7 +279,7 @@ export default function Subscriptions() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
           {/* KPIs */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <ResponsiveGrid cols={4} gap="gap-4" className="mb-6">
             {[
               { icon: CreditCard,  label: 'Suscripciones activas', value: activeSubs.length,        color: 'text-brand-400' },
               { icon: TrendingUp,  label: 'MRR',                   value: fmtCur(mrr) + '/mes',    color: 'text-status-success' },
@@ -290,7 +299,7 @@ export default function Subscriptions() {
                 </motion.div>
               )
             })}
-          </div>
+          </ResponsiveGrid>
 
           {/* Filtros */}
           <div className="flex gap-3 mb-5 flex-wrap items-center">
@@ -321,11 +330,11 @@ export default function Subscriptions() {
               action={!search && <Button onClick={openCreate} icon={<Plus className="w-4 h-4" />}>Crear suscripcion</Button>}
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <ResponsiveGrid cols={3} gap="gap-4">
               {subs.map(function(s) {
                 return <SubCard key={s.id} sub={s} onEdit={openEdit} onArchive={handleArchive} />
               })}
-            </div>
+            </ResponsiveGrid>
           )}
         </div>
       </div>
@@ -341,6 +350,9 @@ export default function Subscriptions() {
           >{toastMsg.msg}</motion.div>
         )}
       </AnimatePresence>
+
+      <Toast toasts={toasts} onDismiss={dismiss} />
+      <ConfirmDialog isOpen={showArchiveConfirm !== false} title="Archivar suscripción" message="¿Estás seguro?" confirmText="Archivar" cancelText="Cancelar" isDangerous onConfirm={confirmArchive} onCancel={() => setShowArchiveConfirm(false)} />
     </div>
   )
 }

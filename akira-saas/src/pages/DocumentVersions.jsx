@@ -3,6 +3,8 @@ import { ArrowLeft, RotateCcw, FileText, User } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import AppLayout from '@/shared/components/layout/AppLayout'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { getDocumentVersions, restoreDocumentVersion } from '@/services/documents.service'
 
 export default function DocumentVersionsPage() {
@@ -32,19 +34,25 @@ export default function DocumentVersionsPage() {
     }
   }
 
+  const { toasts, show, dismiss } = useToast()
+  const [showRestoreConfirm, setShowRestoreConfirm] = useState(null)
+
   const handleRestore = async (version) => {
-    if (!window.confirm(`¿Restaurar a la versión del ${new Date(version.created_at).toLocaleString('es-ES')}?`)) {
-      return
-    }
+    setShowRestoreConfirm(version)
+  }
+
+  const confirmRestore = async () => {
+    if (!showRestoreConfirm) return
 
     try {
       setRestoring(true)
-      await restoreDocumentVersion(documentId, version.id)
-      alert('Versión restaurada exitosamente')
+      await restoreDocumentVersion(documentId, showRestoreConfirm.id)
+      show('Versión restaurada exitosamente', 'success', 3000)
+      setShowRestoreConfirm(null)
       navigate(`/documents/${documentId}`)
     } catch (error) {
-      console.error('Error restoring version:', error)
-      alert('Error al restaurar versión')
+      show('Error al restaurar versión: ' + (error.message || error), 'error', 3000)
+      setShowRestoreConfirm(null)
     } finally {
       setRestoring(false)
     }
@@ -287,6 +295,20 @@ export default function DocumentVersionsPage() {
           )}
         </div>
       </div>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Restore Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showRestoreConfirm !== null}
+        title="Restaurar versión"
+        message={showRestoreConfirm ? `¿Restaurar a la versión del ${new Date(showRestoreConfirm.created_at).toLocaleString('es-ES')}?` : ''}
+        confirmText="Restaurar"
+        cancelText="Cancelar"
+        onConfirm={confirmRestore}
+        onCancel={() => setShowRestoreConfirm(null)}
+      />
     </AppLayout>
   )
 }

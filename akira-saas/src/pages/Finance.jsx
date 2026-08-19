@@ -5,6 +5,9 @@ import {
   TrendingUp, TrendingDown, DollarSign, Clock,
   Filter, ChevronDown, ChevronUp, Download,
 } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { ResponsiveGrid } from '@/components/responsive'
 import { exportToCsv } from '@/shared/utils/exportCsv'
 import {
   getFinanceEntries, createFinanceEntry, updateFinanceEntry,
@@ -393,15 +396,23 @@ export default function Finance() {
       .finally(function() { setFormLoading(false) })
   }
 
+  const { toasts, show, dismiss } = useToast()
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(null)
+
   function handleArchive(id) {
-    if (!window.confirm('Archivar este movimiento?')) return
-    archiveFinanceEntry(id)
+    setShowArchiveConfirm(id)
+  }
+
+  function confirmArchive() {
+    if (!showArchiveConfirm) return
+    archiveFinanceEntry(showArchiveConfirm)
       .then(function() {
-        setEntries(function(prev) { return prev.filter(function(e) { return e.id !== id }) })
-        showToast('Movimiento archivado')
+        setEntries(function(prev) { return prev.filter(function(e) { return e.id !== showArchiveConfirm }) })
+        show('Movimiento archivado', 'success', 3000)
+        setShowArchiveConfirm(null)
         refreshKpis()
       })
-      .catch(function(e) { showToast(e.message, 'error') })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000); setShowArchiveConfirm(null) })
   }
 
   var SI = {
@@ -426,21 +437,21 @@ export default function Finance() {
 
           {/* KPI Cards */}
           {kpisLoading ? (
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+            <ResponsiveGrid cols={4} gap="gap-4" className="mb-6">
               {[0,1,2,3].map(function(i) { return <div key={i} className="surface-card p-4 h-24 skeleton" /> })}
-            </div>
+            </ResponsiveGrid>
           ) : kpis && (
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+            <ResponsiveGrid cols={4} gap="gap-4" className="mb-6">
               <KpiCard label="Ingresos totales"   value={fmtCur(kpis.totalIncome)}  sub={'Este mes: ' + fmtCur(kpis.monthIncome)}  color="#22c55e" icon={TrendingUp}   trend={kpis.incomeTrend} delay={0} />
               <KpiCard label="Gastos totales"     value={fmtCur(kpis.totalExpense)} sub={'Este mes: ' + fmtCur(kpis.monthExpense)} color="#ef4444" icon={TrendingDown} delay={0.06} />
               <KpiCard label="Beneficio neto"     value={fmtCur(kpis.netProfit)}    sub={'Este mes: ' + fmtCur(kpis.monthProfit)}   color={kpis.netProfit >= 0 ? '#22c55e' : '#ef4444'} icon={DollarSign} delay={0.12} />
               <KpiCard label="Facturas pendientes" value={fmtCur(kpis.pendingInv)}  sub="Por cobrar" color="#f59e0b" icon={Clock} delay={0.18} />
-            </div>
+            </ResponsiveGrid>
           )}
 
           {/* Grafica + Ranking */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-6">
-            <div className="xl:col-span-2 surface-card p-5">
+          <ResponsiveGrid cols={3} gap="gap-5" className="mb-6">
+            <div className="lg:col-span-2 surface-card p-5">
               <h3 className="text-sm font-semibold text-text-1 mb-4">Evolucion ultimos 6 meses</h3>
               {kpis && kpis.sparkline && kpis.sparkline.length > 0 ? (
                 <AreaChart
@@ -462,7 +473,7 @@ export default function Finance() {
               <h3 className="text-sm font-semibold text-text-1 mb-4">Ranking de clientes</h3>
               <ClientRanking ranking={ranking} />
             </div>
-          </div>
+          </ResponsiveGrid>
 
           {/* Filtros y tabla */}
           <div className="surface-card overflow-hidden">
@@ -493,7 +504,7 @@ export default function Finance() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3">
+                    <ResponsiveGrid cols={4} gap="gap-3" className="pt-3">
                       <div>
                         <label className="label-base">Tipo</label>
                         <select value={type} onChange={function(e) { setType(e.target.value) }} style={SI}>
@@ -529,7 +540,7 @@ export default function Finance() {
                           className="text-xs text-text-3 hover:text-text-2 transition-colors"
                         >Limpiar filtros</button>
                       </div>
-                    </div>
+                    </ResponsiveGrid>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -556,6 +567,21 @@ export default function Finance() {
           >{toastMsg.msg}</motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Archive Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showArchiveConfirm !== null}
+        title="Archivar movimiento"
+        message="¿Estás seguro de que deseas archivar este movimiento? No se eliminará, solo se ocultará."
+        confirmText="Archivar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmArchive}
+        onCancel={() => setShowArchiveConfirm(null)}
+      />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Bell, X, Check, AlertCircle, Info, CheckCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/shared/lib/supabase'
 
 const NOTIFICATION_TYPES = {
   success: { icon: CheckCircle, color: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)' },
@@ -36,29 +36,35 @@ export default function NotificationCenter() {
     loadNotifications()
 
     // Subscribe to real-time notifications
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    let subscription = null
 
-    const subscription = supabase
-      .channel(`notifications:${user.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          setNotifications((prev) => [payload.new, ...prev])
-          setUnreadCount((prev) => prev + 1)
-          playNotificationSound()
-        }
-      )
-      .subscribe()
+    const setupSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      subscription = supabase
+        .channel(`notifications:${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            setNotifications((prev) => [payload.new, ...prev])
+            setUnreadCount((prev) => prev + 1)
+            playNotificationSound()
+          }
+        )
+        .subscribe()
+    }
+
+    setupSubscription()
 
     return () => {
-      subscription.unsubscribe()
+      if (subscription) subscription.unsubscribe()
     }
   }, [])
 

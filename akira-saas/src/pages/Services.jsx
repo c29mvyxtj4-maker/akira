@@ -1,6 +1,9 @@
 ﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, Wrench, TrendingUp, Package } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { ResponsiveGrid } from '@/components/responsive'
 import {
   getServices, createService, updateService, archiveService,
   SERVICE_CATEGORIES,
@@ -45,8 +48,8 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
   return (
     <form onSubmit={function(e) { e.preventDefault(); if (!form.name.trim()) return; onSave(form) }} className="space-y-4">
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
+      <ResponsiveGrid cols={2} gap="gap-3">
+        <div className="lg:col-span-2">
           <label className="label-base">Nombre del servicio *</label>
           <input value={form.name} onChange={set('name')} placeholder="Pack de video corporativo" style={INP} />
         </div>
@@ -121,6 +124,8 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
         </button>
       </div>
 
+      </ResponsiveGrid>
+
       <div className="flex justify-end gap-2 pt-2 border-t border-border">
         <Button variant="secondary" type="button" onClick={onCancel}>Cancelar</Button>
         <Button type="submit" loading={loading}>{initial ? 'Guardar cambios' : 'Crear servicio'}</Button>
@@ -191,6 +196,8 @@ export default function Services() {
   var [editing,     setEditing]     = useState(null)
   var [formLoading, setFormLoading] = useState(false)
   var [toastMsg,    setToastMsg]    = useState(null)
+  var [showArchiveConfirm, setShowArchiveConfirm] = useState(false)
+  var { toasts, show, dismiss } = useToast()
 
   function showToast(msg, type) {
     setToastMsg({ msg: msg, type: type || 'success' })
@@ -233,13 +240,17 @@ export default function Services() {
   }
 
   function handleArchive(id) {
-    if (!window.confirm('Archivar este servicio?')) return
-    archiveService(id)
+    setShowArchiveConfirm(id)
+  }
+
+  function confirmArchive() {
+    archiveService(showArchiveConfirm)
       .then(function() {
-        setServices(function(prev) { return prev.filter(function(s) { return s.id !== id }) })
-        showToast('Servicio archivado')
+        setServices(function(prev) { return prev.filter(function(s) { return s.id !== showArchiveConfirm }) })
+        show('Servicio archivado', 'success', 3000)
+        setShowArchiveConfirm(false)
       })
-      .catch(function(e) { showToast(e.message, 'error') })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000); setShowArchiveConfirm(false) })
   }
 
   // KPIs
@@ -265,7 +276,7 @@ export default function Services() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
           {/* KPIs */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <ResponsiveGrid cols={3} gap="gap-4" className="mb-6">
             {[
               { icon: Package,    label: 'Servicios activos', value: services.filter(function(s) { return s.active }).length, color: 'text-brand-400' },
               { icon: TrendingUp, label: 'Margen promedio',   value: avgMargin + '%', color: avgMargin >= 50 ? 'text-status-success' : 'text-status-warning' },
@@ -284,7 +295,7 @@ export default function Services() {
                 </motion.div>
               )
             })}
-          </div>
+          </ResponsiveGrid>
 
           {/* Filtros */}
           <div className="flex gap-3 mb-5 flex-wrap items-center">
@@ -318,13 +329,13 @@ export default function Services() {
               action={!search && <Button onClick={openCreate} icon={<Plus className="w-4 h-4" />}>Crear servicio</Button>}
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <ResponsiveGrid cols={3} gap="gap-4">
               {services.map(function(s) {
                 return (
                   <ServiceCard key={s.id} service={s} onEdit={openEdit} onArchive={handleArchive} />
                 )
               })}
-            </div>
+            </ResponsiveGrid>
           )}
         </div>
       </div>
@@ -340,6 +351,9 @@ export default function Services() {
           >{toastMsg.msg}</motion.div>
         )}
       </AnimatePresence>
+
+      <Toast toasts={toasts} onDismiss={dismiss} />
+      <ConfirmDialog isOpen={showArchiveConfirm !== false} title="Archivar servicio" message="¿Estás seguro?" confirmText="Archivar" cancelText="Cancelar" isDangerous onConfirm={confirmArchive} onCancel={() => setShowArchiveConfirm(false)} />
     </div>
   )
 }

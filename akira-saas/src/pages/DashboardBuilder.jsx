@@ -3,6 +3,8 @@ import { Plus, Save, Download, Share2, Trash2 } from 'lucide-react'
 import { motion, Reorder, AnimatePresence } from 'framer-motion'
 import AppLayout from '@/shared/components/layout/AppLayout'
 import DashboardWidget from '@/components/dashboard/DashboardWidget'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { fetchDashboards, saveDashboard, deleteDashboard, shareDashboard } from '@/services/dashboards.service'
 
 const AVAILABLE_WIDGETS = [
@@ -84,16 +86,24 @@ export default function DashboardBuilderPage() {
     }
   }
 
+  const { toasts, show, dismiss } = useToast()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+
   const handleDeleteDashboard = async () => {
-    if (!currentDashboard || !window.confirm('¿Eliminar este dashboard?')) {
-      return
-    }
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDeleteDashboard = async () => {
+    if (!currentDashboard) return
 
     try {
       await deleteDashboard(currentDashboard.id)
+      show('Dashboard eliminado', 'success', 3000)
+      setShowDeleteConfirm(false)
       loadDashboards()
     } catch (error) {
-      console.error('Error deleting dashboard:', error)
+      show('Error: ' + (error.message || error), 'error', 3000)
+      setShowDeleteConfirm(false)
     }
   }
 
@@ -327,6 +337,21 @@ export default function DashboardBuilderPage() {
           </AnimatePresence>
         </Reorder.Group>
       </div>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Eliminar dashboard"
+        message="¿Estás seguro de que deseas eliminar este dashboard?"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmDeleteDashboard}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </AppLayout>
   )
 }

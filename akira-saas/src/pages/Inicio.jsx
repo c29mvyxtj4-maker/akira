@@ -1,3 +1,4 @@
+import { ResponsiveGrid } from '@/components/responsive'
 ﻿import { useState, useEffect, lazy, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -6,6 +7,8 @@ import {
   Users, FolderKanban, Wallet, FileText, Clock, BookOpen,
   ChevronRight, TrendingUp, Search, Mail, Bell, Video,
 } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import TextInputDialog from '@/components/ui/TextInputDialog'
 import { WidgetGrid, useWidgets } from '@/modules/widgets'
 import { useApp } from '@/shared/context/AppContext'
 import { useAuth } from '@/shared/context/AuthContext'
@@ -81,10 +84,19 @@ export default function Inicio() {
     setMenuAnchor({ top: r.bottom + 6, left: r.left })
     setMenuOpen(function (v) { return !v })
   }
+  const { toasts, show, dismiss } = useToast()
+  const [showCreateWorkspace, setShowCreateWorkspace] = useState(false)
+
   function handleCreateWorkspace() {
     setMenuOpen(false)
-    var name = window.prompt('Nombre del nuevo espacio de trabajo')
-    if (name && name.trim()) createWorkspace(name.trim()).catch(function (e) { window.alert('No se pudo crear: ' + (e.message || e)) })
+    setShowCreateWorkspace(true)
+  }
+
+  function confirmCreateWorkspace(name) {
+    createWorkspace(name.trim()).then(function() {
+      show('Espacio de trabajo creado', 'success', 3000)
+      setShowCreateWorkspace(false)
+    }).catch(function (e) { show('No se pudo crear: ' + (e.message || e), 'error', 3000) })
   }
 
   var PILLS = [
@@ -143,7 +155,7 @@ export default function Inicio() {
   }, [])
 
   function handleAddAccount() {
-    window.alert('Sistema de mÀºltiples cuentas - pronto disponible')
+    show('Sistema de múltiples cuentas - pronto disponible', 'info', 3000)
     setMenuOpen(false)
   }
 
@@ -374,6 +386,21 @@ export default function Inicio() {
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {settingsOpen && <SettingsPanel onClose={function() { setSettingsOpen(false) }} initialTab={settingsTab} />}
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Create Workspace Dialog */}
+      <TextInputDialog
+        isOpen={showCreateWorkspace}
+        title="Crear espacio de trabajo"
+        label="Nombre"
+        placeholder="Mi nuevo workspace"
+        confirmText="Crear"
+        cancelText="Cancelar"
+        onConfirm={confirmCreateWorkspace}
+        onCancel={() => setShowCreateWorkspace(false)}
+      />
     </div>
   )
 }

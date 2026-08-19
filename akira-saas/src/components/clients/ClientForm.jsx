@@ -4,6 +4,7 @@ import {
   User, Building2, Mail, Phone, Globe,
   Instagram, Hash, DollarSign, FileText, Calendar,
 } from 'lucide-react'
+import { validateForm, validateEmail } from '@/utils/formValidation'
 import { CLIENT_NICHES, CLIENT_SOURCES_MAP } from '@/services/clients.service'
 import Input   from '@/shared/components/ui/Input'
 import Select  from '@/shared/components/ui/Select'

@@ -1,3 +1,4 @@
+import { ResponsiveGrid } from '@/components/responsive'
 ﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, ChevronRight, Film } from 'lucide-react'

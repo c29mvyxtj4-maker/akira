@@ -1,5 +1,6 @@
 ﻿import { supabase } from '@/shared/lib/supabase'
 import { createFinanceEntry } from '@/services/finance.service'
+import { createInvoice as createInvoiceService } from '@/services/invoices.service'
 import { getCompanySettings } from '@/services/company.service'
 
 export var ACTION_LABELS = {
@@ -62,7 +63,8 @@ async function createProjectAction(data) {
 }
 
 async function createInvoiceAction(data) {
-  if (!data.items || data.items.length === 0) throw new Error('La factura necesita al menos una linea')
+  if (!data.items || data.items.length === 0) throw new Error('La factura necesita al menos una línea')
+  if (!data.client_id) throw new Error('Se requiere un cliente para crear la factura')
 
   var taxRate = data.tax_rate
   if (taxRate === undefined || taxRate === null) {
@@ -74,8 +76,38 @@ async function createInvoiceAction(data) {
     }
   }
 
-  // TODO: Fix invoice creation
-  throw new Error('Invoice creation not yet implemented in brain actions')
+  // Validar items
+  var validItems = []
+  for (var item of data.items) {
+    if (!item.description || !item.description.trim()) throw new Error('Cada línea debe tener una descripción')
+    if (!item.quantity || item.quantity <= 0) throw new Error('Cada línea debe tener cantidad > 0')
+    if (!item.unit_price || item.unit_price < 0) throw new Error('Cada línea debe tener un precio válido')
+
+    validItems.push({
+      description: item.description.trim(),
+      quantity: Number(item.quantity),
+      unit_price: Number(item.unit_price),
+    })
+  }
+
+  var invoiceData = {
+    client_id:   data.client_id,
+    items:       validItems,
+    tax_rate:    Number(taxRate),
+    issue_date:  data.issue_date || null,
+    due_date:    data.due_date   || null,
+    status:      data.status     || 'draft',
+    notes:       data.notes      || null,
+  }
+
+  var invoice = await createInvoiceService(invoiceData)
+  return {
+    invoice_id: invoice.id,
+    invoice_number: invoice.invoice_number,
+    total: invoice.total,
+    client_id: invoice.client_id,
+    status: invoice.status,
+  }
 }
 
 async function createCalendarEventAction(data) {

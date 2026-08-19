@@ -631,7 +631,7 @@ function TeamPanel({ project, show }) {
   )
 }
 
-function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateTaskAssignee, onUpdateProgress, onBack, onSavePage }) {
+function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateTaskAssignee, onUpdateProgress, onBack, onSavePage, show }) {
   var [tab, setTab] = useState('overview')
 
   if (loading) return <div className="flex-1 flex items-center justify-center"><PageSpinner label="Cargando..." /></div>
@@ -1138,6 +1138,7 @@ export default function Projects() {
             onUpdateProgress={hook.handleUpdateProgress}
             onBack={function() { hook.setSelectedId(null) }}
             onSavePage={hook.savePage}
+            show={show}
           />
         </div>
       </div>

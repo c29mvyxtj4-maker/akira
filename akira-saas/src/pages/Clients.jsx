@@ -190,7 +190,7 @@ function ClientKpis({ clients }) {
           </motion.div>
         )
       })}
-    </div>
+    </ResponsiveGrid>
   )
 }
 
@@ -428,7 +428,7 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
                         <p className={clsx('text-base font-black', s.color)}>{s.value}</p>
                       </div>
                     ))}
-                  </div>
+                  </ResponsiveGrid>
                   {finance.pending > 0 && (
                     <div className="mt-2 px-3 py-2 bg-status-warning/10 border border-status-warning/20 rounded-lg flex items-center gap-2">
                       <Clock className="w-3.5 h-3.5 text-status-warning flex-shrink-0" />

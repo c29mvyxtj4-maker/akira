@@ -78,7 +78,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <label className="label-base">Descripción</label>
           <textarea value={form.description} onChange={set('description')} rows={2} placeholder="Que incluye este servicio..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
-      </div>
+      </ResponsiveGrid>
 
       {/* Preview margen */}
       {price > 0 && (
@@ -124,8 +124,6 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           }} />
         </button>
       </div>
-
-      </ResponsiveGrid>
 
       <div className="flex justify-end gap-2 pt-2 border-t border-border">
         <Button variant="secondary" type="button" onClick={onCancel}>Cancelar</Button>

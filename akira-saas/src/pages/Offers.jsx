@@ -83,7 +83,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <label className="label-base">Descripción</label>
           <textarea value={form.description} onChange={set('description')} rows={2} placeholder="Que incluye este servicio..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
-      </div>
+      </ResponsiveGrid>
       {price > 0 && (
         <div className="flex items-center gap-4 px-4 py-3 rounded-lg bg-surface-3 border border-border">
           <div className="text-center">
@@ -191,7 +191,7 @@ function CatalogTab({ services, loading, error, search, setSearch, category, set
       ) : (
         <ResponsiveGrid cols={3} gap="gap-4">
           {services.map(function(s) { return <ServiceCard key={s.id} service={s} onEdit={onEdit} onArchive={onArchive} /> })}
-        </div>
+        </ResponsiveGrid>
       )}
     </div>
   )
@@ -274,7 +274,7 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
           <label className="label-base">Notas</label>
           <textarea value={form.notes} onChange={set('notes')} rows={2} placeholder="Notas adicionales..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
-      </div>
+      </ResponsiveGrid>
       {Number(form.price) > 0 && (
         <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-surface-3 border border-border">
           <div>
@@ -368,7 +368,7 @@ function SubscriptionsTab({ subs, clients, loading, error, search, setSearch, st
       ) : (
         <ResponsiveGrid cols={3} gap="gap-4">
           {subs.map(function(s) { return <SubCard key={s.id} sub={s} onEdit={onEdit} onArchive={onArchive} /> })}
-        </div>
+        </ResponsiveGrid>
       )}
     </div>
   )
@@ -548,7 +548,7 @@ export default function Offers() {
                 </motion.div>
               )
             })}
-          </div>
+          </ResponsiveGrid>
 
           {/* Pestañas */}
           <div className="flex gap-1 mb-5 bg-surface-3 rounded-lg p-1 w-fit">

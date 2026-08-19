@@ -20,7 +20,7 @@ import {
   getProjectTimeEntries, getRunningEntry, startTimer, stopTimer,
   addManualEntry, deleteTimeEntry, fmtDuration, sumSeconds,
 } from '@/services/time.service'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import KanbanBoard from '@/components/projects/KanbanBoard'
 import ProjectPage from '@/components/projects/ProjectPage'
 import TaskTemplateSelector from '@/components/projects/TaskTemplateSelector'
@@ -399,7 +399,7 @@ function TimePanel({ project, show }) {
   }
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
-  const { toasts, show, dismiss } = useToast()
+  const { toasts, show: showToast, dismiss } = useToast()
 
   function handleDelete(id) {
     setShowDeleteConfirm(id)
@@ -410,9 +410,9 @@ function TimePanel({ project, show }) {
     deleteTimeEntry(showDeleteConfirm).then(() => {
       setShowDeleteConfirm(null)
       load()
-      show('Entrada eliminada', 'success', 3000)
+      showToast('Entrada eliminada', 'success', 3000)
     }).catch((e) => {
-      show('Error al eliminar: ' + (e.message || e), 'error', 3000)
+      showToast('Error al eliminar: ' + (e.message || e), 'error', 3000)
       setShowDeleteConfirm(null)
     })
   }

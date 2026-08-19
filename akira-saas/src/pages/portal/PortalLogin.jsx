@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { Mail, ArrowRight, Check } from 'lucide-react'
 
 export default function PortalLogin() {

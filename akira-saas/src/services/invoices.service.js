@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 import { getActiveOrgId, scopeToOrg } from '@/shared/lib/activeOrg'
 
 async function uid() {

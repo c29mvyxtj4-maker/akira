@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { getUserAccess, grantAccess, revokeAccess } from '@/services/resourceAccess.service'
 
 function Toggle({ checked, onClick }) {

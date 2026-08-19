@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 // ALL EVENT FETCHING MOVED TO SIDEBAR.COMPONENT TO BYPASS CACHE ISSUES
 // DO NOT USE THIS FUNCTION - USE INLINE CODE IN SIDEBAR.JSX

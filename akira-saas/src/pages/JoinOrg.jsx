@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { Check, AlertTriangle } from 'lucide-react'
 
 export default function JoinOrg() {

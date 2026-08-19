@@ -8,7 +8,7 @@ import Button from '@/shared/components/ui/Button'
 import EmptyState from '@/shared/components/ui/EmptyState'
 import Modal from '@/shared/components/ui/Modal'
 import Select from '@/shared/components/ui/Select'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 /**
  * Time Tracking Page

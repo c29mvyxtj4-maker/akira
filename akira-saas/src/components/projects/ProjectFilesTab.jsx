@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion'
 import { Upload, Trash2, Download, Image as ImageIcon, Video, Music, FileText, File as FileIcon } from 'lucide-react'
 import { getProjectFiles, uploadProjectFile, deleteProjectFile, fmtFileSize, fileKind } from '@/services/projectFiles.service'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 var KIND_ICON = { image: ImageIcon, video: Video, audio: Music, pdf: FileText, other: FileIcon }
 var KIND_COLOR = { image: '#22c55e', video: '#3b82f6', audio: '#a855f7', pdf: '#f59e0b', other: '#64748b' }

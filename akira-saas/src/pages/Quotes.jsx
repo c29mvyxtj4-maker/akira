@@ -11,7 +11,7 @@ import {
 import { getCompanySettings } from '@/services/company.service'
 import { getServicesForSelect } from '@/services/subscriptions.service'
 import { downloadQuotePdf } from '@/shared/utils/generateQuotePdf'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { useAddRecent } from '@/shared/hooks/useAddRecent'
 import { useCurrentItem } from '@/shared/context/CurrentItemContext'
 import PageHeader   from '@/shared/components/layout/PageHeader'

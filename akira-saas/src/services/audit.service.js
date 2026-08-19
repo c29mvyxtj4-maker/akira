@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 export var RESOURCE_LABELS = {
   clients:         'Cliente',

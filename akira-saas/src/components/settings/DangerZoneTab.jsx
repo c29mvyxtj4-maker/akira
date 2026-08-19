@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { Section } from './_shared'
 
 function DangerZoneTab() {

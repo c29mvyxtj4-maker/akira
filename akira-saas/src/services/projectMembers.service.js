@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 /*
  * Miembros vinculados a un proyecto (tabla project_members). Los nombres se

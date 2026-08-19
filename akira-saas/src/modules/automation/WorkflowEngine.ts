@@ -1,6 +1,6 @@
 ﻿import { Workflow, WorkflowExecution, ExecutionStep, ExecutionStatus } from './types'
 import { AgentFactory } from './AgentFactory'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export class WorkflowEngine {
   async executeWorkflow(workflow: Workflow): Promise<WorkflowExecution> {

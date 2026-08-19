@@ -1,5 +1,5 @@
 ﻿import { useCallback } from 'react'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { createBlock, updateBlock, reorderBlocks } from '@/services/documents.service'
 
 interface BlockData {

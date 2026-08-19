@@ -27,7 +27,7 @@ import {
   Shield,
 } from 'lucide-react'
 import { ROUTES } from '@/shared/config/constants'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { getRecentPages, getFavorites, getUserWorkspaces, getRecentClients, getRecentProjects } from '@/services/sidebar.service'
 import { EVENT_TYPES } from '@/services/calendar.service'
 import AccountMenu from '@/shared/components/layout/AccountMenu'

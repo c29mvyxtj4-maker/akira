@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { scopeToOrg, getActiveOrgId } from '@/shared/lib/activeOrg'
 
 export function useClients() {

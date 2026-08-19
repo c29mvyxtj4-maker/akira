@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { scopeToOrg } from '@/shared/lib/activeOrg'
 

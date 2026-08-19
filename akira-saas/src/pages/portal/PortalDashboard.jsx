@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { getPortalClientData, getPortalBranding } from '@/services/portal.service'
 import PortalView from '@/components/portal/PortalView'
 

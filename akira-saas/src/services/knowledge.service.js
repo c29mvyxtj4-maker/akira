@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 export var KNOWLEDGE_CATEGORIES = [
   'Procesos', 'Plantillas', 'Clientes', 'Equipamiento',

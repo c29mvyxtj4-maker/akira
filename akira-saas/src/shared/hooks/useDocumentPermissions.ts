@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { fetchDocument, fetchPermissions } from '@/services/documents.service'
 
 type UserRole = 'viewer' | 'editor' | 'admin'

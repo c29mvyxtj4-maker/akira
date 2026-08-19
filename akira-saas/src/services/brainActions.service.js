@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 import { createFinanceEntry } from '@/services/finance.service'
 import { createInvoice as createInvoiceService } from '@/services/invoices.service'
 import { getCompanySettings } from '@/services/company.service'

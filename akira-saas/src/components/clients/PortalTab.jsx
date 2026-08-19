@@ -14,7 +14,7 @@ import {
   getPortalApprovals, createPortalApproval, updatePortalApproval, deletePortalApproval,
   getPortalClientData, getPortalBranding,
 } from '@/services/portal.service'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import EmptyState from '@/shared/components/ui/EmptyState'
 import Spinner    from '@/shared/components/ui/Spinner'
 import PortalView from '@/components/portal/PortalView'

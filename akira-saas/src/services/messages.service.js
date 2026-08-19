@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 /* Chat de equipo (team_messages) + anuncios (announcements), con realtime. */
 

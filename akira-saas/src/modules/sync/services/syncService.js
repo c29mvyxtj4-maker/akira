@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 import { syncEngine } from '../SyncEngine'
 
 export async function subscribeToClientsChanges(orgId, callback) {

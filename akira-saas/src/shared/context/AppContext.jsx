@@ -1,5 +1,5 @@
 ﻿import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/shared/context/AuthContext'
 import { scopeToOrg } from '@/shared/lib/activeOrg'
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Bell, X, Check, AlertCircle, Info, CheckCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 const NOTIFICATION_TYPES = {
   success: { icon: CheckCircle, color: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)' },

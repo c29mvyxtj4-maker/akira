@@ -4,7 +4,7 @@
  * Including documents, blocks, permissions, comments, versions, and more
  */
 
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 // ============================================================================
 // DOCUMENTS

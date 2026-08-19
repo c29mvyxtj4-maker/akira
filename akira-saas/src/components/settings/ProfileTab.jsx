@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState, useRef } from 'react'
 import { Copy, Check, Upload } from 'lucide-react'
 import { getProfile, updateProfile } from '@/services/settings.service'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { usePrefs } from '@/shared/hooks/usePreferences'
 import { Field, INP, SaveBtn, Section, RowSection, Row, Toggle, MiniBtn, onBlur, onFocus } from './_shared'
 

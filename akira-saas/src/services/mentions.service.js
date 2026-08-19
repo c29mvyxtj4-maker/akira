@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 /*
  * Bandeja de menciones (tabla mentions). Cada usuario ve las suyas. Las

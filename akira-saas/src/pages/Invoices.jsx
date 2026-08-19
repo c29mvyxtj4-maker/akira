@@ -15,7 +15,7 @@ import {
 import { getCompanySettings } from '@/services/company.service'
 import { getServicesForSelect } from '@/services/subscriptions.service'
 import { downloadInvoicePdf } from '@/shared/utils/generateInvoicePdf'
-import { supabase } from '@/shared/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { useAddRecent } from '@/shared/hooks/useAddRecent'
 import { useCurrentItem } from '@/shared/context/CurrentItemContext'
 import PageHeader   from '@/shared/components/layout/PageHeader'

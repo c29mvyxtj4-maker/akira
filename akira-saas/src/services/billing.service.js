@@ -1,4 +1,4 @@
-﻿import { supabase } from '@/shared/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 // Tier a usar cuando una org no tiene 'plan' asignado (no debería pasar, ya
 // que la columna tiene DEFAULT 'starter', pero por si acaso).

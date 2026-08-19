@@ -19,11 +19,33 @@ export function YouTubeProjectForm({ projectId, onSubmit, isLoading = false }: Y
     targetAudience: '',
     durationMinutes: 10,
   })
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const selectedTemplate = YOUTUBE_TEMPLATES[formData.template]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const newErrors: Record<string, string> = {}
+
+    if (!formData.title.trim()) {
+      newErrors.title = 'Título requerido'
+    }
+    if (!formData.publishingDate) {
+      newErrors.publishingDate = 'Fecha de publicación requerida'
+    }
+    if (new Date(formData.publishingDate) <= new Date()) {
+      newErrors.publishingDate = 'La fecha debe ser en el futuro'
+    }
+    if (formData.durationMinutes < 1) {
+      newErrors.durationMinutes = 'Duración debe ser al menos 1 minuto'
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
+    setErrors({})
 
     const input: CreateYouTubeProjectInput = {
       projectId,
@@ -45,6 +67,15 @@ export function YouTubeProjectForm({ projectId, onSubmit, isLoading = false }: Y
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6 p-6 bg-gradient-to-br from-surface-0 to-surface-1 rounded-lg border border-surface-2"
     >
+      {Object.keys(errors).length > 0 && (
+        <div className="bg-status-danger/10 border border-status-danger/30 rounded-lg p-3 flex gap-2">
+          <div className="text-status-danger text-sm font-medium">
+            {Object.values(errors).map((err, i) => (
+              <div key={i}>{err}</div>
+            ))}
+          </div>
+        </div>
+      )}
       <div>
         <label className="block text-sm font-semibold text-text-1 mb-2">Video Title</label>
         <input

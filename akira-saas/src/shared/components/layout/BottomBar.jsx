@@ -4,7 +4,7 @@ import { Home, Search, Sparkles, PenSquare } from 'lucide-react'
 import { ROUTES } from '@/shared/config/constants'
 import Dock from '@/shared/components/ui/Dock'
 import CommandPalette from '@/shared/components/layout/CommandPalette'
-import AskAkiraButton from '@/shared/components/akira/AskAkiraButton'
+import AskAkiraButton from '@/components/akira/AskAkiraButton'
 import { getPref } from '@/shared/hooks/usePreferences'
 
 /*

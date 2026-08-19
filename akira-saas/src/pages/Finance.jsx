@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import Toast, { useToast } from '@/components/ui/Toast'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import IconButton from '@/components/ui/IconButton'
 import { ResponsiveGrid } from '@/components/responsive'
 import { exportToCsv } from '@/shared/utils/exportCsv'
 import {
@@ -232,12 +233,8 @@ function EntriesTable({ entries, onEdit, onArchive, loading }) {
                 </td>
                 <td style={{ padding: '10px 12px' }}>
                   <div style={{ display: 'flex', gap: '4px' }}>
-                    <button type="button" onClick={function() { onEdit(e) }}
-                      style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}
-                    ><Edit3 style={{ width: '13px', height: '13px' }} /></button>
-                    <button type="button" onClick={function() { onArchive(e.id) }}
-                      style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(239,68,68,0.1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}
-                    ><Archive style={{ width: '13px', height: '13px' }} /></button>
+                    <IconButton icon={Edit3} onClick={() => onEdit(e)} />
+                    <IconButton icon={Archive} onClick={() => onArchive(e.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
                   </div>
                 </td>
               </tr>

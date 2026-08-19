@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, Wrench, TrendingUp, Package } from 'lucide-react'
 import Toast, { useToast } from '@/components/ui/Toast'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import IconButton from '@/components/ui/IconButton'
 import { ResponsiveGrid } from '@/components/responsive'
 import {
   getServices, createService, updateService, archiveService,
@@ -154,12 +155,8 @@ function ServiceCard({ service, onEdit, onArchive }) {
           <p className="text-xs text-text-4">{service.category} / {service.unit}</p>
         </div>
         <div className="flex gap-1.5 flex-shrink-0">
-          <button type="button" onClick={function() { onEdit(service) }}
-            className="w-7 h-7 rounded-lg hover:bg-surface-4 flex items-center justify-center text-text-3 hover:text-text-1 transition-colors"
-          ><Edit3 className="w-3.5 h-3.5" /></button>
-          <button type="button" onClick={function() { onArchive(service.id) }}
-            className="w-7 h-7 rounded-lg hover:bg-status-danger/10 flex items-center justify-center text-text-3 hover:text-status-danger transition-colors"
-          ><Archive className="w-3.5 h-3.5" /></button>
+          <IconButton icon={Edit3} onClick={() => onEdit(service)} />
+          <IconButton icon={Archive} onClick={() => onArchive(service.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
         </div>
       </div>
 

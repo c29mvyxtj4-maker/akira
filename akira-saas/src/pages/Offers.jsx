@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, Wrench, TrendingUp, Package, CreditCard } from 'lucide-react'
 import { ResponsiveGrid } from '@/components/responsive'
+import IconButton from '@/components/ui/IconButton'
 import {
   getServices, createService, updateService, archiveService,
   SERVICE_CATEGORIES,
@@ -141,8 +142,8 @@ function ServiceCard({ service, onEdit, onArchive }) {
           <p className="text-xs text-text-4">{service.category} / {service.unit}</p>
         </div>
         <div className="flex gap-1.5 flex-shrink-0">
-          <button type="button" onClick={function() { onEdit(service) }} className="w-7 h-7 rounded-lg hover:bg-surface-4 flex items-center justify-center text-text-3 hover:text-text-1 transition-colors"><Edit3 className="w-3.5 h-3.5" /></button>
-          <button type="button" onClick={function() { onArchive(service.id) }} className="w-7 h-7 rounded-lg hover:bg-status-danger/10 flex items-center justify-center text-text-3 hover:text-status-danger transition-colors"><Archive className="w-3.5 h-3.5" /></button>
+          <IconButton icon={Edit3} onClick={() => onEdit(service)} />
+          <IconButton icon={Archive} onClick={() => onArchive(service.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
         </div>
       </div>
       {service.description && <p className="text-xs text-text-4 mb-3 truncate-2 leading-relaxed">{service.description}</p>}
@@ -316,8 +317,8 @@ function SubCard({ sub, onEdit, onArchive }) {
           </p>
         </div>
         <div className="flex gap-1.5 flex-shrink-0">
-          <button type="button" onClick={function() { onEdit(sub) }} className="w-7 h-7 rounded-lg hover:bg-surface-4 flex items-center justify-center text-text-3 hover:text-text-1 transition-colors"><Edit3 className="w-3.5 h-3.5" /></button>
-          <button type="button" onClick={function() { onArchive(sub.id) }} className="w-7 h-7 rounded-lg hover:bg-status-danger/10 flex items-center justify-center text-text-3 hover:text-status-danger transition-colors"><Archive className="w-3.5 h-3.5" /></button>
+          <IconButton icon={Edit3} onClick={() => onEdit(sub)} />
+          <IconButton icon={Archive} onClick={() => onArchive(sub.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
         </div>
       </div>
       <div className="flex items-end justify-between">

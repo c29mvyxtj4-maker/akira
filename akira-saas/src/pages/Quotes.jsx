@@ -1,8 +1,9 @@
 ﻿import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Trash2, FileSignature, Archive, ChevronLeft, Building2, ArrowRightCircle, Wrench } from 'lucide-react'
+import { Plus, Trash2, FileSignature, Archive, ChevronLeft, Building2, ArrowRightCircle, Wrench, Edit3 } from 'lucide-react'
 import Toast, { useToast } from '@/components/ui/Toast'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import IconButton from '@/components/ui/IconButton'
 import {
   getQuotes, getQuoteById, createQuote, updateQuote,
   updateQuoteStatus, archiveQuote, convertQuoteToInvoice, QUOTE_STATUS,
@@ -478,12 +479,8 @@ export default function Quotes() {
                       </td>
                       <td style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', gap: '4px' }}>
-                          <button type="button" onClick={function() { openEdit(q) }}
-                            style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', color: '#94a3b8' }}
-                          >–œŽ</button>
-                          <button type="button" onClick={function() { handleArchive(q.id) }}
-                            style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(239,68,68,0.1)', cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          ><Archive style={{ width: '13px', height: '13px' }} /></button>
+                          <IconButton icon={Edit3} onClick={() => openEdit(q)} />
+                          <IconButton icon={Archive} onClick={() => handleArchive(q.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
                         </div>
                       </td>
                     </tr>

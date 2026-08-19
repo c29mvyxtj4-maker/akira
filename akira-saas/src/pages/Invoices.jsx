@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import Toast, { useToast } from '@/components/ui/Toast'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import IconButton from '@/components/ui/IconButton'
 import { exportToCsv } from '@/shared/utils/exportCsv'
 import {
   getInvoices, getInvoiceById, createInvoice, updateInvoice,
@@ -621,12 +622,8 @@ export default function Invoices() {
                               {chargingId === inv.id ? 'Generando│' : 'Cobrar'}
                             </button>
                           )}
-                          <button type="button" onClick={function() { openEdit(inv) }}
-                            style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', color: '#94a3b8' }}
-                          >–œŽ</button>
-                          <button type="button" onClick={function() { handleArchive(inv.id) }}
-                            style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(239,68,68,0.1)', cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          ><Archive style={{ width: '13px', height: '13px' }} /></button>
+                          <IconButton icon={Edit3} onClick={() => openEdit(inv)} />
+                          <IconButton icon={Archive} onClick={() => handleArchive(inv.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
                         </div>
                       </td>
                     </tr>

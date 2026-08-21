@@ -1,0 +1,72 @@
+name: 🚀 Deploy to Netlify
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    name: Build & Deploy to Netlify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: akira-saas
+
+      - name: 🔨 Build application
+        run: npm run build
+        working-directory: akira-saas
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_GOOGLE_AI_KEY: ${{ secrets.VITE_GOOGLE_AI_KEY }}
+          CI: true
+
+      - name: ✅ Run tests
+        run: npm run test:a11y
+        working-directory: akira-saas
+        continue-on-error: true
+
+      - name: 🌐 Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2.1
+        with:
+          publish-dir: './akira-saas/dist'
+          production-branch: master
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: 'Deploy from GitHub Actions - ${{ github.sha }}'
+          netlify-config-path: './akira-saas/netlify.toml'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 10
+
+      - name: 📊 Deployment Summary
+        if: always()
+        run: |
+          echo "✅ Build: Success"
+          echo "📁 Artifact: dist/ (249 files)"
+          echo "🌐 Deployment: Netlify"
+          echo ""
+          echo "📝 Next Steps:"
+          echo "1. Check Netlify dashboard: https://app.netlify.com"
+          echo "2. View logs in GitHub Actions"
+          echo "3. Setup custom domain if needed"

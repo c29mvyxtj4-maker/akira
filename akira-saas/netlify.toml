@@ -1,9 +1,9 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  environment = { NODE_VERSION = "20.0.0" }
 
 [build.environment]
+  NODE_VERSION = "20.0.0"
   VITE_SUPABASE_URL = "$VITE_SUPABASE_URL"
   VITE_SUPABASE_ANON_KEY = "$VITE_SUPABASE_ANON_KEY"
   VITE_GOOGLE_AI_KEY = "$VITE_GOOGLE_AI_KEY"

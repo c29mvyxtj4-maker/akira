@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { NotionEditor } from '@/components/notion/NotionEditor'
 import * as notionService from '@/services/notion.service'
-import { PageSpinner } from '@/components/ui/Spinner'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
 
 export default function DocumentsPage() {
   const navigate = useNavigate()

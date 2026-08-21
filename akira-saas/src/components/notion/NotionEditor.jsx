@@ -13,7 +13,7 @@ import { AITranslator } from './AITranslator'
 import { DatabaseViews } from './DatabaseViews'
 import * as notionService from '@/services/notion.service'
 import { useNotion } from '@/hooks/useNotion'
-import { PageSpinner } from '@/components/ui/Spinner'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
 
 export function NotionEditor({ pageId }) {
   const [page, setPage] = useState(null)

@@ -1,4 +1,7 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
   "routes": [
     {
       "src": "/assets/(.*)",
@@ -9,12 +12,13 @@
       "dest": "/icons/$1"
     },
     {
-      "src": "/(.*\..*)",
+      "src": "/(.*\\..*)",
       "dest": "/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/index.html",
+      "status": 200
     }
   ]
 }

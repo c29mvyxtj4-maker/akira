@@ -7,11 +7,11 @@ import {
   Instagram, TrendingUp, FolderKanban, AlertTriangle,
   Clock, CalendarCheck, Users, UserCheck, FileText, Download, Star,
 } from 'lucide-react'
-import { exportToCsv } from '@/utils/exportCsv'
+import { exportToCsv } from '@/shared/utils/exportCsv'
 import { supabase } from '@/lib/supabase'
-import { useClients } from '@/hooks/useClients'
-import { useAddRecent } from '@/hooks/useAddRecent'
-import { useCurrentItem } from '@/context/CurrentItemContext'
+import { useClients } from '@/shared/hooks/useClients'
+import { useAddRecent } from '@/shared/hooks/useAddRecent'
+import { useCurrentItem } from '@/shared/context/CurrentItemContext'
 import { CLIENT_NICHES } from '@/services/clients.service'
 import { CLIENT_STATUS, PROJECT_STATUS } from '@/shared/config/constants'
 import { getEmailTemplates, buildTemplateMailto } from '@/services/templates.service'

@@ -47,6 +47,7 @@ const Notion        = lazy(() => import('@/pages/Notion')) // Notion editor (Fas
 const AuditLog      = lazy(() => import('@/pages/AuditLog')) // Audit logs & history
 const DashboardBuilder = lazy(() => import('@/pages/DashboardBuilder')) // Custom dashboards
 const ReportBuilder = lazy(() => import('@/pages/AdminDashboard')) // Report builder
+const DocumentVersions = lazy(() => import('@/pages/DocumentVersions')) // Document version history
 
 function ComingSoon({ name }) {
   return (

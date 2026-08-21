@@ -44,6 +44,9 @@ const Automation    = lazy(() => import('@/pages/Automation')) // v2.0 Automatio
 const YouTube       = lazy(() => import('@/pages/YouTube')) // YouTube project management
 const DocumentsNotion = lazy(() => import('@/pages/DocumentsNotion')) // Notion-style documents
 const Notion        = lazy(() => import('@/pages/Notion')) // Notion editor (Fase 1)
+const AuditLog      = lazy(() => import('@/pages/AuditLog')) // Audit logs & history
+const DashboardBuilder = lazy(() => import('@/pages/DashboardBuilder')) // Custom dashboards
+const ReportBuilder = lazy(() => import('@/pages/AdminDashboard')) // Report builder
 
 function ComingSoon({ name }) {
   return (

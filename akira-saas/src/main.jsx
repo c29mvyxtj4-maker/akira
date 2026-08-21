@@ -2,14 +2,15 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { MotionConfig } from 'framer-motion'
-import { AuthProvider } from './context/AuthContext.jsx'
-import { AppProvider }  from './context/AppContext.jsx'
-import { OrgProvider }  from './context/OrgContext.jsx'
-import { CurrentItemProvider } from './context/CurrentItemContext.jsx'
+import { AuthProvider } from '@/shared/context/AuthContext.jsx'
+import { AppProvider }  from '@/shared/context/AppContext.jsx'
+import { OrgProvider }  from '@/shared/context/OrgContext.jsx'
+import { CurrentItemProvider } from '@/shared/context/CurrentItemContext.jsx'
+import { LanguageProvider } from '@/shared/context/LanguageContext.jsx'
 import App from './App.jsx'
-import ErrorBoundary from './components/ErrorBoundary.jsx'
-import { installPrefsListener } from './lib/applyPrefs'
-import './lib/sentry'   // inicializa Sentry si hay VITE_SENTRY_DSN (no-op si no)
+import ErrorBoundary from '@/shared/components/ErrorBoundary.jsx'
+import { installPrefsListener } from '@/shared/lib/applyPrefs'
+import '@/shared/lib/sentry'   // inicializa Sentry si hay VITE_SENTRY_DSN (no-op si no)
 import './index.css'
 
 // Aplica tema / contraste / reducir-movimiento desde el arranque y reacciona a
@@ -32,17 +33,19 @@ if (typeof caches !== 'undefined' && caches.keys) {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <ErrorBoundary>
     <MotionConfig reducedMotion="user">
-      <BrowserRouter>
-        <AuthProvider>
-          <OrgProvider>
-            <AppProvider>
-              <CurrentItemProvider>
-                <App />
-              </CurrentItemProvider>
-            </AppProvider>
-          </OrgProvider>
-        </AuthProvider>
-      </BrowserRouter>
+      <LanguageProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <OrgProvider>
+              <AppProvider>
+                <CurrentItemProvider>
+                  <App />
+                </CurrentItemProvider>
+              </AppProvider>
+            </OrgProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </LanguageProvider>
     </MotionConfig>
   </ErrorBoundary>
 )

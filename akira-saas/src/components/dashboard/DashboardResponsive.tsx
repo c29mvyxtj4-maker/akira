@@ -1,5 +1,5 @@
-import { ReactNode } from 'react'
-import { useResponsive } from '@/hooks/useResponsive'
+﻿import { ReactNode } from 'react'
+import { useResponsive } from '@/shared/hooks/useResponsive'
 import { ResponsiveGrid, ResponsiveSection } from '@/components/responsive'
 
 /**
@@ -49,7 +49,7 @@ export function KpiCardGrid({ children, gap = 'md' }: KpiCardGridProps) {
 
 /**
  * DashboardPanel - Tarjeta de panel con estilos responsivos
- * Padding adaptativo según breakpoint
+ * Padding adaptativo segÀºn breakpoint
  */
 
 interface DashboardPanelProps {
@@ -104,7 +104,7 @@ export function DashboardPanel({
 
 /**
  * DashboardGrid - Grid genérica para layouts de dashboard
- * Adapta columnas según breakpoint
+ * Adapta columnas segÀºn breakpoint
  */
 
 interface DashboardGridProps {
@@ -137,7 +137,7 @@ export function DashboardGrid({
 
 /**
  * ChartContainer - Container responsivo para gráficos
- * Ajusta tamaño y altura según breakpoint
+ * Ajusta tamaño y altura segÀºn breakpoint
  */
 
 interface ChartContainerProps {
@@ -295,3 +295,4 @@ export function Stats({
     </div>
   )
 }
+

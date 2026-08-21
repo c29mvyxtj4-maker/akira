@@ -11,7 +11,9 @@
     "deploy": "node scripts/deploy.mjs",
     "seed": "node scripts/seed-data.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:a11y": "vitest run --include 'src/__tests__/accessibility.test.js'",
+    "a11y:audit": "node scripts/axe-audit.mjs"
   },
   "dependencies": {
     "@capacitor/cli": "^8.4.1",
@@ -60,6 +62,8 @@
     "zustand": "^4.4.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@axe-core/react": "^4.13.0",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "10.4.20",
     "jsdom": "^25.0.1",

@@ -1,29 +1,32 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Trash2, FileText, Archive, ChevronLeft,
   Building2, Wrench, Download, CreditCard, Eye, EyeOff,
 } from 'lucide-react'
-import { exportToCsv } from '@/utils/exportCsv'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import IconButton from '@/components/ui/IconButton'
+import { exportToCsv } from '@/shared/utils/exportCsv'
 import {
   getInvoices, getInvoiceById, createInvoice, updateInvoice,
   updateInvoiceStatus, archiveInvoice, INVOICE_STATUS,
 } from '@/services/invoices.service'
 import { getCompanySettings } from '@/services/company.service'
 import { getServicesForSelect } from '@/services/subscriptions.service'
-import { downloadInvoicePdf } from '@/utils/generateInvoicePdf'
+import { downloadInvoicePdf } from '@/shared/utils/generateInvoicePdf'
 import { supabase } from '@/lib/supabase'
-import { useAddRecent } from '@/hooks/useAddRecent'
-import { useCurrentItem } from '@/context/CurrentItemContext'
-import PageHeader   from '@/components/layout/PageHeader'
-import Badge        from '@/components/ui/Badge'
-import Button        from '@/components/ui/Button'
-import EmptyState   from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
-import { SkeletonTableRow } from '@/components/ui/Skeleton'
+import { useAddRecent } from '@/shared/hooks/useAddRecent'
+import { useCurrentItem } from '@/shared/context/CurrentItemContext'
+import PageHeader   from '@/shared/components/layout/PageHeader'
+import Badge        from '@/shared/components/ui/Badge'
+import Button        from '@/shared/components/ui/Button'
+import EmptyState   from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
+import { SkeletonTableRow } from '@/shared/components/ui/Skeleton'
 import { useSearchParams } from 'react-router-dom'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '–‚¬' }
 function fmtDate(d) { if (!d) return '--'; return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 function makeItemId() { return 'item_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6) }
 
@@ -33,7 +36,7 @@ var INP = {
   outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box',
 }
 
-/* ── Editor de factura (cuadricula de lineas) ─────────────── */
+/* –”€–”€ Editor de factura (cuadricula de lineas) –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loading }) {
   var today = new Date().toISOString().split('T')[0]
 
@@ -47,7 +50,7 @@ function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loa
     return [{ id: makeItemId(), description: '', quantity: 1, price: 0 }]
   })
 
-  // Servicios activos, para poder anadirlos como linea con un clic — NUEVO
+  // Servicios activos, para poder anadirlos como linea con un clic –” NUEVO
   var [services, setServices] = useState([])
   useEffect(function() {
     getServicesForSelect().then(setServices).catch(function() { setServices([]) })
@@ -109,7 +112,7 @@ function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loa
           <label className="label-base">Cliente</label>
           <select value={clientId} onChange={function(e) { setClientId(e.target.value) }} style={INP}>
             <option value="">Sin cliente</option>
-            {clients.map(function(c) { return <option key={c.id} value={c.id}>{c.name}{c.company ? ' — ' + c.company : ''}</option> })}
+            {clients.map(function(c) { return <option key={c.id} value={c.id}>{c.name}{c.company ? ' –” ' + c.company : ''}</option> })}
           </select>
         </div>
         <div>
@@ -164,7 +167,7 @@ function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loa
               >
                 <option value="">+ Añadir servicio...</option>
                 {services.map(function(s) {
-                  return <option key={s.id} value={s.id}>{s.name} — {fmtCur(s.price)}</option>
+                  return <option key={s.id} value={s.id}>{s.name} –” {fmtCur(s.price)}</option>
                 })}
               </select>
             </div>
@@ -205,7 +208,7 @@ function InvoiceEditor({ initial, clients, defaultTaxRate, onSave, onCancel, loa
   )
 }
 
-/* ── Vista previa de la factura ───────────────────────────── */
+/* –”€–”€ Vista previa de la factura –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function InvoicePreview({ invoice, company, onBack }) {
   var items = Array.isArray(invoice.items) ? invoice.items : []
   var client = invoice.clients
@@ -213,10 +216,12 @@ function InvoicePreview({ invoice, company, onBack }) {
   var [charging, setCharging] = useState(false)
   var canCharge = invoice.status !== 'paid' && invoice.status !== 'void'
 
+  const { toasts, show, dismiss } = useToast()
+
   function handleDownload() {
     setDownloading(true)
     downloadInvoicePdf(invoice, company)
-      .catch(function(e) { window.alert('Error al generar el PDF: ' + e.message) })
+      .catch(function(e) { show('Error al generar el PDF: ' + (e.message || e), 'error', 3000) })
       .finally(function() { setDownloading(false) })
   }
 
@@ -231,7 +236,7 @@ function InvoicePreview({ invoice, company, onBack }) {
       // la pestaña actual a Stripe: funciona en móvil y escritorio.
       window.location.href = url
     } catch (e) {
-      window.alert('No se pudo generar el cobro: ' + (e.message || e))
+      show('No se pudo generar el cobro: ' + (e.message || e), 'error', 3000)
     } finally {
       setCharging(false)
     }
@@ -343,9 +348,9 @@ function InvoicePreview({ invoice, company, onBack }) {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    PAGINA PRINCIPAL
-═══════════════════════════════════════════════════════════ */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 export default function Invoices() {
   var { addRecent } = useAddRecent()
   var { setCurrentItem } = useCurrentItem()
@@ -382,7 +387,7 @@ export default function Invoices() {
 
   useEffect(function() { loadAll() }, [loadAll])
 
-  // Abrir directamente una factura si venimos de la busqueda global — NUEVO
+  // Abrir directamente una factura si venimos de la busqueda global –” NUEVO
   var [searchParams] = useSearchParams()
   useEffect(function() {
     var openId = searchParams.get('open')
@@ -398,11 +403,11 @@ export default function Invoices() {
   function handleExport() {
     if (!invoices.length) return
     var columns = [
-      { key: 'number',      label: 'Número' },
+      { key: 'number',      label: 'NÀºmero' },
       { key: 'client',      label: 'Cliente' },
       { key: 'issue_date',  label: 'Emisión' },
       { key: 'due_date',    label: 'Vencimiento' },
-      { key: 'total',       label: 'Total (€)' },
+      { key: 'total',       label: 'Total (–‚¬)' },
       { key: 'status_label',label: 'Estado' },
     ]
     var rows = invoices.map(function(inv) {
@@ -451,7 +456,7 @@ export default function Invoices() {
   }
 
   function sendInvoiceEmail(id) {
-    showToast('Enviando factura al cliente…')
+    showToast('Enviando factura al cliente│')
     supabase.functions.invoke('send-invoice', { body: { invoice_id: id } })
       .then(function(res) {
         var err = (res.error && res.error.message) || (res.data && res.data.error)
@@ -464,7 +469,7 @@ export default function Invoices() {
   async function handleCharge(inv) {
     if (chargingId) return
     setChargingId(inv.id)
-    showToast('Generando enlace de cobro…')
+    showToast('Generando enlace de cobro│')
     try {
       var res = await supabase.functions.invoke('create-checkout', { body: { invoice_id: inv.id } })
       if (res.error) throw res.error
@@ -479,14 +484,21 @@ export default function Invoices() {
     }
   }
 
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(null)
+
   function handleArchive(id) {
-    if (!window.confirm('Archivar esta factura?')) return
-    archiveInvoice(id)
+    setShowArchiveConfirm(id)
+  }
+
+  function confirmArchive() {
+    if (!showArchiveConfirm) return
+    archiveInvoice(showArchiveConfirm)
       .then(function() {
-        setInvoices(function(prev) { return prev.filter(function(i) { return i.id !== id }) })
-        showToast('Factura archivada')
+        setInvoices(function(prev) { return prev.filter(function(i) { return i.id !== showArchiveConfirm }) })
+        show('Factura archivada', 'success', 3000)
+        setShowArchiveConfirm(null)
       })
-      .catch(function(e) { showToast(e.message, 'error') })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000); setShowArchiveConfirm(null) })
   }
 
   function openPreview(inv) {
@@ -540,14 +552,14 @@ export default function Invoices() {
       <div className="flex-1 overflow-y-auto p-6">
         {!company || !company.company_name ? (
           <div style={{ padding: '14px 18px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '10px', marginBottom: '20px', fontSize: '13px', color: '#f59e0b' }}>
-            Todavia no has rellenado tus datos fiscales. Ve a Configuracion → Facturacion antes de crear tu primera factura.
+            Todavia no has rellenado tus datos fiscales. Ve a Configuracion –†’ Facturacion antes de crear tu primera factura.
           </div>
         ) : null}
 
         {invoices.length === 0 ? (
           <EmptyState
             icon={FileText}
-            emoji="📄"
+            emoji="ðŸ“„"
             title="Sin facturas todavia"
             description="Crea tu primera factura para empezar a facturar a tus clientes."
             actionShortcut="Cmd+N"
@@ -558,7 +570,7 @@ export default function Invoices() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  {['Número', 'Cliente', 'Emisión', 'Total', 'Estado', 'Acciones'].map(function(h, hi) {
+                  {['NÀºmero', 'Cliente', 'Emisión', 'Total', 'Estado', 'Acciones'].map(function(h, hi) {
                     var isActions = hi === 5
                     return <th key={h} style={{ padding: '10px 14px', textAlign: isActions ? 'right' : 'left', fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap', position: isActions ? 'sticky' : undefined, right: isActions ? 0 : undefined, background: isActions ? 'var(--bg-2)' : undefined }}>{h}</th>
                   })}
@@ -584,8 +596,8 @@ export default function Invoices() {
                               <Eye style={{ width: '11px', height: '11px' }} /> Visible en portal
                             </div>
                           ) : (
-                            <div title="En borrador: solo tú la ves. Pásala a Enviada para que el cliente la reciba y la vea en el portal." style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px', fontSize: '10px', fontWeight: 600, color: 'var(--text-5)' }}>
-                              <EyeOff style={{ width: '11px', height: '11px' }} /> Solo tú (borrador)
+                            <div title="En borrador: solo tÀº la ves. Pásala a Enviada para que el cliente la reciba y la vea en el portal." style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px', fontSize: '10px', fontWeight: 600, color: 'var(--text-5)' }}>
+                              <EyeOff style={{ width: '11px', height: '11px' }} /> Solo tÀº (borrador)
                             </div>
                           )
                         )}
@@ -607,15 +619,11 @@ export default function Invoices() {
                               style={{ display: 'flex', alignItems: 'center', gap: '5px', height: '28px', padding: '0 10px', borderRadius: '6px', border: '1px solid rgba(34,197,94,0.35)', background: 'rgba(34,197,94,0.12)', color: '#22c55e', fontSize: '12px', fontWeight: 700, cursor: chargingId === inv.id ? 'not-allowed' : 'pointer', opacity: chargingId === inv.id ? 0.6 : 1, whiteSpace: 'nowrap' }}
                             >
                               <CreditCard style={{ width: '13px', height: '13px' }} />
-                              {chargingId === inv.id ? 'Generando…' : 'Cobrar'}
+                              {chargingId === inv.id ? 'Generando│' : 'Cobrar'}
                             </button>
                           )}
-                          <button type="button" onClick={function() { openEdit(inv) }}
-                            style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', color: '#94a3b8' }}
-                          >✎</button>
-                          <button type="button" onClick={function() { handleArchive(inv.id) }}
-                            style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(239,68,68,0.1)', cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          ><Archive style={{ width: '13px', height: '13px' }} /></button>
+                          <IconButton icon={Edit3} onClick={() => openEdit(inv)} />
+                          <IconButton icon={Archive} onClick={() => handleArchive(inv.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
                         </div>
                       </td>
                     </tr>
@@ -656,6 +664,23 @@ export default function Invoices() {
           >{toastMsg.msg}</motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Archive Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showArchiveConfirm !== null}
+        title="Archivar factura"
+        message="¿Estás seguro de que deseas archivar esta factura?"
+        confirmText="Archivar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmArchive}
+        onCancel={() => setShowArchiveConfirm(null)}
+      />
     </div>
   )
 }
+
+

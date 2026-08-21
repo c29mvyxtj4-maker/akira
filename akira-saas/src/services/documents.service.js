@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Documents Service
  * Handles all database operations for the Notion-like document system
  * Including documents, blocks, permissions, comments, versions, and more
@@ -743,3 +743,60 @@ export function subscribeToComments(documentId, callback) {
     )
     .subscribe()
 }
+
+// ============================================================================
+// DOCUMENT VERSIONS
+// ============================================================================
+
+export async function getDocumentVersions(documentId, limit = 50) {
+  return supabase
+    .from('document_versions')
+    .select(`
+      *,
+      profiles:created_by(id, full_name, email, avatar_url)
+    `)
+    .eq('document_id', documentId)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+}
+
+export async function createDocumentVersion(documentId, title, content, userId) {
+  return supabase
+    .from('document_versions')
+    .insert({
+      document_id: documentId,
+      title,
+      content,
+      created_by: userId,
+    })
+    .select()
+}
+
+export async function restoreDocumentVersion(documentId, versionId) {
+  // Get version
+  const { data: version } = await supabase
+    .from('document_versions')
+    .select('title, content')
+    .eq('id', versionId)
+    .single()
+
+  if (!version) throw new Error('Version not found')
+
+  // Update document
+  return supabase
+    .from('documents')
+    .update({
+      title: version.title,
+      content: version.content,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', documentId)
+}
+
+export async function deleteDocumentVersion(versionId) {
+  return supabase
+    .from('document_versions')
+    .delete()
+    .eq('id', versionId)
+}
+

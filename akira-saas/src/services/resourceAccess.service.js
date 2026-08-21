@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 export async function getUserAccess(userId) {
   var res = await supabase.from('resource_access').select('*').eq('user_id', userId)

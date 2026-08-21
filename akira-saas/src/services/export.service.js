@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 async function uid() {
   var res = await supabase.auth.getUser()
@@ -59,7 +59,7 @@ export async function downloadExport() {
   return payload
 }
 
-/* ── Exportar una sola tabla como CSV (mas facil de abrir en Excel) ── */
+/* –”€–”€ Exportar una sola tabla como CSV (mas facil de abrir en Excel) –”€–”€ */
 function toCsvValue(v) {
   if (v === null || v === undefined) return ''
   if (typeof v === 'object') v = JSON.stringify(v)

@@ -1,6 +1,6 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { scopeToOrg } from '@/lib/activeOrg'
+import { scopeToOrg } from '@/shared/lib/activeOrg'
 
 var GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY
 
@@ -10,7 +10,7 @@ async function uid() {
   return res.data.user.id
 }
 
-/* ── Construir contexto del negocio ───────────────────────── */
+/* –”€–”€ Construir contexto del negocio –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 async function buildBusinessContext() {
   var ownerId = await uid()
 
@@ -107,7 +107,7 @@ async function buildBusinessContext() {
   return ctx.join('\n')
 }
 
-/* ── Protocolo de acciones ─────────────────────────────────── */
+/* –”€–”€ Protocolo de acciones –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 var ACTION_PROTOCOL = [
   '',
   '=== CAPACIDAD DE ACCION ===',
@@ -161,9 +161,9 @@ var SYSTEM_PROMPT_BASE = [
   ACTION_PROTOCOL,
 ].join('\n')
 
-/* ═══════════════════════════════════════════════════════════
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    CONVERSACIONES
-═══════════════════════════════════════════════════════════ */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 
 export async function getConversations() {
   var ownerId = await uid()
@@ -223,9 +223,9 @@ export async function saveMessage(conversationId, role, content) {
   return res.data
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    GEMINI
-═══════════════════════════════════════════════════════════ */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 
 export async function sendMessageToGemini(conversationId, userMessage, previousMessages) {
   if (!GEMINI_KEY) throw new Error('Falta VITE_GEMINI_API_KEY en el archivo .env')
@@ -303,9 +303,9 @@ export async function sendMessageStream(conversationId, userMessage, previousMes
   return fullText
 }
 
-/* ═══════════════════════════════════════════════════════════
-   RESUMEN DE PROYECTO (V5 — resumenes generados por IA)
-═══════════════════════════════════════════════════════════ */
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
+   RESUMEN DE PROYECTO (V5 –” resumenes generados por IA)
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 
 export async function generateProjectSummary(project) {
   if (!GEMINI_KEY) throw new Error('Falta VITE_GEMINI_API_KEY en el archivo .env')

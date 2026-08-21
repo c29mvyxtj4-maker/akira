@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Send, Megaphone, MessageSquare, Trash2 } from 'lucide-react'
-import { useOrg } from '@/context/OrgContext'
-import { useAuth } from '@/context/AuthContext'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { useOrg } from '@/shared/context/OrgContext'
+import { useAuth } from '@/shared/context/AuthContext'
 import { getOrgTeam } from '@/services/projectMembers.service'
 import {
   getTeamMessages, sendTeamMessage, subscribeTeamMessages,
@@ -66,24 +68,34 @@ export default function Mensajes() {
 
   useEffect(function () { if (endRef.current && tab === 'chat') endRef.current.scrollIntoView({ behavior: 'smooth' }) }, [messages, tab])
 
-  function nameOf(uid) { var p = team[uid]; return (p && p.full_name) || (uid === me ? 'Tú' : 'Miembro') }
+  function nameOf(uid) { var p = team[uid]; return (p && p.full_name) || (uid === me ? 'TÀº' : 'Miembro') }
   function initialOf(uid) { var n = nameOf(uid); return (n[0] || '?').toUpperCase() }
+
+  const { toasts, show, dismiss } = useToast()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
 
   function send() {
     var t = draft.trim()
     if (!t || !orgId) return
     setDraft('')
-    sendTeamMessage(orgId, t).catch(function (e) { window.alert('No se pudo enviar: ' + (e.message || e)) })
+    sendTeamMessage(orgId, t).catch(function (e) { show('No se pudo enviar: ' + (e.message || e), 'error', 3000) })
   }
   function publish() {
     var b = annBody.trim()
     if (!b || !orgId) return
     setAnnTitle(''); setAnnBody('')
-    postAnnouncement(orgId, annTitle.trim(), b).catch(function (e) { window.alert('No se pudo publicar: ' + (e.message || e)) })
+    postAnnouncement(orgId, annTitle.trim(), b).catch(function (e) { show('No se pudo publicar: ' + (e.message || e), 'error', 3000) })
   }
   function removeAnn(id) {
-    if (!window.confirm('¿Eliminar este anuncio?')) return
-    deleteAnnouncement(id).then(function () { setAnns(function (prev) { return prev.filter(function (a) { return a.id !== id }) }) }).catch(function () {})
+    setShowDeleteConfirm(id)
+  }
+  function confirmRemoveAnn() {
+    if (!showDeleteConfirm) return
+    deleteAnnouncement(showDeleteConfirm).then(function () {
+      setAnns(function (prev) { return prev.filter(function (a) { return a.id !== showDeleteConfirm }) })
+      show('Anuncio eliminado', 'success', 3000)
+      setShowDeleteConfirm(null)
+    }).catch(function () { setShowDeleteConfirm(null) })
   }
 
   var TABS = [{ id: 'chat', label: 'Chat', icon: MessageSquare }, { id: 'announce', label: 'Anuncios', icon: Megaphone }]
@@ -112,12 +124,12 @@ export default function Mensajes() {
         </div>
 
         {!orgId ? (
-          <p style={{ fontSize: '14px', color: 'var(--text-4)' }}>Cargando tu organización…</p>
+          <p style={{ fontSize: '14px', color: 'var(--text-4)' }}>Cargando tu organización│</p>
         ) : tab === 'chat' ? (
           <>
             <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '10px', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: 0 }}>
               {messages.length === 0 ? (
-                <p style={{ fontSize: '13px', color: 'var(--text-5)', textAlign: 'center', paddingTop: '32px' }}>Aún no hay mensajes. Escribe el primero.</p>
+                <p style={{ fontSize: '13px', color: 'var(--text-5)', textAlign: 'center', paddingTop: '32px' }}>AÀºn no hay mensajes. Escribe el primero.</p>
               ) : messages.map(function (m) {
                 var mine = m.user_id === me
                 return (
@@ -135,7 +147,7 @@ export default function Mensajes() {
             <div style={{ display: 'flex', gap: '8px', padding: '10px 0 calc(var(--safe-bottom) + 12px)', flexShrink: 0 }}>
               <input value={draft} onChange={function (e) { setDraft(e.target.value) }}
                 onKeyDown={function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                placeholder="Escribe un mensaje…" className="input-base" style={{ flex: 1, height: '42px' }} />
+                placeholder="Escribe un mensaje│" className="input-base" style={{ flex: 1, height: '42px' }} />
               <button type="button" onClick={send} aria-label="Enviar"
                 style={{ width: '42px', height: '42px', flexShrink: 0, borderRadius: 'var(--radius-md)', border: 'none', background: 'var(--gradient-brand)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Send style={{ width: '17px', height: '17px' }} />
@@ -148,7 +160,7 @@ export default function Mensajes() {
               <div style={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Publicar anuncio</p>
                 <input value={annTitle} onChange={function (e) { setAnnTitle(e.target.value) }} placeholder="Título (opcional)" className="input-base" style={{ height: '38px' }} />
-                <textarea value={annBody} onChange={function (e) { setAnnBody(e.target.value) }} placeholder="Escribe el anuncio para tu equipo…" rows={3} className="input-base" style={{ resize: 'vertical' }} />
+                <textarea value={annBody} onChange={function (e) { setAnnBody(e.target.value) }} placeholder="Escribe el anuncio para tu equipo│" rows={3} className="input-base" style={{ resize: 'vertical' }} />
                 <button type="button" onClick={publish} className="btn-base bg-brand-500 hover:bg-brand-600 text-white h-9 self-end px-4 text-sm">Publicar</button>
               </div>
             )}
@@ -169,6 +181,22 @@ export default function Mensajes() {
           </div>
         )}
       </div>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm !== null}
+        title="Eliminar anuncio"
+        message="¿Estás seguro de que deseas eliminar este anuncio?"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmRemoveAnn}
+        onCancel={() => setShowDeleteConfirm(null)}
+      />
     </div>
   )
 }
+

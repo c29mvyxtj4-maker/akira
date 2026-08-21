@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronLeft, ChevronRight, Plus, X,
   Clock, MapPin, Tag, Calendar as CalendarIcon,
   AlertCircle, CheckCircle, Circle, Edit3, ListTodo,
 } from 'lucide-react'
-import { useCalendar } from '@/hooks/useCalendar'
-import PageHeader from '@/components/layout/PageHeader'
-import Button from '@/components/ui/Button'
-import Modal from '@/components/ui/Modal'
-import { getPref } from '@/hooks/usePreferences'
+import { useCalendar } from '@/shared/hooks/useCalendar'
+import PageHeader from '@/shared/components/layout/PageHeader'
+import Button from '@/shared/components/ui/Button'
+import Modal from '@/shared/components/ui/Modal'
+import { getPref } from '@/shared/hooks/usePreferences'
 import clsx from 'clsx'
 
 // Respeta la preferencia "Comenzar la semana el lunes".
@@ -76,7 +76,7 @@ function toDateStr(d) {
   return y + '-' + m + '-' + day
 }
 
-// Inicio de la semana (lunes o domingo según preferencia).
+// Inicio de la semana (lunes o domingo segÀºn preferencia).
 function getMonday(date) {
   var d = new Date(date)
   var day = d.getDay()
@@ -93,8 +93,8 @@ function timeToMinutes(t) {
 }
 
 /* Reparte eventos solapados en columnas lado a lado (estilo Notion/Google):
-   agrupa los que se pisan en un "clúster" y a cada uno le asigna una columna;
-   todos los de un clúster comparten el mismo nº de columnas para repartir el
+   agrupa los que se pisan en un "clÀºster" y a cada uno le asigna una columna;
+   todos los de un clÀºster comparten el mismo nÂº de columnas para repartir el
    ancho por igual. Devuelve [{ event, start, end, col, cols }]. */
 function layoutDayEvents(timedEvents) {
   var items = timedEvents.map(function(e) {
@@ -108,8 +108,8 @@ function layoutDayEvents(timedEvents) {
   })
 
   var out = []
-  var cluster = []       // items del clúster actual
-  var colEnds = []       // fin del último evento de cada columna
+  var cluster = []       // items del clÀºster actual
+  var colEnds = []       // fin del Àºltimo evento de cada columna
   var clusterEnd = -1
 
   function flush() {
@@ -121,7 +121,7 @@ function layoutDayEvents(timedEvents) {
   }
 
   items.forEach(function(it) {
-    // si no se solapa con nada del clúster abierto, cerramos el clúster
+    // si no se solapa con nada del clÀºster abierto, cerramos el clÀºster
     if (cluster.length && it.start >= clusterEnd) flush()
     var placed = -1
     for (var c = 0; c < colEnds.length; c++) {
@@ -140,7 +140,7 @@ function layoutDayEvents(timedEvents) {
 function hhmmLabel(m) {
   return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0')
 }
-// Minuto (desde medianoche) ajustado a 15' según la Y del cursor dentro de una
+// Minuto (desde medianoche) ajustado a 15' segÀºn la Y del cursor dentro de una
 // columna de día, descontando dónde agarró el usuario el evento.
 function dropMinutesFrom(clientY, rectTop, grabMin, dur) {
   var minutes = ((clientY - rectTop) / ROW_HEIGHT) * 60 - grabMin
@@ -148,7 +148,7 @@ function dropMinutesFrom(clientY, rectTop, grabMin, dur) {
   return Math.max(0, Math.min(24 * 60 - dur, minutes)) + WEEK_HOUR_START * 60
 }
 
-/* ── Chip de evento en el calendario (vista mes) ──────────── */
+/* –”€–”€ Chip de evento en el calendario (vista mes) –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function EventChip({ event, onClick }) {
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
   return (
@@ -165,7 +165,7 @@ function EventChip({ event, onClick }) {
   )
 }
 
-/* ── Bloque de evento en la vista semanal ─────────────────── */
+/* –”€–”€ Bloque de evento en la vista semanal –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 /* Bloque-guía que se pinta en el destino mientras arrastras: contorno de
    marca + la hora a la que caerá el evento (como en apps de calendario). */
 function DropGhost({ startMin, dur, label }) {
@@ -212,7 +212,7 @@ function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, 
     <button type="button"
       onClick={function(e) { e.stopPropagation(); if (!canDrag) onClick(event) }}
       onPointerDown={canDrag ? onPointerDown : undefined}
-      title={(canDrag ? 'Arrastra para mover · ' : '') + event.title + ' · ' + fmtTime(event.start_time) + (event.end_time ? '–' + fmtTime(event.end_time) : '')}
+      title={(canDrag ? 'Arrastra para mover · ' : '') + event.title + ' · ' + fmtTime(event.start_time) + (event.end_time ? '–“' + fmtTime(event.end_time) : '')}
       style={{
         position: 'absolute', left: leftCalc, width: widthCalc, top: top + 'px', height: height + 'px',
         background: cfg.bg, border: '1px solid ' + cfg.border, borderLeft: '3px solid ' + cfg.dot,
@@ -228,14 +228,14 @@ function WeekEventBlock({ event, startMin, endMin, col, cols, canDrag, onClick, 
       </span>
       {!compact && (
         <span style={{ fontSize: '9px', color: cfg.text, opacity: 0.8, display: 'block' }}>
-          {fmtTime(event.start_time)}{event.end_time ? '–' + fmtTime(event.end_time) : ''}
+          {fmtTime(event.start_time)}{event.end_time ? '–“' + fmtTime(event.end_time) : ''}
         </span>
       )}
     </button>
   )
 }
 
-/* ── Panel detalle de evento ──────────────────────────────── */
+/* –”€–”€ Panel detalle de evento –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function EventDetail({ event, onClose, onEdit, onStatusChange, onDelete, isMobile }) {
   if (!event) return null
   var cfg = EVENT_COLORS[event.event_type] || EVENT_COLORS.other
@@ -285,7 +285,7 @@ function EventDetail({ event, onClose, onEdit, onStatusChange, onDelete, isMobil
             <p style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff' }}>{fmtDate(event.event_date)}</p>
             {(event.start_time || event.end_time) && (
               <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>
-                {fmtTime(event.start_time)}{event.end_time ? ' — ' + fmtTime(event.end_time) : ''}
+                {fmtTime(event.start_time)}{event.end_time ? ' –” ' + fmtTime(event.end_time) : ''}
               </p>
             )}
           </div>
@@ -345,7 +345,7 @@ function EventDetail({ event, onClose, onEdit, onStatusChange, onDelete, isMobil
   )
 }
 
-/* ── Panel agenda lateral ─────────────────────────────────── */
+/* –”€–”€ Panel agenda lateral –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function AgendaPanel({ events, onEventClick, isMobile, onBack }) {
   var today     = new Date()
   var upcoming  = events
@@ -428,7 +428,7 @@ function AgendaPanel({ events, onEventClick, isMobile, onBack }) {
   )
 }
 
-/* ── Vista semanal ─────────────────────────────────────────── */
+/* –”€–”€ Vista semanal –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent }) {
   var [dropHint, setDropHint] = useState(null)
 
@@ -597,7 +597,7 @@ function WeekView({ weekStart, events, onEventClick, onSlotClick, onMoveEvent })
   )
 }
 
-/* ── Modal de nuevo/editar evento ─────────────────────────── */
+/* –”€–”€ Modal de nuevo/editar evento –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial }) {
   var [form, setForm] = useState({
     title:      initial ? (initial.title || '') : '',
@@ -695,10 +695,10 @@ function EventForm({ onSave, onCancel, loading, selectors, defaultDate, initial 
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    PAGINA PRINCIPAL
-═══════════════════════════════════════════════════════════ */
-/* ── Vista de día (al entrar en un día desde el mes) ───────── */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
+/* –”€–”€ Vista de día (al entrar en un día desde el mes) –”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function DayView({ dateStr, events, onBack, onEventClick, onMoveEvent, onCreate }) {
   var hours = []
   for (var h = WEEK_HOUR_START; h <= WEEK_HOUR_END; h++) hours.push(h)
@@ -897,8 +897,8 @@ export default function Calendar() {
   weekEnd.setDate(weekEnd.getDate() + 6)
   var sameMonth = weekStart.getMonth() === weekEnd.getMonth()
   var weekLabel = sameMonth
-    ? weekStart.getDate() + ' – ' + weekEnd.getDate() + ' ' + MONTHS[weekStart.getMonth()].slice(0, 3) + ' ' + weekStart.getFullYear()
-    : weekStart.getDate() + ' ' + MONTHS[weekStart.getMonth()].slice(0, 3) + ' – ' + weekEnd.getDate() + ' ' + MONTHS[weekEnd.getMonth()].slice(0, 3) + ' ' + weekEnd.getFullYear()
+    ? weekStart.getDate() + ' –“ ' + weekEnd.getDate() + ' ' + MONTHS[weekStart.getMonth()].slice(0, 3) + ' ' + weekStart.getFullYear()
+    : weekStart.getDate() + ' ' + MONTHS[weekStart.getMonth()].slice(0, 3) + ' –“ ' + weekEnd.getDate() + ' ' + MONTHS[weekEnd.getMonth()].slice(0, 3) + ' ' + weekEnd.getFullYear()
 
   var showCalendarPane = !isMobile || mobileStep === 'calendar'
   var showSidePane     = !isMobile || mobileStep === 'agenda' || mobileStep === 'detail'
@@ -1118,3 +1118,4 @@ export default function Calendar() {
     </div>
   )
 }
+

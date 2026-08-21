@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Send, Trash2, Mail, Eye, EyeOff,
@@ -15,8 +15,8 @@ import {
   getPortalClientData, getPortalBranding,
 } from '@/services/portal.service'
 import { supabase } from '@/lib/supabase'
-import EmptyState from '@/components/ui/EmptyState'
-import Spinner    from '@/components/ui/Spinner'
+import EmptyState from '@/shared/components/ui/EmptyState'
+import Spinner    from '@/shared/components/ui/Spinner'
 import PortalView from '@/components/portal/PortalView'
 
 var PORTAL_URL = window.location.origin + '/portal'
@@ -41,16 +41,16 @@ function fmtSize(b) {
 }
 
 function fileIcon(type) {
-  if (!type) return '📎'
-  if (type.startsWith('image/'))  return '🖼'
-  if (type === 'application/pdf') return '📄'
-  if (type.includes('word'))      return '📝'
-  if (type.startsWith('video/'))  return '🎬'
-  if (type.startsWith('audio/'))  return '🎵'
-  return '📎'
+  if (!type) return 'ðŸ“Ž'
+  if (type.startsWith('image/'))  return 'ðŸ–¼'
+  if (type === 'application/pdf') return 'ðŸ“„'
+  if (type.includes('word'))      return 'ðŸ“'
+  if (type.startsWith('video/'))  return 'ðŸŽ¬'
+  if (type.startsWith('audio/'))  return 'ðŸŽµ'
+  return 'ðŸ“Ž'
 }
 
-/* ── Sección: Usuarios del portal ─────────────────────────── */
+/* –”€–”€ Sección: Usuarios del portal –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function UsersSection({ clientId, clientName }) {
   var [users,   setUsers]   = useState([])
   var [loading, setLoading] = useState(true)
@@ -235,7 +235,7 @@ function UsersSection({ clientId, clientName }) {
                         onClick={function() { handleTogglePerm(user.id, res, 'can_view', perm.can_view) }}
                         style={{ padding: '3px 9px', borderRadius: '20px', fontSize: '10px', fontWeight: 600, cursor: 'pointer', border: 'none', background: perm.can_view ? 'rgba(34,197,94,0.12)' : 'var(--bg-4)', color: perm.can_view ? '#22c55e' : 'var(--text-5)', transition: 'all 0.1s' }}
                       >
-                        {perm.can_view ? '✓ ' : '✗ '}{labels[res]}
+                        {perm.can_view ? '–œ“ ' : '–œ— '}{labels[res]}
                       </button>
                     )
                   })}
@@ -243,7 +243,7 @@ function UsersSection({ clientId, clientName }) {
 
                 {user.last_login && (
                   <p style={{ fontSize: '10px', color: 'var(--text-5)', marginTop: '8px' }}>
-                    Último acceso: {fmtDate(user.last_login)}
+                    Àšltimo acceso: {fmtDate(user.last_login)}
                   </p>
                 )}
               </div>
@@ -255,7 +255,7 @@ function UsersSection({ clientId, clientName }) {
   )
 }
 
-/* ── Sección: Mensajería ──────────────────────────────────── */
+/* –”€–”€ Sección: Mensajería –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function MessagesSection({ clientId }) {
   var [messages, setMessages] = useState([])
   var [loading,  setLoading]  = useState(true)
@@ -307,7 +307,7 @@ function MessagesSection({ clientId }) {
                   <p>{msg.content}</p>
                   <p style={{ fontSize: '10px', opacity: 0.6, marginTop: '4px', textAlign: isOwner ? 'right' : 'left' }}>
                     {new Date(msg.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                    {!isOwner && !msg.read && <span style={{ marginLeft: '6px', color: 'var(--brand)' }}>● nuevo</span>}
+                    {!isOwner && !msg.read && <span style={{ marginLeft: '6px', color: 'var(--brand)' }}>–— nuevo</span>}
                   </p>
                 </div>
               </div>
@@ -335,7 +335,7 @@ function MessagesSection({ clientId }) {
   )
 }
 
-/* ── Sección: Archivos ────────────────────────────────────── */
+/* –”€–”€ Sección: Archivos –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function FilesSection({ clientId }) {
   var [files,    setFiles]    = useState([])
   var [loading,  setLoading]  = useState(true)
@@ -423,7 +423,7 @@ function FilesSection({ clientId }) {
   )
 }
 
-/* ── Sección: Aprobaciones ────────────────────────────────── */
+/* –”€–”€ Sección: Aprobaciones –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function ApprovalsSection({ clientId }) {
   var [approvals, setApprovals] = useState([])
   var [loading,   setLoading]   = useState(true)
@@ -549,9 +549,9 @@ function ApprovalsSection({ clientId }) {
   )
 }
 
-/* ══════════════════════════════════════════════════════════
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    COMPONENTE PRINCIPAL
-══════════════════════════════════════════════════════════ */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 // Vista previa del portal tal como lo ve el cliente (solo lectura, dentro del owner).
 function PreviewSection({ client }) {
   var [data,     setData]     = useState(null)
@@ -584,7 +584,7 @@ function PreviewSection({ client }) {
     return function() { alive = false }
   }, [client.id])
 
-  if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-4)' }}>Cargando vista previa…</div>
+  if (loading) return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-4)' }}>Cargando vista previa│</div>
   if (error)   return <div style={{ padding: '20px', textAlign: 'center', color: 'var(--brand)' }}>{error}</div>
 
   return (
@@ -611,7 +611,7 @@ export default function PortalTab({ client }) {
       <div style={{ padding: '14px 16px', background: 'rgba(230,57,70,0.06)', border: '1px solid rgba(230,57,70,0.15)', borderRadius: '10px', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
           <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--gradient-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 900, color: '#fff', flexShrink: 0 }}>A</div>
-          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)' }}>Portal de Cliente — {client.name}</p>
+          <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)' }}>Portal de Cliente –” {client.name}</p>
         </div>
         <p style={{ fontSize: '12px', color: 'var(--text-4)', lineHeight: 1.5 }}>
           Espacio privado donde tu cliente puede ver el estado de sus proyectos, comunicarse contigo y aprobar entregas.
@@ -644,3 +644,4 @@ export default function PortalTab({ client }) {
     </div>
   )
 }
+

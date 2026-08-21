@@ -6,6 +6,8 @@ import {
   Copy, Check, RefreshCw,
   Zap, User, ChevronLeft, CheckCircle2, XCircle, Loader2,
 } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import {
   getConversations, createConversation, archiveConversation,
   updateConversationTitle, getMessages, saveMessage,
@@ -401,14 +403,23 @@ export default function Brain() {
       .catch(function(e) { showToast(e.message, 'error') })
   }
 
+  const { toasts, show, dismiss } = useToast()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
+
   function handleArchive(id) {
-    if (!window.confirm('Eliminar esta conversacion?')) return
-    archiveConversation(id)
+    setShowDeleteConfirm(id)
+  }
+
+  function confirmArchive() {
+    if (!showDeleteConfirm) return
+    archiveConversation(showDeleteConfirm)
       .then(function() {
-        setConversations(function(prev) { return prev.filter(function(c) { return c.id !== id }) })
-        if (activeConvId === id) { setActiveConvId(null); setMessages([]); setMobileStep('list') }
+        setConversations(function(prev) { return prev.filter(function(c) { return c.id !== showDeleteConfirm }) })
+        if (activeConvId === showDeleteConfirm) { setActiveConvId(null); setMessages([]); setMobileStep('list') }
+        show('Conversación eliminada', 'success', 3000)
+        setShowDeleteConfirm(null)
       })
-      .catch(function(e) { showToast(e.message, 'error') })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000); setShowDeleteConfirm(null) })
   }
 
   function handleRename(id, title) {
@@ -671,6 +682,21 @@ export default function Brain() {
         @keyframes bounce { 0%,100% { transform:translateY(0) } 50% { transform:translateY(-4px) } }
         @keyframes spin { from { transform:rotate(0deg) } to { transform:rotate(360deg) } }
       `}</style>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm !== null}
+        title="Eliminar conversación"
+        message="¿Estás seguro de que deseas eliminar esta conversación? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmArchive}
+        onCancel={() => setShowDeleteConfirm(null)}
+      />
     </div>
   )
 }

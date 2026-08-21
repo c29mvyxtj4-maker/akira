@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 /*
  * Miembros vinculados a un proyecto (tabla project_members). Los nombres se
@@ -48,3 +48,4 @@ export async function getOrgTeam(orgId) {
   if (res.error) throw res.error
   return attachProfiles(res.data || [])
 }
+

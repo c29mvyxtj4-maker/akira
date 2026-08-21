@@ -1,24 +1,28 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, Plus, Archive, Edit3, AlertTriangle,
   TrendingUp, TrendingDown, DollarSign, Clock,
   Filter, ChevronDown, ChevronUp, Download,
 } from 'lucide-react'
-import { exportToCsv } from '@/utils/exportCsv'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import IconButton from '@/components/ui/IconButton'
+import { ResponsiveGrid } from '@/components/responsive'
+import { exportToCsv } from '@/shared/utils/exportCsv'
 import {
   getFinanceEntries, createFinanceEntry, updateFinanceEntry,
   archiveFinanceEntry, getFinanceKpis, getClientRanking,
   getSelectorsForFinance, FINANCE_TYPES, FINANCE_STATUS,
 } from '@/services/finance.service'
 import { getFinanceCategories } from '@/services/categories.service'
-import PageHeader      from '@/components/layout/PageHeader'
-import Modal           from '@/components/ui/Modal'
-import Badge           from '@/components/ui/Badge'
-import Button          from '@/components/ui/Button'
-import EmptyState      from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
-import AreaChart       from '@/components/charts/AreaChart'
+import PageHeader      from '@/shared/components/layout/PageHeader'
+import Modal           from '@/shared/components/ui/Modal'
+import Badge           from '@/shared/components/ui/Badge'
+import Button          from '@/shared/components/ui/Button'
+import EmptyState      from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
+import AreaChart       from '@/shared/components/charts/AreaChart'
 import clsx            from 'clsx'
 
 function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '€' }
@@ -30,7 +34,7 @@ var INP = {
   outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box',
 }
 
-/* ── KPI Card ─────────────────────────────────────────────── */
+/* –”€–”€ KPI Card –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function KpiCard({ label, value, sub, color, trend, icon: Icon, delay }) {
   return (
     <motion.div
@@ -56,7 +60,7 @@ function KpiCard({ label, value, sub, color, trend, icon: Icon, delay }) {
   )
 }
 
-/* ── Formulario ───────────────────────────────────────────── */
+/* –”€–”€ Formulario –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading }) {
   var today = new Date().toISOString().split('T')[0]
   var EMPTY = {
@@ -87,7 +91,7 @@ function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading
   return (
     <form onSubmit={function(e) { e.preventDefault(); if (!form.description.trim() || !amount) return; onSave(form) }} className="space-y-4">
 
-      {/* Tipo — pills */}
+      {/* Tipo –” pills */}
       <div>
         <label className="label-base">Tipo de movimiento</label>
         <div className="flex gap-2 flex-wrap mt-1">
@@ -116,7 +120,7 @@ function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading
           <input value={form.description} onChange={set('description')} placeholder="Factura cliente / Gasto equipo..." style={INP} />
         </div>
         <div>
-          <label className="label-base">Importe (€) *</label>
+          <label className="label-base">Importe (–‚¬) *</label>
           <input type="number" min="0" step="0.01" value={form.amount} onChange={set('amount')} placeholder="0.00" style={INP} />
         </div>
         <div>
@@ -176,7 +180,7 @@ function FinanceForm({ initial, selectors, categories, onSave, onCancel, loading
   )
 }
 
-/* ── Tabla de entradas ────────────────────────────────────── */
+/* –”€–”€ Tabla de entradas –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function EntriesTable({ entries, onEdit, onArchive, loading }) {
   if (loading) return <PageSpinner label="Cargando movimientos..." />
   if (entries.length === 0) return (
@@ -229,12 +233,8 @@ function EntriesTable({ entries, onEdit, onArchive, loading }) {
                 </td>
                 <td style={{ padding: '10px 12px' }}>
                   <div style={{ display: 'flex', gap: '4px' }}>
-                    <button type="button" onClick={function() { onEdit(e) }}
-                      style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(255,255,255,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}
-                    ><Edit3 style={{ width: '13px', height: '13px' }} /></button>
-                    <button type="button" onClick={function() { onArchive(e.id) }}
-                      style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'rgba(239,68,68,0.1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}
-                    ><Archive style={{ width: '13px', height: '13px' }} /></button>
+                    <IconButton icon={Edit3} onClick={() => onEdit(e)} />
+                    <IconButton icon={Archive} onClick={() => onArchive(e.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
                   </div>
                 </td>
               </tr>
@@ -246,7 +246,7 @@ function EntriesTable({ entries, onEdit, onArchive, loading }) {
   )
 }
 
-/* ── Ranking de clientes ──────────────────────────────────── */
+/* –”€–”€ Ranking de clientes –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€ */
 function ClientRanking({ ranking }) {
   if (ranking.length === 0) return (
     <div style={{ textAlign: 'center', padding: '24px 0', color: '#6b7280', fontSize: '13px' }}>Sin datos de clientes todavia</div>
@@ -275,15 +275,15 @@ function ClientRanking({ ranking }) {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    PAGINA PRINCIPAL
-═══════════════════════════════════════════════════════════ */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 export default function Finance() {
   var [entries,     setEntries]     = useState([])
   var [kpis,        setKpis]        = useState(null)
   var [ranking,     setRanking]     = useState([])
   var [selectors,   setSelectors]   = useState({ clients: [], projects: [] })
-  var [categories,  setCategories]  = useState([]) // ← NUEVO
+  var [categories,  setCategories]  = useState([]) // –† NUEVO
   var [loading,     setLoading]     = useState(true)
   var [kpisLoading, setKpisLoading] = useState(true)
   var [error,       setError]       = useState(null)
@@ -306,7 +306,7 @@ export default function Finance() {
     setTimeout(function() { setToastMsg(null) }, 3500)
   }
 
-  function loadCategories() { // ← NUEVO
+  function loadCategories() { // –† NUEVO
     getFinanceCategories()
       .then(function(rows) { setCategories(rows.map(function(r) { return r.name })) })
       .catch(function() { setCategories(['General']) })
@@ -314,7 +314,7 @@ export default function Finance() {
 
   useEffect(function() {
     getSelectorsForFinance().then(function(d) { setSelectors(d) }).catch(function() {})
-    loadCategories() // ← NUEVO
+    loadCategories() // –† NUEVO
 
     setKpisLoading(true)
     Promise.all([getFinanceKpis(), getClientRanking()])
@@ -354,7 +354,7 @@ export default function Finance() {
       { key: 'description', label: 'Descripción' },
       { key: 'client',      label: 'Cliente' },
       { key: 'project',     label: 'Proyecto' },
-      { key: 'amount',      label: 'Importe (€)' },
+      { key: 'amount',      label: 'Importe (–‚¬)' },
       { key: 'status_label',label: 'Estado' },
     ]
     var rows = entries.map(function(e) {
@@ -393,15 +393,23 @@ export default function Finance() {
       .finally(function() { setFormLoading(false) })
   }
 
+  const { toasts, show, dismiss } = useToast()
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(null)
+
   function handleArchive(id) {
-    if (!window.confirm('Archivar este movimiento?')) return
-    archiveFinanceEntry(id)
+    setShowArchiveConfirm(id)
+  }
+
+  function confirmArchive() {
+    if (!showArchiveConfirm) return
+    archiveFinanceEntry(showArchiveConfirm)
       .then(function() {
-        setEntries(function(prev) { return prev.filter(function(e) { return e.id !== id }) })
-        showToast('Movimiento archivado')
+        setEntries(function(prev) { return prev.filter(function(e) { return e.id !== showArchiveConfirm }) })
+        show('Movimiento archivado', 'success', 3000)
+        setShowArchiveConfirm(null)
         refreshKpis()
       })
-      .catch(function(e) { showToast(e.message, 'error') })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000); setShowArchiveConfirm(null) })
   }
 
   var SI = {
@@ -426,21 +434,21 @@ export default function Finance() {
 
           {/* KPI Cards */}
           {kpisLoading ? (
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+            <ResponsiveGrid cols={4} gap="gap-4" className="mb-6">
               {[0,1,2,3].map(function(i) { return <div key={i} className="surface-card p-4 h-24 skeleton" /> })}
-            </div>
+            </ResponsiveGrid>
           ) : kpis && (
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+            <ResponsiveGrid cols={4} gap="gap-4" className="mb-6">
               <KpiCard label="Ingresos totales"   value={fmtCur(kpis.totalIncome)}  sub={'Este mes: ' + fmtCur(kpis.monthIncome)}  color="#22c55e" icon={TrendingUp}   trend={kpis.incomeTrend} delay={0} />
               <KpiCard label="Gastos totales"     value={fmtCur(kpis.totalExpense)} sub={'Este mes: ' + fmtCur(kpis.monthExpense)} color="#ef4444" icon={TrendingDown} delay={0.06} />
               <KpiCard label="Beneficio neto"     value={fmtCur(kpis.netProfit)}    sub={'Este mes: ' + fmtCur(kpis.monthProfit)}   color={kpis.netProfit >= 0 ? '#22c55e' : '#ef4444'} icon={DollarSign} delay={0.12} />
               <KpiCard label="Facturas pendientes" value={fmtCur(kpis.pendingInv)}  sub="Por cobrar" color="#f59e0b" icon={Clock} delay={0.18} />
-            </div>
+            </ResponsiveGrid>
           )}
 
           {/* Grafica + Ranking */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-6">
-            <div className="xl:col-span-2 surface-card p-5">
+          <ResponsiveGrid cols={3} gap="gap-5" className="mb-6">
+            <div className="lg:col-span-2 surface-card p-5">
               <h3 className="text-sm font-semibold text-text-1 mb-4">Evolucion ultimos 6 meses</h3>
               {kpis && kpis.sparkline && kpis.sparkline.length > 0 ? (
                 <AreaChart
@@ -462,7 +470,7 @@ export default function Finance() {
               <h3 className="text-sm font-semibold text-text-1 mb-4">Ranking de clientes</h3>
               <ClientRanking ranking={ranking} />
             </div>
-          </div>
+          </ResponsiveGrid>
 
           {/* Filtros y tabla */}
           <div className="surface-card overflow-hidden">
@@ -493,7 +501,7 @@ export default function Finance() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3">
+                    <ResponsiveGrid cols={4} gap="gap-3" className="pt-3">
                       <div>
                         <label className="label-base">Tipo</label>
                         <select value={type} onChange={function(e) { setType(e.target.value) }} style={SI}>
@@ -529,7 +537,7 @@ export default function Finance() {
                           className="text-xs text-text-3 hover:text-text-2 transition-colors"
                         >Limpiar filtros</button>
                       </div>
-                    </div>
+                    </ResponsiveGrid>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -556,6 +564,22 @@ export default function Finance() {
           >{toastMsg.msg}</motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Archive Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showArchiveConfirm !== null}
+        title="Archivar movimiento"
+        message="¿Estás seguro de que deseas archivar este movimiento? No se eliminará, solo se ocultará."
+        confirmText="Archivar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmArchive}
+        onCancel={() => setShowArchiveConfirm(null)}
+      />
     </div>
   )
 }
+

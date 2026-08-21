@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 export interface SyncChannel {
   name: string
@@ -175,3 +175,4 @@ export class SyncEngine {
 }
 
 export const syncEngine = SyncEngine.getInstance()
+

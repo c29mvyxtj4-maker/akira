@@ -1,9 +1,9 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Mail, ArrowLeft, Loader2, CheckCircle } from 'lucide-react'
-import { useAuth } from '@/context/AuthContext'
-import { ROUTES } from '@/config/constants'
+import { useAuth } from '@/shared/context/AuthContext'
+import { ROUTES } from '@/shared/config/constants'
 
 export default function ResetPassword() {
   const { resetPassword } = useAuth()

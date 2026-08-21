@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Copy, Check } from 'lucide-react'
 import { getWorkspace, updateWorkspace } from '@/services/settings.service'
-import { useOrg } from '@/context/OrgContext'
-import { usePrefs } from '@/hooks/usePreferences'
+import { useOrg } from '@/shared/context/OrgContext'
+import { usePrefs } from '@/shared/hooks/usePreferences'
 import { Field, INP, SaveBtn, Section, RowSection, Row, Toggle, RowSelect, MiniBtn, onBlur, onFocus } from './_shared'
 
 /*
- * General (grupo Espacio de trabajo) — datos del negocio + configuración del
+ * General (grupo Espacio de trabajo) –” datos del negocio + configuración del
  * espacio, exportación, estadísticas, personas, zona de riesgo e ID. Los datos
  * de negocio se guardan en Supabase; el resto son preferencias del espacio.
  */
@@ -78,12 +78,12 @@ function WorkspaceTab() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px' }}>
           <Field label="Moneda">
             <select value={ws.currency || 'EUR'} onChange={set('currency')} style={SEL}>
-              <option value="EUR">EUR — Euro</option>
-              <option value="USD">USD — Dolar</option>
-              <option value="GBP">GBP — Libra</option>
-              <option value="MXN">MXN — Peso mexicano</option>
-              <option value="COP">COP — Peso colombiano</option>
-              <option value="ARS">ARS — Peso argentino</option>
+              <option value="EUR">EUR –” Euro</option>
+              <option value="USD">USD –” Dolar</option>
+              <option value="GBP">GBP –” Libra</option>
+              <option value="MXN">MXN –” Peso mexicano</option>
+              <option value="COP">COP –” Peso colombiano</option>
+              <option value="ARS">ARS –” Peso argentino</option>
             </select>
           </Field>
           <Field label="Zona horaria">
@@ -109,8 +109,8 @@ function WorkspaceTab() {
       </Section>
 
       <RowSection title="Exportar" description="Descarga el contenido de tu espacio de trabajo.">
-        <Row title="Contenido del espacio de trabajo" description="Descarga clientes, proyectos, facturas y más en Ajustes → Importar y exportar.">
-          <MiniBtn label="Ver exportación" onClick={function () { window.alert('Ve a Ajustes → Importar y exportar para descargar tus datos.') }} />
+        <Row title="Contenido del espacio de trabajo" description="Descarga clientes, proyectos, facturas y más en Ajustes –†’ Importar y exportar.">
+          <MiniBtn label="Ver exportación" onClick={function () { window.alert('Ve a Ajustes –†’ Importar y exportar para descargar tus datos.') }} />
         </Row>
         <Row title="Miembros" description="Exporta la lista de personas de tu espacio de trabajo." last>
           <MiniBtn label="Exportar CSV" onClick={function () { window.alert('Disponible en el panel de Personas.') }} />
@@ -127,7 +127,7 @@ function WorkspaceTab() {
         <Row title="Directorio personal" description="Un listado de todas las personas del espacio de trabajo.">
           <MiniBtn label="Abrir" onClick={function () { window.alert('Gestiona las personas en el apartado Personas.') }} />
         </Row>
-        <Row title="Mostrar la actividad reciente en los perfiles" description="Muestra la última actividad de cada persona en su perfil.">
+        <Row title="Mostrar la actividad reciente en los perfiles" description="Muestra la Àºltima actividad de cada persona en su perfil.">
           <Toggle checked={prefs.ws_people_activity} onClick={function () { setPref('ws_people_activity', !prefs.ws_people_activity) }} />
         </Row>
         <Row title="Tarjeta al pasar el cursor" description="Muestra una tarjeta con datos de la persona al pasar el ratón por su nombre." last>
@@ -141,8 +141,8 @@ function WorkspaceTab() {
         </Row>
       </RowSection>
 
-      <RowSection title="ID del espacio de trabajo" description="Identificador único del espacio (útil para soporte).">
-        <Row title="ID del espacio de trabajo" description={org.org ? org.org.id : '—'} last>
+      <RowSection title="ID del espacio de trabajo" description="Identificador Àºnico del espacio (Àºtil para soporte).">
+        <Row title="ID del espacio de trabajo" description={org.org ? org.org.id : '–”'} last>
           <MiniBtn label={copied ? 'Copiado' : 'Copiar'} icon={copied ? Check : Copy} onClick={copyId} />
         </Row>
       </RowSection>
@@ -151,3 +151,5 @@ function WorkspaceTab() {
 }
 
 export default WorkspaceTab
+
+

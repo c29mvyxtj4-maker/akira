@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Clock, Plus, BarChart3 } from 'lucide-react'
 import Timer from '@/components/time/Timer'
 import TimeEntries from '@/components/time/TimeEntries'
-import PageHeader from '@/components/layout/PageHeader'
-import Button from '@/components/ui/Button'
-import EmptyState from '@/components/ui/EmptyState'
-import Modal from '@/components/ui/Modal'
-import Select from '@/components/ui/Select'
+import PageHeader from '@/shared/components/layout/PageHeader'
+import Button from '@/shared/components/ui/Button'
+import EmptyState from '@/shared/components/ui/EmptyState'
+import Modal from '@/shared/components/ui/Modal'
+import Select from '@/shared/components/ui/Select'
 import { supabase } from '@/lib/supabase'
 
 /**
@@ -355,3 +355,5 @@ export default function TimeTracking() {
     </div>
   )
 }
+
+

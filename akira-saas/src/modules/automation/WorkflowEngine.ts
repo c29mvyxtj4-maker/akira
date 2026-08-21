@@ -1,4 +1,4 @@
-import { Workflow, WorkflowExecution, ExecutionStep, ExecutionStatus } from './types'
+﻿import { Workflow, WorkflowExecution, ExecutionStep, ExecutionStatus } from './types'
 import { AgentFactory } from './AgentFactory'
 import { supabase } from '@/lib/supabase'
 
@@ -167,3 +167,4 @@ export class WorkflowEngine {
 }
 
 export const workflowEngine = new WorkflowEngine()
+

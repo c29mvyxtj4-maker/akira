@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { Clock, AlertTriangle, CheckCircle2, TrendingUp, Users, FolderKanban } from 'lucide-react'
-import { useApp } from '@/context/AppContext'
+import { useApp } from '@/shared/context/AppContext'
 
 function formatRelative(date) {
   if (!date) return ''

@@ -1,8 +1,8 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { downloadCsv, downloadExport } from '@/services/export.service'
 import { getQuarterlyReport } from '@/services/quarterlyReport.service'
 import { getCompanySettings } from '@/services/company.service'
-import { downloadQuarterlyReportPdf } from '@/utils/generateQuarterlyReportPdf'
+import { downloadQuarterlyReportPdf } from '@/shared/utils/generateQuarterlyReportPdf'
 import { INP, Section, Toast } from './_shared'
 
 function QuarterlyReportPicker() {
@@ -112,3 +112,4 @@ function DataExportTab() {
 
 
 export default DataExportTab
+

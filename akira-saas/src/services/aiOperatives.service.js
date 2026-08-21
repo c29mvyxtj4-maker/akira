@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+﻿import { GoogleGenerativeAI } from '@google/generative-ai'
 import { supabase } from '@/lib/supabase'
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_AI_KEY || '')
@@ -106,7 +106,7 @@ async function _executeActionInternal(action, params) {
 
 /**
  * Handler: Onboard new client
- * Steps: Create client → Send welcome → Create project → Assign manager
+ * Steps: Create client –†’ Send welcome –†’ Create project –†’ Assign manager
  */
 async function handleOnboardClient(params) {
   const { userId } = await supabase.auth.getUser()
@@ -162,7 +162,7 @@ async function handleOnboardClient(params) {
 
 /**
  * Handler: Generate invoices automatically
- * Steps: Get time entries → Calculate hours → Generate PDF → Send to client
+ * Steps: Get time entries –†’ Calculate hours –†’ Generate PDF –†’ Send to client
  */
 async function handleGenerateInvoice(params) {
   const { userId } = await supabase.auth.getUser()
@@ -203,7 +203,7 @@ async function handleGenerateInvoice(params) {
 
 /**
  * Handler: Generate project status report
- * Steps: Get daily activity → Identify blockers → Create summary → Post report
+ * Steps: Get daily activity –†’ Identify blockers –†’ Create summary –†’ Post report
  */
 async function handleProjectStatus(params) {
   const results = []
@@ -241,7 +241,7 @@ async function handleProjectStatus(params) {
 
 /**
  * Handler: Financial analysis and recommendations
- * Steps: Calculate metrics → Identify trends → Generate insights
+ * Steps: Calculate metrics –†’ Identify trends –†’ Generate insights
  */
 async function handleFinancialAnalysis(params) {
   const { userId } = await supabase.auth.getUser()
@@ -281,7 +281,7 @@ async function handleFinancialAnalysis(params) {
 
 /**
  * Handler: Lead nurturing automation
- * Steps: Add to CRM → Send intro → Schedule follow-up → Track engagement
+ * Steps: Add to CRM –†’ Send intro –†’ Schedule follow-up –†’ Track engagement
  */
 async function handleLeadNurture(params) {
   const results = []
@@ -463,10 +463,11 @@ export function formatWorkflowResult(result) {
   if (!result) return 'No result'
 
   return {
-    status: result.success ? '✅ Success' : '❌ Failed',
+    status: result.success ? '–œ… Success' : '–Œ Failed',
     operative: result.operative || 'Unknown',
     outcome: result.outcome || result.error || 'Completed',
     duration: result.duration ? `${result.duration}ms` : 'Unknown',
     details: result.results || []
   }
 }
+

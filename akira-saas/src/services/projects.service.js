@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 export const PROJECT_STATUS_MAP = {
   pending:   { label: 'Pendiente',  color: 'default' },

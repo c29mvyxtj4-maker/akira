@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 /* Chat de equipo (team_messages) + anuncios (announcements), con realtime. */
 
@@ -7,7 +7,7 @@ async function uid() {
   return r.data && r.data.user ? r.data.user.id : null
 }
 
-// ── Chat de equipo ────────────────────────────────────────────────────
+// –”€–”€ Chat de equipo –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
 export async function getTeamMessages(orgId) {
   if (!orgId) return []
   var res = await supabase.from('team_messages').select('*')
@@ -32,7 +32,7 @@ export function subscribeTeamMessages(orgId, onInsert) {
   return function () { supabase.removeChannel(ch) }
 }
 
-// ── Anuncios (solo owner publica) ─────────────────────────────────────
+// –”€–”€ Anuncios (solo owner publica) –”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€–”€
 export async function getAnnouncements(orgId) {
   if (!orgId) return []
   var res = await supabase.from('announcements').select('*')
@@ -62,3 +62,4 @@ export function subscribeAnnouncements(orgId, onInsert) {
     .subscribe()
   return function () { supabase.removeChannel(ch) }
 }
+

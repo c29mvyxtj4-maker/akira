@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   User, Lock, Database, Receipt, History, Building2, SlidersHorizontal,
@@ -6,8 +6,8 @@ import {
   Sparkles, Plug, Globe, Terminal, WifiOff, Boxes, Fingerprint, Scale,
   ChevronRight, ChevronLeft, X,
 } from 'lucide-react'
-import { useAuth } from '@/context/AuthContext'
-import PageHeader from '@/components/layout/PageHeader'
+import { useAuth } from '@/shared/context/AuthContext'
+import PageHeader from '@/shared/components/layout/PageHeader'
 import ProfileTab from '@/components/settings/ProfileTab'
 import PreferencesTab from '@/components/settings/PreferencesTab'
 import WorkspaceTab from '@/components/settings/WorkspaceTab'
@@ -36,7 +36,7 @@ export default function Settings({ onClose, initialTab }) {
   var isModal = typeof onClose === 'function'
   var [activeTab, setActiveTab] = useState(initialTab || 'profile')
 
-  // Móvil: 'list' (ver las pestañas) | 'content' (ver el contenido de una pestaña) — NUEVO
+  // Móvil: 'list' (ver las pestañas) | 'content' (ver el contenido de una pestaña) –” NUEVO
   var [mobileStep, setMobileStep] = useState('list')
   var [isMobile, setIsMobile] = useState(false)
   useEffect(function() {
@@ -53,7 +53,7 @@ export default function Settings({ onClose, initialTab }) {
   }
 
   // Estructura por grupos (estilo Notion): cada grupo tiene un encabezado y sus
-  // pestañas. El mapa plano TABS se deriva para búsquedas por id.
+  // pestañas. El mapa plano TABS se deriva para bÀºsquedas por id.
   var GROUPS = [
     { title: 'Cuenta', tabs: [
       { id: 'profile',       label: 'Mi perfil',       icon: User },
@@ -74,7 +74,7 @@ export default function Settings({ onClose, initialTab }) {
       { id: 'connections', label: 'Conexiones',       icon: Plug },
       { id: 'mcp',         label: 'MCP de AKIRA',     icon: Terminal },
       { id: 'offline',     label: 'Sin conexión',     icon: WifiOff },
-      { id: 'publicpages', label: 'Páginas públicas', icon: Globe },
+      { id: 'publicpages', label: 'Páginas pÀºblicas', icon: Globe },
       { id: 'automations', label: 'Automatizaciones', icon: Workflow },
     ] },
     { title: 'Administración', tabs: [
@@ -98,7 +98,7 @@ export default function Settings({ onClose, initialTab }) {
   var twoPane = (
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
 
-        {/* Sidebar de tabs, agrupada estilo Notion — en móvil, pantalla completa hasta elegir */}
+        {/* Sidebar de tabs, agrupada estilo Notion –” en móvil, pantalla completa hasta elegir */}
         {showListPane && (
           <div style={{ width: isMobile ? '100%' : '248px', flexShrink: 0, borderRight: '1px solid var(--border)', padding: '14px 10px', background: 'rgba(255,255,255,0.012)', overflowY: 'auto' }}>
             {GROUPS.map(function(group, gi) {
@@ -306,3 +306,4 @@ export default function Settings({ onClose, initialTab }) {
     </div>
   )
 }
+

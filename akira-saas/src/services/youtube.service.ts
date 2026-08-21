@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 import type {
   YouTubeProject,
   YouTubePhase,
@@ -6,9 +6,9 @@ import type {
   CreateYouTubeProjectInput,
   UpdateYouTubeProjectInput,
   YouTubeTemplate,
-} from '@/types/youtube'
-import { calculatePhaseDates, calculateProjectProgress } from '@/utils/dateCalculations'
-import { getTemplateByName } from '@/data/youtubeTemplates'
+} from '@/shared/types/youtube'
+import { calculatePhaseDates, calculateProjectProgress } from '@/shared/utils/dateCalculations'
+import { getTemplateByName } from '@/shared/data/youtubeTemplates'
 
 /**
  * Crear un nuevo YouTube Project con phases automáticas
@@ -290,3 +290,4 @@ export const deleteYouTubeProject = async (projectId: string): Promise<void> => 
   const { error } = await supabase.from('youtube_projects').delete().eq('id', projectId)
   if (error) throw error
 }
+

@@ -1,10 +1,10 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/context/AuthContext'
-import { ROUTES } from '@/config/constants'
+import { useAuth } from '@/shared/context/AuthContext'
+import { ROUTES } from '@/shared/config/constants'
 import { Eye, EyeOff, ArrowRight, AlertTriangle, CheckCircle } from 'lucide-react'
-import Stepper, { Step } from '@/components/ui/Stepper'
+import Stepper, { Step } from '@/shared/components/ui/Stepper'
 
 function emailValid(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v || '').trim()) }
 
@@ -44,7 +44,7 @@ export default function Login() {
     return true
   }
 
-  // Alta real, disparada al completar el último paso del Stepper.
+  // Alta real, disparada al completar el Àºltimo paso del Stepper.
   async function doSignup() {
     if (loading) return
     setLoading(true); setError(''); setNotice('')
@@ -125,7 +125,7 @@ export default function Login() {
               onFinalStepCompleted={doSignup}
               backButtonText="Atrás"
               nextButtonText="Continuar"
-              completeButtonText={loading ? 'Creando…' : 'Crear cuenta'}
+              completeButtonText={loading ? 'Creando│' : 'Crear cuenta'}
               nextButtonProps={{ disabled: !canProceed() }}
             >
               <Step>
@@ -311,3 +311,5 @@ export default function Login() {
     </div>
   )
 }
+
+

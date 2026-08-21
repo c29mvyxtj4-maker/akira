@@ -1,18 +1,19 @@
-import { usePrefs } from '@/hooks/usePreferences'
+﻿import { usePrefs } from '@/shared/hooks/usePreferences'
+import { useLanguage } from '@/shared/hooks/useLanguage'
 import { Row, RowSection, Toggle, Kbd, RowSelect, MiniBtn } from './_shared'
 
 /*
- * Preferencias (grupo Cuenta) — apariencia, idioma y hora, app de escritorio y
+ * Preferencias (grupo Cuenta) –” apariencia, idioma y hora, app de escritorio y
  * privacidad. Cada opción se persiste en localStorage (usePrefs) y lleva una
  * breve descripción debajo. El tema se aplica de verdad (clase .light en la raíz).
  */
 function PreferencesTab() {
+  var { language, changeLanguage } = useLanguage()
   var [prefs, setPref] = usePrefs({
     pref_theme:           'system',
     pref_high_contrast:   false,
     pref_bg_animation:    true,
     pref_reduce_motion:   false,
-    pref_language:        'es',
     pref_number_format:   'es-ES',
     pref_text_direction:  false,
     pref_spellcheck:      'es',
@@ -30,6 +31,7 @@ function PreferencesTab() {
   // lib/applyPrefs.js (reacciona al evento 'akira-prefs-change' que emite usePrefs).
   function toggle(key) { return function () { setPref(key, !prefs[key]) } }
   function onSel(key) { return function (e) { setPref(key, e.target.value) } }
+  function onLanguageChange(e) { changeLanguage(e.target.value) }
 
   return (
     <div>
@@ -51,28 +53,28 @@ function PreferencesTab() {
 
       <RowSection title="Idioma y hora" description="Idioma, formatos y zona horaria.">
         <Row title="Idioma de la aplicación" description="Idioma de la interfaz de AKIRA.">
-          <RowSelect value={prefs.pref_language} onChange={onSel('pref_language')}
-            options={[{ value: 'es', label: 'Español' }, { value: 'en', label: 'English' }]} />
+          <RowSelect value={language} onChange={onLanguageChange}
+            options={[{ value: 'es', label: 'Español' }, { value: 'ca', label: 'Català' }, { value: 'en', label: 'English' }]} />
         </Row>
-        <Row title="Formato de número" description="Cómo se muestran los miles y decimales (1.000,00 vs 1,000.00).">
+        <Row title="Formato de nÀºmero" description="Cómo se muestran los miles y decimales (1.000,00 vs 1,000.00).">
           <RowSelect value={prefs.pref_number_format} onChange={onSel('pref_number_format')}
             options={[{ value: 'es-ES', label: '1.234,56' }, { value: 'en-US', label: '1,234.56' }]} />
         </Row>
-        <Row title="Mostrar siempre los controles de dirección de texto" description="Útil si escribes en idiomas de derecha a izquierda.">
+        <Row title="Mostrar siempre los controles de dirección de texto" description="Àštil si escribes en idiomas de derecha a izquierda.">
           <Toggle checked={prefs.pref_text_direction} onClick={toggle('pref_text_direction')} />
         </Row>
         <Row title="Idiomas del corrector ortográfico" description="Idioma con el que se revisa la ortografía al escribir.">
           <RowSelect value={prefs.pref_spellcheck} onChange={onSel('pref_spellcheck')}
             options={[{ value: 'es', label: 'Español' }, { value: 'en', label: 'Inglés' }, { value: 'es,en', label: 'Español + Inglés' }, { value: 'off', label: 'Desactivado' }]} />
         </Row>
-        <Row title="Comenzar la semana el lunes" description="Afecta a la vista del calendario y a los resúmenes semanales.">
+        <Row title="Comenzar la semana el lunes" description="Afecta a la vista del calendario y a los resÀºmenes semanales.">
           <Toggle checked={prefs.pref_week_monday} onClick={toggle('pref_week_monday')} />
         </Row>
         <Row title="Formato de fecha" description="Orden de día, mes y año.">
           <RowSelect value={prefs.pref_date_format} onChange={onSel('pref_date_format')}
             options={[{ value: 'dmy', label: 'DD/MM/AAAA' }, { value: 'mdy', label: 'MM/DD/AAAA' }, { value: 'ymd', label: 'AAAA-MM-DD' }]} />
         </Row>
-        <Row title="Establecer automáticamente la zona horaria según ubicación" description="Usa la zona horaria de tu dispositivo.">
+        <Row title="Establecer automáticamente la zona horaria segÀºn ubicación" description="Usa la zona horaria de tu dispositivo.">
           <Toggle checked={prefs.pref_tz_auto} onClick={toggle('pref_tz_auto')} />
         </Row>
         <Row title="Zona horaria" description="Se usa para eventos, recordatorios y fechas." last>
@@ -89,18 +91,18 @@ function PreferencesTab() {
       </RowSection>
 
       <RowSection title="Aplicación de escritorio" description="Atajos y comportamiento al abrir AKIRA.">
-        <Row title="Usar atajo de búsqueda" description="Abre la paleta de búsqueda con un atajo de teclado.">
+        <Row title="Usar atajo de bÀºsqueda" description="Abre la paleta de bÀºsqueda con un atajo de teclado.">
           <Toggle checked={prefs.pref_search_shortcut} onClick={toggle('pref_search_shortcut')} />
         </Row>
-        <Row title="Acceso directo del atajo de búsqueda" description="Combinación para abrir la paleta de comandos.">
-          <Kbd>Ctrl / ⌘ + K</Kbd>
+        <Row title="Acceso directo del atajo de bÀºsqueda" description="Combinación para abrir la paleta de comandos.">
+          <Kbd>Ctrl / –Œ˜ + K</Kbd>
         </Row>
         <Row title="Acceso directo a AKIRA IA" description="Combinación para abrir el asistente en la página actual.">
-          <Kbd>Ctrl / ⌘ + J</Kbd>
+          <Kbd>Ctrl / –Œ˜ + J</Kbd>
         </Row>
         <Row title="Al iniciar" description="Qué pantalla se abre cuando entras en AKIRA." last>
           <RowSelect value={prefs.pref_startup} onChange={onSel('pref_startup')}
-            options={[{ value: 'inicio', label: 'Inicio' }, { value: 'dashboard', label: 'Panel' }, { value: 'last', label: 'Última página visitada' }]} />
+            options={[{ value: 'inicio', label: 'Inicio' }, { value: 'dashboard', label: 'Panel' }, { value: 'last', label: 'Àšltima página visitada' }]} />
         </Row>
       </RowSection>
 
@@ -120,3 +122,4 @@ function PreferencesTab() {
 }
 
 export default PreferencesTab
+

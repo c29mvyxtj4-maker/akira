@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 // Tier a usar cuando una org no tiene 'plan' asignado (no debería pasar, ya
 // que la columna tiene DEFAULT 'starter', pero por si acaso).
@@ -73,3 +73,4 @@ export async function checkFeatureAccess(orgId, featureName, currentUsage) {
 
   return { allowed: true, enabled: true, limit: limit.limit_value, tier: tier, feature: featureName }
 }
+

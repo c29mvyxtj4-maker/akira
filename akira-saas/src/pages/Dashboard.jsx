@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { useApp } from '@/context/AppContext'
-import { useAuth } from '@/context/AuthContext'
+﻿import { useState, useEffect } from 'react'
+import { useApp } from '@/shared/context/AppContext'
+import { useAuth } from '@/shared/context/AuthContext'
 import { motion } from 'framer-motion'
 import {
   Users, FolderKanban, TrendingUp, AlertTriangle,
@@ -11,18 +11,18 @@ import RevenueChart  from '@/components/dashboard/RevenueChart'
 import ActivityFeed  from '@/components/dashboard/ActivityFeed'
 import QuickActions  from '@/components/dashboard/QuickActions'
 import ForecastCard  from '@/components/dashboard/ForecastCard'
-import { SkeletonText, SkeletonCard, SkeletonPageHeader } from '@/components/ui/Skeleton'
-import { useNotifications, buildInvoiceReminderMailto } from '@/hooks/useNotifications'
+import { SkeletonText, SkeletonCard, SkeletonPageHeader } from '@/shared/components/ui/Skeleton'
+import { useNotifications, buildInvoiceReminderMailto } from '@/shared/hooks/useNotifications'
 import { getCompanySettings } from '@/services/company.service'
 import { useNavigate } from 'react-router-dom'
 import { WidgetGrid, useWidgets } from '@/modules/widgets'
 import { useGlobalSync } from '@/modules/sync'
 import { KpiCardGrid, DashboardGrid, DashboardPanel } from '@/components/dashboard'
-import { useResponsive } from '@/hooks/useResponsive'
+import { useResponsive } from '@/shared/hooks/useResponsive'
 
 function fmtCur(n) {
   if (!n && n !== 0) return '--'
-  return Number(n).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '€'
+  return Number(n).toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '–‚¬'
 }
 function fmtDate(d) {
   if (!d) return '--'
@@ -40,7 +40,7 @@ var GREETING = (function() {
   return 'Buenas noches'
 })()
 
-/* ── Capa 1: tarjetas de "esto necesita tu atencion hoy" ──── */
+/* –”€–”€ Capa 1: tarjetas de "esto necesita tu atencion hoy" –”€–”€–”€–”€ */
 function AttentionCard({ color, icon: Icon, title, subtitle, actionLabel, onAction }) {
   return (
     <motion.div
@@ -111,7 +111,7 @@ function AttentionSection({ notifs, urgentTasks, company, navigate }) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px', borderRadius: '12px', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', marginBottom: '24px' }}>
         <CheckCircle style={{ width: '18px', height: '18px', color: '#22c55e', flexShrink: 0 }} />
-        <p style={{ fontSize: '13px', color: '#22c55e', fontWeight: 600 }}>Todo al día — sin nada urgente que atender ahora mismo</p>
+        <p style={{ fontSize: '13px', color: '#22c55e', fontWeight: 600 }}>Todo al día –” sin nada urgente que atender ahora mismo</p>
       </div>
     )
   }
@@ -134,7 +134,7 @@ function AttentionSection({ notifs, urgentTasks, company, navigate }) {
   )
 }
 
-/* ── Capa 3: oportunidades simples, sin inventar nada ─────── */
+/* –”€–”€ Capa 3: oportunidades simples, sin inventar nada –”€–”€–”€–”€–”€–”€–”€ */
 function OpportunitiesSection({ clients, projects, navigate }) {
   var ACTIVE_ST = ['pending', 'active', 'review']
   var clientsWithActiveProject = new Set(
@@ -157,7 +157,7 @@ function OpportunitiesSection({ clients, projects, navigate }) {
           return (
             <AttentionCard key={c.id} color="#a855f7" icon={Sparkles}
               title={c.company || c.name}
-              subtitle="Cliente activo sin ningún proyecto en curso — podría ser buen momento para proponerle algo nuevo"
+              subtitle="Cliente activo sin ningÀºn proyecto en curso –” podría ser buen momento para proponerle algo nuevo"
               actionLabel="Ver cliente"
               onAction={function() { navigate('/clients') }}
             />
@@ -190,7 +190,7 @@ export default function Dashboard() {
     if (prevMonth > 0) revenueTrend = Math.round(((lastMonth - prevMonth) / prevMonth) * 100)
   }
 
-  // Iconos KPI: un único rojo de marca (coherente con la línea de acento
+  // Iconos KPI: un Àºnico rojo de marca (coherente con la línea de acento
   // "siempre roja" de KpiCard). El sparkline recibe hex porque va a un
   // atributo SVG (stroke), donde var() no resuelve.
   var KPI_CARDS = [
@@ -238,7 +238,7 @@ export default function Dashboard() {
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
           <h1 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-1)', letterSpacing: '-0.03em' }}>
-            {GREETING}, {name} 👋
+            {GREETING}, {name} ðŸ‘‹
           </h1>
           <button
             onClick={() => setShowWidgets(!showWidgets)}
@@ -282,13 +282,13 @@ export default function Dashboard() {
         </motion.div>
       )}
 
-      {/* CAPA 1 — atencion hoy */}
+      {/* CAPA 1 –” atencion hoy */}
       <AttentionSection notifs={notifs} urgentTasks={kpis && kpis.urgentTasksList} company={company} navigate={navigate} />
 
-      {/* CAPA 3 — oportunidades */}
+      {/* CAPA 3 –” oportunidades */}
       {data && <OpportunitiesSection clients={data.clients} projects={data.projects} navigate={navigate} />}
 
-      {/* CAPA 2 — como va tu negocio (Responsive: xs:1 md:2 lg:3 xl:4) */}
+      {/* CAPA 2 –” como va tu negocio (Responsive: xs:1 md:2 lg:3 xl:4) */}
       <KpiCardGrid gap="md">
         {loading ? (
           // Show skeleton loading state for KPI cards
@@ -414,3 +414,6 @@ export default function Dashboard() {
     </div>
   )
 }
+
+
+

@@ -1,9 +1,9 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Trash2, ChevronDown } from 'lucide-react'
 import { TIMELINE_TYPES } from '@/services/clients.service'
-import Button  from '@/components/ui/Button'
-import Select  from '@/components/ui/Select'
+import Button  from '@/shared/components/ui/Button'
+import Select  from '@/shared/components/ui/Select'
 
 function formatDt(d) {
   if (!d) return ''
@@ -75,7 +75,7 @@ export default function ClientTimeline({ timeline = [], onAdd, onDelete }) {
               <textarea
                 value={content}
                 onChange={e => setContent(e.target.value)}
-                placeholder="Descripción del evento…"
+                placeholder="Descripción del evento│"
                 rows={2}
                 className="input-base text-xs w-full resize-none"
               />

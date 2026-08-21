@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 export async function fetchDashboards(orgId) {
   const { data, error } = await supabase
@@ -118,3 +118,4 @@ export async function reorderWidgets(dashboardId, widgets) {
 
   await Promise.all(updates)
 }
+

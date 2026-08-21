@@ -1,7 +1,7 @@
-import { motion, AnimatePresence } from 'framer-motion';
+﻿import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, X, ArrowRight } from 'lucide-react';
 import { getTemplatesList } from '@/services/taskTemplates.service';
-import { DUR, EASE } from '@/config/motion';
+import { DUR, EASE } from '@/shared/config/motion';
 
 export default function TaskTemplateModal({ isOpen, onClose, onSelectTemplate, loading = false }) {
   const templates = getTemplatesList();
@@ -101,3 +101,4 @@ export default function TaskTemplateModal({ isOpen, onClose, onSelectTemplate, l
     </AnimatePresence>
   );
 }
+

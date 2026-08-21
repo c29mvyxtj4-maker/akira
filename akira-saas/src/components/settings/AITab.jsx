@@ -1,10 +1,10 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Sparkles, Wand2, CheckCircle2, Lightbulb, Wrench } from 'lucide-react'
-import { usePrefs } from '@/hooks/usePreferences'
+import { usePrefs } from '@/shared/hooks/usePreferences'
 import { Row, RowSection, Toggle, RowSelect, MiniBtn, INP, onFocus, onBlur } from './_shared'
 
 /*
- * IA de AKIRA (grupo Funciones) — equivalente a "IA de Notion": personalización
+ * IA de AKIRA (grupo Funciones) –” equivalente a "IA de Notion": personalización
  * del asistente, instrucciones, habilidades y modelo. Persistido en localStorage.
  */
 var SKILLS = [
@@ -70,7 +70,7 @@ function AITab() {
       </RowSection>
 
       <RowSection title="Comportamiento">
-        <Row title="Sugerencias proactivas" description="Permite que AKIRA proponga acciones (crear tareas, facturas…) a partir de tu contexto." last>
+        <Row title="Sugerencias proactivas" description="Permite que AKIRA proponga acciones (crear tareas, facturas│) a partir de tu contexto." last>
           <Toggle checked={prefs.ai_suggestions} onClick={toggle('ai_suggestions')} />
         </Row>
       </RowSection>
@@ -79,3 +79,4 @@ function AITab() {
 }
 
 export default AITab
+

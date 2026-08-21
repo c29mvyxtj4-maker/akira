@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { Trash2, Clock, Edit2 } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import EmptyState from '@/components/ui/EmptyState'
+import Button from '@/shared/components/ui/Button'
+import EmptyState from '@/shared/components/ui/EmptyState'
 
 /**
  * Display list of time entries
@@ -61,7 +61,7 @@ export default function TimeEntries({
     return (
       <EmptyState
         icon={Clock}
-        emoji="⏱️"
+        emoji="–±ï¸"
         title="No time entries yet"
         description="Start tracking time with the timer above to create your first entry."
         size="sm"
@@ -199,3 +199,4 @@ export default function TimeEntries({
     </motion.div>
   )
 }
+

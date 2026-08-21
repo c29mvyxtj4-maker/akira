@@ -1,15 +1,15 @@
-import { supabase } from '@/lib/supabase'
-import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
+﻿import { supabase } from '@/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/shared/lib/activeOrg'
 
 export var EVENT_TYPES = {
-  meeting:  { label: 'Reunion',    color: '#ef4444', emoji: '📅' },
-  shoot:    { label: 'Rodaje',     color: '#ef4444', emoji: '🎬' },
-  delivery: { label: 'Entrega',    color: '#22c55e', emoji: '📦' },
-  call:     { label: 'Llamada',    color: '#3b82f6', emoji: '📞' },
-  deadline: { label: 'Deadline',   color: '#f59e0b', emoji: '⏰' },
-  reminder: { label: 'Recordatorio', color: '#ec4899', emoji: '🔔' },
-  personal: { label: 'Personal',   color: '#a855f7', emoji: '👤' },
-  other:    { label: 'Otro',       color: '#64748b', emoji: '📌' },
+  meeting:  { label: 'Reunion',    color: '#ef4444', emoji: 'ðŸ“…' },
+  shoot:    { label: 'Rodaje',     color: '#ef4444', emoji: 'ðŸŽ¬' },
+  delivery: { label: 'Entrega',    color: '#22c55e', emoji: 'ðŸ“¦' },
+  call:     { label: 'Llamada',    color: '#3b82f6', emoji: 'ðŸ“ž' },
+  deadline: { label: 'Deadline',   color: '#f59e0b', emoji: '–°' },
+  reminder: { label: 'Recordatorio', color: '#ec4899', emoji: 'ðŸ””' },
+  personal: { label: 'Personal',   color: '#a855f7', emoji: 'ðŸ‘¤' },
+  other:    { label: 'Otro',       color: '#64748b', emoji: 'ðŸ“Œ' },
 }
 
 export var EVENT_STATUS = {

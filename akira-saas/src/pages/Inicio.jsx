@@ -1,4 +1,5 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { ResponsiveGrid } from '@/components/responsive'
+﻿import { useState, useEffect, lazy, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -6,40 +7,43 @@ import {
   Users, FolderKanban, Wallet, FileText, Clock, BookOpen,
   ChevronRight, TrendingUp, Search, Mail, Bell, Video,
 } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import TextInputDialog from '@/components/ui/TextInputDialog'
 import { WidgetGrid, useWidgets } from '@/modules/widgets'
-import { useApp } from '@/context/AppContext'
-import { useAuth } from '@/context/AuthContext'
-import { useOrg } from '@/context/OrgContext'
-import { ROUTES } from '@/config/constants'
-import { DUR, EASE, SPRING } from '@/config/motion'
+import { useApp } from '@/shared/context/AppContext'
+import { useAuth } from '@/shared/context/AuthContext'
+import { useOrg } from '@/shared/context/OrgContext'
+import { useLanguage } from '@/shared/hooks/useLanguage'
+import { ROUTES } from '@/shared/config/constants'
+import { DUR, EASE, SPRING } from '@/shared/config/motion'
 import { getUnreadMentionCount } from '@/services/mentions.service'
 import { getFinanceKpis } from '@/services/finance.service'
-import { getPref } from '@/hooks/usePreferences'
-import TransparentArea from '@/components/charts/TransparentArea'
-import { fmtEuro, numberLocale } from '@/lib/format'
+import { getPref } from '@/shared/hooks/usePreferences'
+import TransparentArea from '@/shared/components/charts/TransparentArea'
+import { fmtEuro, numberLocale } from '@/shared/lib/format'
 
 function fmtEur(n) {
   return fmtEuro(n)
 }
-import AccountMenu from '@/components/layout/AccountMenu'
-import BorderGlow from '@/components/ui/BorderGlow'
-import SearchModal from '@/components/ui/SearchModal'
+import AccountMenu from '@/shared/components/layout/AccountMenu'
+import BorderGlow from '@/shared/components/ui/BorderGlow'
+import SearchModal from '@/shared/components/ui/SearchModal'
 import SettingsPanel from '@/pages/Settings'
 
 // Props de BorderGlow afinados para botones pequeños del top bar (tono de marca).
 var GLOW = { className: 'glow-btn', borderRadius: 19, glowRadius: 15, glowIntensity: 1.4, coneSpread: 25, backgroundColor: 'transparent', glowColor: '355 78 62', colors: ['#e63946', '#ff5a66', '#a01f2b'], animated: true }
 
-// Fondo animado (three.js) — en diferido para no bloquear la carga inicial.
-var Silk = lazy(function () { return import('@/components/effects/Silk') })
+// Fondo animado (three.js) –” en diferido para no bloquear la carga inicial.
+var Silk = lazy(function () { return import('@/shared/components/effects/Silk') })
 
 /*
  * Pantalla principal (hub). Sin sidebar: la navegación es esta pantalla + la
  * barra inferior global. Layout ancho para escritorio, rejillas responsive.
  */
 
-function fmtCur(n) {
+function fmtCur(n, currency) {
   if (!n && n !== 0) return '--'
-  return Number(n).toLocaleString(numberLocale(), { maximumFractionDigits: 0 }) + '€'
+  return Number(n).toLocaleString(numberLocale(), { maximumFractionDigits: 0 }) + currency
 }
 
 export default function Inicio() {
@@ -47,6 +51,7 @@ export default function Inicio() {
   var { kpis, loading } = useApp()
   var { profile, user, signOut } = useAuth()
   var { org, members, workspaces, switchWorkspace, createWorkspace } = useOrg()
+  var { t, getCurrency } = useLanguage()
   var name = profile && profile.full_name ? profile.full_name.split(' ')[0] : 'usuario'
   var initial = profile && profile.full_name ? profile.full_name[0].toUpperCase() : 'M'
 
@@ -79,43 +84,55 @@ export default function Inicio() {
     setMenuAnchor({ top: r.bottom + 6, left: r.left })
     setMenuOpen(function (v) { return !v })
   }
+  const { toasts, show, dismiss } = useToast()
+  const [showCreateWorkspace, setShowCreateWorkspace] = useState(false)
+
   function handleCreateWorkspace() {
     setMenuOpen(false)
-    var name = window.prompt('Nombre del nuevo espacio de trabajo')
-    if (name && name.trim()) createWorkspace(name.trim()).catch(function (e) { window.alert('No se pudo crear: ' + (e.message || e)) })
+    setShowCreateWorkspace(true)
+  }
+
+  function confirmCreateWorkspace(name) {
+    createWorkspace(name.trim()).then(function() {
+      show('Espacio de trabajo creado', 'success', 3000)
+      setShowCreateWorkspace(false)
+    }).catch(function (e) { show('No se pudo crear: ' + (e.message || e), 'error', 3000) })
   }
 
   var PILLS = [
-    { icon: Mail,          label: 'Mensajes',   to: '/mensajes' },
-    { icon: Bell,          label: 'Menciones',  to: '/inbox' },
-    { icon: Video,         label: 'Reuniones',  to: '/calendar' },
+    { icon: Mail,          label: t('messages'),   to: '/mensajes' },
+    { icon: Bell,          label: t('mentions'),  to: '/inbox' },
+    { icon: Video,         label: t('meetings'),  to: '/calendar' },
   ]
 
+  var currency = getCurrency()
   var KPIS = [
-    { label: 'MRR',              value: loading ? '—' : fmtCur(kpis && kpis.mrr),          icon: TrendingUp },
-    { label: 'Clientes activos', value: loading ? '—' : (kpis ? kpis.activeClients : 0),   icon: Users },
-    { label: 'Proyectos',        value: loading ? '—' : (kpis ? kpis.activeProjects : 0),  icon: FolderKanban },
-    { label: 'Ingresos mes',     value: loading ? '—' : fmtCur(kpis && kpis.monthIncome),  icon: Wallet },
+    { label: 'MRR',              value: loading ? '–' : fmtCur(kpis && kpis.mrr, currency),          icon: TrendingUp },
+    { label: t('activeClients'), value: loading ? '–' : (kpis ? kpis.activeClients : 0),   icon: Users },
+    { label: t('projects'),        value: loading ? '–' : (kpis ? kpis.activeProjects : 0),  icon: FolderKanban },
+    { label: t('monthIncome'),     value: loading ? '–' : fmtCur(kpis && kpis.monthIncome, currency),  icon: Wallet },
   ]
 
   var QUICK = [
-    { label: 'Centro de mando', sub: 'KPIs y atención hoy', icon: LayoutDashboard, to: '/dashboard' },
-    { label: 'Clientes',   sub: 'Cuentas y portal',   icon: Users,        to: ROUTES.CLIENTS },
-    { label: 'Proyectos',  sub: 'Kanban y entregas',  icon: FolderKanban, to: ROUTES.PROJECTS },
-    { label: 'Finanzas',   sub: 'Ingresos y gastos',  icon: Wallet,       to: ROUTES.FINANCE },
-    { label: 'Facturas',   sub: 'Cobros y PDF',       icon: FileText,     to: ROUTES.INVOICES },
-    { label: 'Calendario', sub: 'Agenda y eventos',   icon: CalendarIcon, to: ROUTES.CALENDAR },
+    { label: t('commandCenter'), sub: t('commandCenterSub'), icon: LayoutDashboard, to: '/dashboard' },
+    { label: t('clients'),   sub: t('clientsSub'),   icon: Users,        to: ROUTES.CLIENTS },
+    { label: t('projects'),  sub: t('projectsSub'),  icon: FolderKanban, to: ROUTES.PROJECTS },
+    { label: t('finances'),   sub: t('financesSub'),  icon: Wallet,       to: ROUTES.FINANCE },
+    { label: t('invoices'),   sub: t('invoicesSub'),       icon: FileText,     to: ROUTES.INVOICES },
+    { label: t('calendar'), sub: t('calendarSub'),   icon: CalendarIcon, to: ROUTES.CALENDAR },
+    { label: t('documents'), sub: t('documentsSub'), icon: BookOpen,     to: ROUTES.DOCUMENTS },
   ]
 
   var SECTIONS = [
-    { label: 'Centro de mando',      icon: LayoutDashboard, to: '/dashboard' },
-    { label: 'Clientes',             icon: Users,        to: ROUTES.CLIENTS },
-    { label: 'Proyectos',            icon: FolderKanban, to: ROUTES.PROJECTS },
-    { label: 'Finanzas',             icon: Wallet,       to: ROUTES.FINANCE },
-    { label: 'Facturas',             icon: FileText,     to: ROUTES.INVOICES },
-    { label: 'Time tracking',        icon: Clock,        to: ROUTES.TIME_TRACKING },
-    { label: 'Calendario',           icon: CalendarIcon, to: ROUTES.CALENDAR },
-    { label: 'Base de conocimiento', icon: BookOpen,     to: ROUTES.KNOWLEDGE },
+    { label: t('commandCenter'),      icon: LayoutDashboard, to: '/dashboard' },
+    { label: t('clients'),             icon: Users,        to: ROUTES.CLIENTS },
+    { label: t('projects'),            icon: FolderKanban, to: ROUTES.PROJECTS },
+    { label: t('finances'),             icon: Wallet,       to: ROUTES.FINANCE },
+    { label: t('invoices'),             icon: FileText,     to: ROUTES.INVOICES },
+    { label: t('timeTracking'),        icon: Clock,        to: ROUTES.TIME_TRACKING },
+    { label: t('calendar'),           icon: CalendarIcon, to: ROUTES.CALENDAR },
+    { label: t('documents'),           icon: BookOpen,     to: ROUTES.DOCUMENTS },
+    { label: t('knowledgeBase'), icon: BookOpen,     to: ROUTES.KNOWLEDGE },
   ]
 
   var sectionLabel = { fontSize: '11px', fontWeight: 700, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '28px 0 12px' }
@@ -138,7 +155,7 @@ export default function Inicio() {
   }, [])
 
   function handleAddAccount() {
-    window.alert('Sistema de múltiples cuentas - pronto disponible')
+    show('Sistema de múltiples cuentas - pronto disponible', 'info', 3000)
     setMenuOpen(false)
   }
 
@@ -162,7 +179,7 @@ export default function Inicio() {
           animate={{ opacity: 1, y: 0 }}
           style={{ marginBottom: '28px' }}
         >
-          <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>Tu negocio de un vistazo</p>
+          <p style={{ fontSize: '14px', color: 'var(--text-4)', marginTop: '2px' }}>{t('yourBusiness')}</p>
         </motion.div>
 
         {/* Navigation Bar - Avatar, Search, Pills */}
@@ -262,7 +279,7 @@ export default function Inicio() {
           })}
         </div>
 
-        {/* Resumen financiero — gráfica transparente (datos del workspace activo) */}
+        {/* Resumen financiero –” gráfica transparente (datos del workspace activo) */}
         {fin && fin.sparkline && (
           <>
             <p style={sectionLabel}>Resumen financiero</p>
@@ -275,7 +292,7 @@ export default function Inicio() {
                     {fmtEur(fin.monthIncome)}
                     {fin.incomeTrend !== null && fin.incomeTrend !== undefined && (
                       <span style={{ fontSize: '12px', fontWeight: 700, marginLeft: '8px', color: fin.incomeTrend >= 0 ? '#22c55e' : 'var(--brand)' }}>
-                        {fin.incomeTrend >= 0 ? '▲' : '▼'} {Math.abs(fin.incomeTrend)}%
+                        {fin.incomeTrend >= 0 ? '––²' : '––¼'} {Math.abs(fin.incomeTrend)}%
                       </span>
                     )}
                   </p>
@@ -299,7 +316,7 @@ export default function Inicio() {
           </>
         )}
 
-        {/* Accesos rápidos — rejilla (sin scroll horizontal: el escalado ya no recorta) */}
+        {/* Accesos rápidos –” rejilla (sin scroll horizontal: el escalado ya no recorta) */}
         <p style={sectionLabel}>Accesos rápidos</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {QUICK.map(function(q) {
@@ -320,7 +337,7 @@ export default function Inicio() {
           })}
         </div>
 
-        {/* Secciones — 2 columnas en escritorio */}
+        {/* Secciones –” 2 columnas en escritorio */}
         <p style={sectionLabel}>Secciones</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
           {SECTIONS.map(function(s) {
@@ -369,6 +386,24 @@ export default function Inicio() {
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {settingsOpen && <SettingsPanel onClose={function() { setSettingsOpen(false) }} initialTab={settingsTab} />}
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Create Workspace Dialog */}
+      <TextInputDialog
+        isOpen={showCreateWorkspace}
+        title="Crear espacio de trabajo"
+        label="Nombre"
+        placeholder="Mi nuevo workspace"
+        confirmText="Crear"
+        cancelText="Cancelar"
+        onConfirm={confirmCreateWorkspace}
+        onCancel={() => setShowCreateWorkspace(false)}
+      />
     </div>
   )
 }
+
+
+

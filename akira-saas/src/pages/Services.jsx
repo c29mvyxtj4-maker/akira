@@ -1,19 +1,23 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, Wrench, TrendingUp, Package } from 'lucide-react'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import IconButton from '@/components/ui/IconButton'
+import { ResponsiveGrid } from '@/components/responsive'
 import {
   getServices, createService, updateService, archiveService,
   SERVICE_CATEGORIES,
 } from '@/services/services.service'
-import PageHeader      from '@/components/layout/PageHeader'
-import Modal           from '@/components/ui/Modal'
-import Badge           from '@/components/ui/Badge'
-import Button          from '@/components/ui/Button'
-import EmptyState      from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
+import PageHeader      from '@/shared/components/layout/PageHeader'
+import Modal           from '@/shared/components/ui/Modal'
+import Badge           from '@/shared/components/ui/Badge'
+import Button          from '@/shared/components/ui/Button'
+import EmptyState      from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
 import clsx            from 'clsx'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '–‚¬' }
 
 var INP = {
   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
@@ -45,8 +49,8 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
   return (
     <form onSubmit={function(e) { e.preventDefault(); if (!form.name.trim()) return; onSave(form) }} className="space-y-4">
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
+      <ResponsiveGrid cols={2} gap="gap-3">
+        <div className="lg:col-span-2">
           <label className="label-base">Nombre del servicio *</label>
           <input value={form.name} onChange={set('name')} placeholder="Pack de video corporativo" style={INP} />
         </div>
@@ -74,7 +78,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <label className="label-base">Descripción</label>
           <textarea value={form.description} onChange={set('description')} rows={2} placeholder="Que incluye este servicio..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
-      </div>
+      </ResponsiveGrid>
 
       {/* Preview margen */}
       {price > 0 && (
@@ -149,12 +153,8 @@ function ServiceCard({ service, onEdit, onArchive }) {
           <p className="text-xs text-text-4">{service.category} / {service.unit}</p>
         </div>
         <div className="flex gap-1.5 flex-shrink-0">
-          <button type="button" onClick={function() { onEdit(service) }}
-            className="w-7 h-7 rounded-lg hover:bg-surface-4 flex items-center justify-center text-text-3 hover:text-text-1 transition-colors"
-          ><Edit3 className="w-3.5 h-3.5" /></button>
-          <button type="button" onClick={function() { onArchive(service.id) }}
-            className="w-7 h-7 rounded-lg hover:bg-status-danger/10 flex items-center justify-center text-text-3 hover:text-status-danger transition-colors"
-          ><Archive className="w-3.5 h-3.5" /></button>
+          <IconButton icon={Edit3} onClick={() => onEdit(service)} />
+          <IconButton icon={Archive} onClick={() => onArchive(service.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
         </div>
       </div>
 
@@ -191,6 +191,8 @@ export default function Services() {
   var [editing,     setEditing]     = useState(null)
   var [formLoading, setFormLoading] = useState(false)
   var [toastMsg,    setToastMsg]    = useState(null)
+  var [showArchiveConfirm, setShowArchiveConfirm] = useState(false)
+  var { toasts, show, dismiss } = useToast()
 
   function showToast(msg, type) {
     setToastMsg({ msg: msg, type: type || 'success' })
@@ -233,13 +235,17 @@ export default function Services() {
   }
 
   function handleArchive(id) {
-    if (!window.confirm('Archivar este servicio?')) return
-    archiveService(id)
+    setShowArchiveConfirm(id)
+  }
+
+  function confirmArchive() {
+    archiveService(showArchiveConfirm)
       .then(function() {
-        setServices(function(prev) { return prev.filter(function(s) { return s.id !== id }) })
-        showToast('Servicio archivado')
+        setServices(function(prev) { return prev.filter(function(s) { return s.id !== showArchiveConfirm }) })
+        show('Servicio archivado', 'success', 3000)
+        setShowArchiveConfirm(false)
       })
-      .catch(function(e) { showToast(e.message, 'error') })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000); setShowArchiveConfirm(false) })
   }
 
   // KPIs
@@ -265,7 +271,7 @@ export default function Services() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
           {/* KPIs */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <ResponsiveGrid cols={3} gap="gap-4" className="mb-6">
             {[
               { icon: Package,    label: 'Servicios activos', value: services.filter(function(s) { return s.active }).length, color: 'text-brand-400' },
               { icon: TrendingUp, label: 'Margen promedio',   value: avgMargin + '%', color: avgMargin >= 50 ? 'text-status-success' : 'text-status-warning' },
@@ -284,7 +290,7 @@ export default function Services() {
                 </motion.div>
               )
             })}
-          </div>
+          </ResponsiveGrid>
 
           {/* Filtros */}
           <div className="flex gap-3 mb-5 flex-wrap items-center">
@@ -318,13 +324,13 @@ export default function Services() {
               action={!search && <Button onClick={openCreate} icon={<Plus className="w-4 h-4" />}>Crear servicio</Button>}
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <ResponsiveGrid cols={3} gap="gap-4">
               {services.map(function(s) {
                 return (
                   <ServiceCard key={s.id} service={s} onEdit={openEdit} onArchive={handleArchive} />
                 )
               })}
-            </div>
+            </ResponsiveGrid>
           )}
         </div>
       </div>
@@ -340,6 +346,9 @@ export default function Services() {
           >{toastMsg.msg}</motion.div>
         )}
       </AnimatePresence>
+
+      <Toast toasts={toasts} onDismiss={dismiss} />
+      <ConfirmDialog isOpen={showArchiveConfirm !== false} title="Archivar servicio" message="¿Estás seguro?" confirmText="Archivar" cancelText="Cancelar" isDangerous onConfirm={confirmArchive} onCancel={() => setShowArchiveConfirm(false)} />
     </div>
   )
 }

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ChevronLeft, Inbox, CheckCheck, AtSign } from 'lucide-react'
 import { getMyMentions, markMentionRead, markAllMentionsRead } from '@/services/mentions.service'
-import { DUR, EASE } from '@/config/motion'
+import { DUR, EASE } from '@/shared/config/motion'
 
 function fmtWhen(iso) {
   if (!iso) return ''
@@ -64,7 +64,7 @@ export default function InboxPage() {
         </div>
 
         {loading ? (
-          <p style={{ fontSize: '14px', color: 'var(--text-4)' }}>Cargando…</p>
+          <p style={{ fontSize: '14px', color: 'var(--text-4)' }}>Cargando│</p>
         ) : items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-4)' }}>
             <AtSign style={{ width: '30px', height: '30px', margin: '0 auto 12px', opacity: 0.5 }} />
@@ -94,3 +94,4 @@ export default function InboxPage() {
     </div>
   )
 }
+

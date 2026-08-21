@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Plus, Archive, Edit3, AlertTriangle, Wrench, TrendingUp, Package, CreditCard } from 'lucide-react'
+import { ResponsiveGrid } from '@/components/responsive'
+import IconButton from '@/components/ui/IconButton'
 import {
   getServices, createService, updateService, archiveService,
   SERVICE_CATEGORIES,
@@ -10,15 +12,15 @@ import {
   getClientsForSelect, getServicesForSelect,
   SUB_PERIODS, SUB_STATUS, calcMonthlyValue,
 } from '@/services/subscriptions.service'
-import PageHeader      from '@/components/layout/PageHeader'
-import Modal           from '@/components/ui/Modal'
-import Badge           from '@/components/ui/Badge'
-import Button          from '@/components/ui/Button'
-import EmptyState      from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
+import PageHeader      from '@/shared/components/layout/PageHeader'
+import Modal           from '@/shared/components/ui/Modal'
+import Badge           from '@/shared/components/ui/Badge'
+import Button          from '@/shared/components/ui/Button'
+import EmptyState      from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
 import clsx            from 'clsx'
 
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '–‚¬' }
 function fmtDate(d) { if (!d) return '--'; return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) }
 function daysLeft(d) { if (!d) return null; return Math.ceil((new Date(d) - Date.now()) / 86400000) }
 
@@ -29,9 +31,9 @@ var INP = {
 }
 var SI = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#f1f5f9', borderRadius: '8px', fontSize: '12px', padding: '6px 10px', outline: 'none', fontFamily: 'inherit', cursor: 'pointer' }
 
-/* ═══════════════════════════════════════════════════════════
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    CATALOGO (antes Services.jsx)
-═══════════════════════════════════════════════════════════ */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 function ServiceForm({ initial, onSave, onCancel, loading }) {
   var EMPTY = { name: '', description: '', category: 'Video', price: '', cost: '', unit: 'proyecto', active: true }
   var [form, setForm] = useState(function() {
@@ -52,7 +54,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
   var margin = price > 0 ? Math.round(((price - cost) / price) * 100) : null
   return (
     <form onSubmit={function(e) { e.preventDefault(); if (!form.name.trim()) return; onSave(form) }} className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+      <ResponsiveGrid cols={2} gap="gap-3">
         <div className="col-span-2">
           <label className="label-base">Nombre del servicio *</label>
           <input value={form.name} onChange={set('name')} placeholder="Pack de video corporativo" style={INP} />
@@ -81,7 +83,7 @@ function ServiceForm({ initial, onSave, onCancel, loading }) {
           <label className="label-base">Descripción</label>
           <textarea value={form.description} onChange={set('description')} rows={2} placeholder="Que incluye este servicio..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
-      </div>
+      </ResponsiveGrid>
       {price > 0 && (
         <div className="flex items-center gap-4 px-4 py-3 rounded-lg bg-surface-3 border border-border">
           <div className="text-center">
@@ -140,8 +142,8 @@ function ServiceCard({ service, onEdit, onArchive }) {
           <p className="text-xs text-text-4">{service.category} / {service.unit}</p>
         </div>
         <div className="flex gap-1.5 flex-shrink-0">
-          <button type="button" onClick={function() { onEdit(service) }} className="w-7 h-7 rounded-lg hover:bg-surface-4 flex items-center justify-center text-text-3 hover:text-text-1 transition-colors"><Edit3 className="w-3.5 h-3.5" /></button>
-          <button type="button" onClick={function() { onArchive(service.id) }} className="w-7 h-7 rounded-lg hover:bg-status-danger/10 flex items-center justify-center text-text-3 hover:text-status-danger transition-colors"><Archive className="w-3.5 h-3.5" /></button>
+          <IconButton icon={Edit3} onClick={() => onEdit(service)} />
+          <IconButton icon={Archive} onClick={() => onArchive(service.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
         </div>
       </div>
       {service.description && <p className="text-xs text-text-4 mb-3 truncate-2 leading-relaxed">{service.description}</p>}
@@ -187,17 +189,17 @@ function CatalogTab({ services, loading, error, search, setSearch, category, set
           action={!search && <Button onClick={onCreate} icon={<Plus className="w-4 h-4" />}>Crear servicio</Button>}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <ResponsiveGrid cols={3} gap="gap-4">
           {services.map(function(s) { return <ServiceCard key={s.id} service={s} onEdit={onEdit} onArchive={onArchive} /> })}
-        </div>
+        </ResponsiveGrid>
       )}
     </div>
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
    SUSCRIPCIONES (antes Subscriptions.jsx)
-═══════════════════════════════════════════════════════════ */
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
   var EMPTY = { name: '', client_id: '', service_id: '', price: '', period: 'monthly', status: 'active', start_date: '', next_billing: '', notes: '' }
   var [form, setForm] = useState(function() {
@@ -225,7 +227,7 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
   var monthly = calcMonthlyValue(form.price, form.period)
   return (
     <form onSubmit={function(e) { e.preventDefault(); if (!form.name.trim()) return; onSave(form) }} className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+      <ResponsiveGrid cols={2} gap="gap-3">
         <div className="col-span-2">
           <label className="label-base">Nombre de la suscripcion *</label>
           <input value={form.name} onChange={set('name')} placeholder="Pack mensual video" style={INP} />
@@ -272,7 +274,7 @@ function SubForm({ initial, clients, services, onSave, onCancel, loading }) {
           <label className="label-base">Notas</label>
           <textarea value={form.notes} onChange={set('notes')} rows={2} placeholder="Notas adicionales..." style={Object.assign({}, INP, { resize: 'vertical' })} />
         </div>
-      </div>
+      </ResponsiveGrid>
       {Number(form.price) > 0 && (
         <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-surface-3 border border-border">
           <div>
@@ -315,8 +317,8 @@ function SubCard({ sub, onEdit, onArchive }) {
           </p>
         </div>
         <div className="flex gap-1.5 flex-shrink-0">
-          <button type="button" onClick={function() { onEdit(sub) }} className="w-7 h-7 rounded-lg hover:bg-surface-4 flex items-center justify-center text-text-3 hover:text-text-1 transition-colors"><Edit3 className="w-3.5 h-3.5" /></button>
-          <button type="button" onClick={function() { onArchive(sub.id) }} className="w-7 h-7 rounded-lg hover:bg-status-danger/10 flex items-center justify-center text-text-3 hover:text-status-danger transition-colors"><Archive className="w-3.5 h-3.5" /></button>
+          <IconButton icon={Edit3} onClick={() => onEdit(sub)} />
+          <IconButton icon={Archive} onClick={() => onArchive(sub.id)} className="hover:bg-status-danger/10 hover:text-status-danger" />
         </div>
       </div>
       <div className="flex items-end justify-between">
@@ -364,17 +366,17 @@ function SubscriptionsTab({ subs, clients, loading, error, search, setSearch, st
           action={!search && <Button onClick={onCreate} icon={<Plus className="w-4 h-4" />}>Crear suscripcion</Button>}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <ResponsiveGrid cols={3} gap="gap-4">
           {subs.map(function(s) { return <SubCard key={s.id} sub={s} onEdit={onEdit} onArchive={onArchive} /> })}
-        </div>
+        </ResponsiveGrid>
       )}
     </div>
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PAGINA PRINCIPAL — OFERTAS
-═══════════════════════════════════════════════════════════ */
+/* –•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•
+   PAGINA PRINCIPAL –” OFERTAS
+–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–•–• */
 export default function Offers() {
   var [tab, setTab] = useState('catalog') // 'catalog' | 'subscriptions'
 
@@ -526,7 +528,7 @@ export default function Offers() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
           {/* KPIs combinados */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <ResponsiveGrid cols={4} gap="gap-4" className="mb-6">
             {[
               { icon: Package,       label: 'Servicios activos',    value: services.filter(function(s) { return s.active }).length, color: 'text-brand-400' },
               { icon: TrendingUp,    label: 'Margen promedio',      value: avgMargin + '%',       color: avgMargin >= 50 ? 'text-status-success' : 'text-status-warning' },
@@ -546,7 +548,7 @@ export default function Offers() {
                 </motion.div>
               )
             })}
-          </div>
+          </ResponsiveGrid>
 
           {/* Pestañas */}
           <div className="flex gap-1 mb-5 bg-surface-3 rounded-lg p-1 w-fit">

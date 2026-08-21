@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Lock } from 'lucide-react'
-import { useOrg } from '@/context/OrgContext'
+import { useOrg } from '@/shared/context/OrgContext'
 import { checkFeatureAccess } from '@/services/billing.service'
-import { PLAN_TIERS } from '@/config/constants'
+import { PLAN_TIERS } from '@/shared/config/constants'
 
-// Gatea `children` según el plan de la org activa. Uso:
+// Gatea `children` segÀºn el plan de la org activa. Uso:
 //   <FeatureGate feature={FEATURES.AI_OPERATIVES}>
 //     <AIOperativesPanel />
 //   </FeatureGate>
 //
 // `currentUsage` es opcional: pásalo cuando la feature tiene un limit_value
 // numérico (p.ej. FEATURES.MAX_PROJECTS) para que el gate compare contra él.
-// Sin backend/Stripe aún: esto solo lee organizations.plan y feature_limits.
+// Sin backend/Stripe aÀºn: esto solo lee organizations.plan y feature_limits.
 export default function FeatureGate({ feature, currentUsage, fallback, children }) {
   var { org } = useOrg()
   var [state, setState] = useState({ loading: true, access: null })
@@ -54,3 +54,4 @@ function UpgradeCTA({ access }) {
     </div>
   )
 }
+

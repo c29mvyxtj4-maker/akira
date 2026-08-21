@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 export var RESOURCE_LABELS = {
   clients:         'Cliente',
@@ -55,7 +55,7 @@ export async function getAuditLog(filters) {
 
   var q = supabase
     .from('audit_log')
-    .select('*') // ← CORREGIDO: ya no intentamos unir con "profiles" aqui
+    .select('*') // –† CORREGIDO: ya no intentamos unir con "profiles" aqui
     .order('created_at', { ascending: false })
     .limit(limit)
 
@@ -66,7 +66,7 @@ export async function getAuditLog(filters) {
   if (res.error) throw res.error
   var rows = res.data || []
 
-  // ← NUEVO: traemos los nombres de los usuarios implicados en un segundo paso, y los juntamos aqui
+  // –† NUEVO: traemos los nombres de los usuarios implicados en un segundo paso, y los juntamos aqui
   var userIds = Array.from(new Set(rows.map(function(r) { return r.user_id }).filter(Boolean)))
   var namesById = {}
   if (userIds.length > 0) {
@@ -83,4 +83,69 @@ export async function getAuditLog(filters) {
       changes:     row.action === 'updated' ? extractChanges(row.metadata) : [],
     })
   })
+}
+
+export async function fetchAuditLogs(filters = {}) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { data: [] }
+
+  let query = supabase
+    .from('audit_logs')
+    .select('*')
+    .eq('org_id', user.user_metadata?.org_id)
+    .order('created_at', { ascending: false })
+    .limit(500)
+
+  if (filters.action) {
+    query = query.eq('action', filters.action)
+  }
+  if (filters.table) {
+    query = query.eq('table_name', filters.table)
+  }
+  if (filters.user) {
+    query = query.eq('user_id', filters.user)
+  }
+  if (filters.dateFrom) {
+    query = query.gte('created_at', filters.dateFrom)
+  }
+  if (filters.dateTo) {
+    query = query.lte('created_at', filters.dateTo)
+  }
+
+  return query
+}
+
+export async function exportAuditLogsCSV(logs) {
+  if (!logs || logs.length === 0) {
+    alert('No hay eventos para exportar')
+    return
+  }
+
+  const headers = ['Fecha', 'Acción', 'Tabla', 'Usuario', 'Record ID', 'Valores anteriores', 'Nuevos valores']
+  const rows = logs.map(log => [
+    new Date(log.created_at).toLocaleString('es-ES'),
+    log.action,
+    log.table_name,
+    log.user_email || 'Sistema',
+    log.record_id,
+    JSON.stringify(log.old_values || {}),
+    JSON.stringify(log.new_values || {}),
+  ])
+
+  const csv = [
+    headers.join(','),
+    ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
+  ].join('\n')
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+
+  link.setAttribute('href', url)
+  link.setAttribute('download', `audit-log-${new Date().toISOString()}.csv`)
+  link.style.visibility = 'hidden'
+
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }

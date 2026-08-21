@@ -1,12 +1,12 @@
-import { useEffect, useState, useRef } from 'react'
+﻿import { useEffect, useState, useRef } from 'react'
 import { Copy, Check, Upload } from 'lucide-react'
 import { getProfile, updateProfile } from '@/services/settings.service'
 import { supabase } from '@/lib/supabase'
-import { usePrefs } from '@/hooks/usePreferences'
+import { usePrefs } from '@/shared/hooks/usePreferences'
 import { Field, INP, SaveBtn, Section, RowSection, Row, Toggle, MiniBtn, onBlur, onFocus } from './_shared'
 
 /*
- * Mi perfil (grupo Cuenta) — datos personales + foto, seguridad de la cuenta,
+ * Mi perfil (grupo Cuenta) –” datos personales + foto, seguridad de la cuenta,
  * soporte, dispositivos e ID de usuario. Cada acción lleva su descripción.
  */
 function ProfileTab({ user }) {
@@ -85,7 +85,7 @@ function ProfileTab({ user }) {
             : <span style={{ width: '56px', height: '56px', borderRadius: '14px', background: 'var(--gradient-brand)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', fontWeight: 800 }}>{initial}</span>}
           <div>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatar} style={{ display: 'none' }} />
-            <MiniBtn label={uploading ? 'Subiendo…' : 'Subir foto'} icon={Upload} onClick={function () { if (fileRef.current) fileRef.current.click() }} disabled={uploading} />
+            <MiniBtn label={uploading ? 'Subiendo│' : 'Subir foto'} icon={Upload} onClick={function () { if (fileRef.current) fileRef.current.click() }} disabled={uploading} />
             <p style={{ fontSize: '11px', color: 'var(--text-5)', marginTop: '6px' }}>PNG o JPG. Se mostrará en tu perfil y en las notificaciones.</p>
           </div>
         </div>
@@ -143,13 +143,13 @@ function ProfileTab({ user }) {
       </RowSection>
 
       <RowSection title="Dispositivos" description="Sesiones activas de tu cuenta.">
-        <Row title="Cerrar sesión en todos los dispositivos" description="Útil si crees que alguien más tiene acceso a tu cuenta." last>
+        <Row title="Cerrar sesión en todos los dispositivos" description="Àštil si crees que alguien más tiene acceso a tu cuenta." last>
           <MiniBtn label="Cerrar todas" danger onClick={signOutEverywhere} />
         </Row>
       </RowSection>
 
-      <RowSection title="ID de usuario" description="Tu identificador único en AKIRA (útil para soporte).">
-        <Row title="ID de usuario" description={user ? user.id : '—'} last>
+      <RowSection title="ID de usuario" description="Tu identificador Àºnico en AKIRA (Àºtil para soporte).">
+        <Row title="ID de usuario" description={user ? user.id : '–”'} last>
           <MiniBtn label={copied ? 'Copiado' : 'Copiar'} icon={copied ? Check : Copy} onClick={copyId} />
         </Row>
       </RowSection>
@@ -158,3 +158,5 @@ function ProfileTab({ user }) {
 }
 
 export default ProfileTab
+
+

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import {
@@ -100,12 +100,12 @@ function fmtSize(b) {
   return (b / 1048576).toFixed(1) + ' MB'
 }
 function fileIcon(type) {
-  if (!type) return '📎'
-  if (type.startsWith('image/'))  return '🖼'
-  if (type === 'application/pdf') return '📄'
-  if (type.includes('word'))      return '📝'
-  if (type.startsWith('video/'))  return '🎬'
-  return '📎'
+  if (!type) return 'ðŸ“Ž'
+  if (type.startsWith('image/'))  return 'ðŸ–¼'
+  if (type === 'application/pdf') return 'ðŸ“„'
+  if (type.includes('word'))      return 'ðŸ“'
+  if (type.startsWith('video/'))  return 'ðŸŽ¬'
+  return 'ðŸ“Ž'
 }
 function darken(hex, amount) {
   let h = hex.replace('#', '')
@@ -241,7 +241,7 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
       {isPreview && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(59,130,246,0.12)', borderBottom: '1px solid rgba(59,130,246,0.25)', color: '#3b82f6', fontSize: '12px', fontWeight: 600, flexShrink: 0 }}>
           <Eye style={{ width: '14px', height: '14px' }} />
-          Vista previa — así ve tu cliente su portal (solo lectura)
+          Vista previa –” así ve tu cliente su portal (solo lectura)
         </div>
       )}
 
@@ -273,7 +273,7 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
       {/* Bienvenida + tabs */}
       <div style={{ padding: '20px 20px 0', background: 'var(--bg-1)', borderBottom: '1px solid var(--border)' }}>
         <p style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-1)', marginBottom: '14px', letterSpacing: '-0.02em' }}>
-          Hola, {greetName} 👋
+          Hola, {greetName} ðŸ‘‹
         </p>
         <div style={{ display: 'flex', gap: '0', overflowX: 'auto' }}>
           {TABS.map((t) => {
@@ -317,7 +317,7 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
                 </div>
               </div>
               <div style={{ flex: 1, minWidth: '200px' }}>
-                <p style={{ fontSize: '19px', fontWeight: 800, color: 'var(--text-1)', letterSpacing: '-0.02em' }}>Hola, {greetName} 👋</p>
+                <p style={{ fontSize: '19px', fontWeight: 800, color: 'var(--text-1)', letterSpacing: '-0.02em' }}>Hola, {greetName} ðŸ‘‹</p>
                 <p style={{ fontSize: '13px', color: 'var(--text-4)', marginTop: '4px', lineHeight: 1.5 }}>
                   {activeProjects.length > 0
                     ? 'Tienes ' + activeProjects.length + (activeProjects.length === 1 ? ' proyecto en curso' : ' proyectos en curso') + '.'
@@ -331,7 +331,7 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <StatTile label="Proyectos activos" value={activeProjects.length} />
               <StatTile label="Facturas pendientes" value={pendingInvoices.length}
-                sub={pendingInvoiceTotal > 0 ? pendingInvoiceTotal.toLocaleString('es-ES', { minimumFractionDigits: 0 }) + '€ por cobrar' : 'Todo al día'}
+                sub={pendingInvoiceTotal > 0 ? pendingInvoiceTotal.toLocaleString('es-ES', { minimumFractionDigits: 0 }) + '–‚¬ por cobrar' : 'Todo al día'}
                 accent={pendingInvoices.length > 0 ? 'var(--brand)' : undefined} />
               <StatTile label="Aprobaciones" value={pendingApprovals} sub={pendingApprovals > 0 ? 'esperan tu revisión' : 'nada pendiente'}
                 accent={pendingApprovals > 0 ? '#f59e0b' : undefined} />
@@ -445,7 +445,7 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
                       <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-1)', fontVariantNumeric: 'tabular-nums' }}>
-                        {(Number(inv.total) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}€
+                        {(Number(inv.total) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}–‚¬
                       </p>
                       {paid ? (
                         <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 700, background: 'rgba(34,197,94,0.12)', color: '#22c55e' }}>Pagada</span>
@@ -453,7 +453,7 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
                         <button type="button" onClick={() => handlePay(inv)} disabled={isPreview || paying === inv.id}
                           title={isPreview ? 'Disponible para el cliente en el portal real' : undefined}
                           style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: 'var(--gradient-brand)', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: (isPreview || paying === inv.id) ? 'not-allowed' : 'pointer', opacity: (isPreview || paying === inv.id) ? 0.6 : 1, whiteSpace: 'nowrap' }}>
-                          {paying === inv.id ? 'Abriendo…' : 'Pagar'}
+                          {paying === inv.id ? 'Abriendo│' : 'Pagar'}
                         </button>
                       )}
                     </div>
@@ -503,7 +503,7 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
                 disabled={isPreview}
                 onChange={(e) => setMsgInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage() } }}
-                placeholder={isPreview ? 'Vista previa — el cliente escribe aquí' : 'Escribe un mensaje...'}
+                placeholder={isPreview ? 'Vista previa –” el cliente escribe aquí' : 'Escribe un mensaje...'}
                 style={{ flex: 1, background: 'var(--bg-3)', border: '1px solid var(--border)', color: 'var(--text-1)', borderRadius: '10px', padding: '10px 14px', fontSize: '14px', fontFamily: 'inherit', outline: 'none', opacity: isPreview ? 0.6 : 1 }}
               />
               <button type="button" onClick={handleSendMessage} disabled={isPreview || !msgInput.trim() || sending}
@@ -588,7 +588,7 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
                         <button type="button"
                           onClick={() => handleApprovalAction(a.id, 'approved', '')}
                           style={{ flex: 1, padding: '9px', borderRadius: '8px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#22c55e', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
-                        >✓ Aprobar</button>
+                        >–œ“ Aprobar</button>
                       </div>
                     )}
                     {isPending && isPreview && (
@@ -604,3 +604,4 @@ export default function PortalView({ data, branding = {}, user = null, mode = 'c
     </div>
   )
 }
+

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { ResponsiveGrid } from '@/components/responsive'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, SlidersHorizontal, UserPlus, Archive,
@@ -12,17 +13,17 @@ import { useClients } from '@/hooks/useClients'
 import { useAddRecent } from '@/hooks/useAddRecent'
 import { useCurrentItem } from '@/context/CurrentItemContext'
 import { CLIENT_NICHES } from '@/services/clients.service'
-import { CLIENT_STATUS, PROJECT_STATUS } from '@/config/constants'
+import { CLIENT_STATUS, PROJECT_STATUS } from '@/shared/config/constants'
 import { getEmailTemplates, buildTemplateMailto } from '@/services/templates.service'
-import PageHeader      from '@/components/layout/PageHeader'
-import Modal           from '@/components/ui/Modal'
-import Badge           from '@/components/ui/Badge'
-import Button          from '@/components/ui/Button'
-import Avatar          from '@/components/ui/Avatar'
-import EmptyState      from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
-import { SkeletonCard } from '@/components/ui/Skeleton'
-import Select          from '@/components/ui/Select'
+import PageHeader      from '@/shared/components/layout/PageHeader'
+import Modal           from '@/shared/components/ui/Modal'
+import Badge           from '@/shared/components/ui/Badge'
+import Button          from '@/shared/components/ui/Button'
+import Avatar          from '@/shared/components/ui/Avatar'
+import EmptyState      from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
+import { SkeletonCard } from '@/shared/components/ui/Skeleton'
+import Select          from '@/shared/components/ui/Select'
 import ClientForm      from '@/components/clients/ClientForm'
 import ClientTimeline  from '@/components/clients/ClientTimeline'
 import clsx            from 'clsx'
@@ -43,7 +44,7 @@ function fmtDate(d, opts) {
   })
 }
 function fmtCur(n) {
-  return (Number(n) || 0).toLocaleString('es-ES') + '€'
+  return (Number(n) || 0).toLocaleString('es-ES') + '–‚¬'
 }
 function incomeSign(type) {
   return ['income', 'payment'].includes(type) ? '+' : '-'
@@ -60,7 +61,7 @@ const SOURCES = {
   unknown:       'Desconocido',
 }
 
-/* ── Boton "Plantilla de email" con menu desplegable ──────── */
+/* –”€–”€ Boton "Plantilla de email" con menu desplegable –”€–”€–”€–”€–”€–”€–”€–”€ */
 function EmailTemplateButton({ client }) {
   var [open, setOpen] = useState(false)
   var [templates, setTemplates] = useState([])
@@ -82,10 +83,12 @@ function EmailTemplateButton({ client }) {
     }
   }
 
+  const { toasts, show, dismiss } = useToast()
+
   function handlePick(t) {
     var url = buildTemplateMailto(t, client)
     if (!url) {
-      window.alert('Este cliente no tiene email guardado.')
+      show('Este cliente no tiene email guardado.', 'info', 3000)
       return
     }
     window.location.href = url
@@ -110,7 +113,7 @@ function EmailTemplateButton({ client }) {
             <div style={{ padding: '14px', fontSize: '12px', color: 'var(--text-4)', textAlign: 'center' }}>Cargando...</div>
           ) : templates.length === 0 ? (
             <div style={{ padding: '14px', fontSize: '12px', color: 'var(--text-4)', textAlign: 'center' }}>
-              Sin plantillas todavia.<br />Crea una en Configuracion → Plantillas.
+              Sin plantillas todavia.<br />Crea una en Configuracion –†’ Plantillas.
             </div>
           ) : (
             templates.map(function(t) {
@@ -162,11 +165,11 @@ function ClientKpis({ clients }) {
     { label: 'Activos',   value: active,                              icon: UserCheck,     color: 'text-status-success', bg: 'bg-status-success/10' },
     { label: 'Leads',     value: leads,                               icon: Users,         color: 'text-brand-400',      bg: 'bg-brand-500/10' },
     { label: 'En riesgo', value: atRisk,                              icon: AlertTriangle, color: 'text-status-danger',  bg: 'bg-status-danger/10' },
-    { label: 'MRV total', value: mrv.toLocaleString('es-ES') + '€',  icon: TrendingUp,    color: 'text-status-warning', bg: 'bg-status-warning/10' },
+    { label: 'MRV total', value: mrv.toLocaleString('es-ES') + '–‚¬',  icon: TrendingUp,    color: 'text-status-warning', bg: 'bg-status-warning/10' },
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-2 p-3 border-b border-border">
+    <ResponsiveGrid cols={2} gap="gap-2" className="p-3 border-b border-border">
       {items.map((item, i) => {
         const Icon = item.icon
         return (
@@ -187,7 +190,7 @@ function ClientKpis({ clients }) {
           </motion.div>
         )
       })}
-    </div>
+    </ResponsiveGrid>
   )
 }
 
@@ -334,11 +337,11 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
    { id: 'portal',    label: 'Portal' },
 ]
 
-  // Contexto para Akira — calculado aqui, dentro de ClientDetail, donde "client" si existe
+  // Contexto para Akira –” calculado aqui, dentro de ClientDetail, donde "client" si existe
   var akiraContext = [
     'Cliente: ' + client.name + (client.company ? ' (' + client.company + ')' : ''),
     'Estado: ' + (cfg ? cfg.label : client.status),
-    client.monthly_value > 0 ? 'Valor mensual: ' + client.monthly_value + '€' : null,
+    client.monthly_value > 0 ? 'Valor mensual: ' + client.monthly_value + '–‚¬' : null,
     client.niche ? 'Nicho: ' + client.niche : null,
     'Proyectos vinculados: ' + projects.length,
     finance ? 'Ingresos totales de este cliente: ' + fmtCur(finance.income) : null,
@@ -468,7 +471,7 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
               {finance && (
                 <div>
                   <h4 className="text-xs font-semibold text-text-2 uppercase tracking-wider mb-3">Economico</h4>
-                  <div className="grid grid-cols-3 gap-3">
+                  <ResponsiveGrid cols={3} gap="gap-3">
                     {[
                       { label: 'Ingresos',  value: fmtCur(finance.income),  color: 'text-status-success' },
                       { label: 'Gastos',    value: fmtCur(finance.expense), color: 'text-status-danger' },
@@ -479,7 +482,7 @@ function ClientDetail({ client, timeline, projects, finance, loading, onEdit, on
                         <p className={clsx('text-base font-black', s.color)}>{s.value}</p>
                       </div>
                     ))}
-                  </div>
+                  </ResponsiveGrid>
                   {finance.pending > 0 && (
                     <div className="mt-2 px-3 py-2 bg-status-warning/10 border border-status-warning/20 rounded-lg flex items-center gap-2">
                       <Clock className="w-3.5 h-3.5 text-status-warning flex-shrink-0" />
@@ -612,7 +615,7 @@ export default function Clients() {
       { key: 'status_label',  label: 'Estado' },
       { key: 'niche',         label: 'Nicho' },
       { key: 'source',        label: 'Origen' },
-      { key: 'monthly_value', label: 'Valor mensual (€)' },
+      { key: 'monthly_value', label: 'Valor mensual (–‚¬)' },
     ]
     const rows = clients.map(c => ({
       name:          c.name || '',
@@ -646,7 +649,7 @@ export default function Clients() {
 
       <div className="flex flex-1 overflow-hidden">
 
-        {/* SIDEBAR — en móvil ocupa toda la pantalla y se oculta al seleccionar un cliente */}
+        {/* SIDEBAR –” en móvil ocupa toda la pantalla y se oculta al seleccionar un cliente */}
         <div className={clsx(
           'w-full md:w-72 flex-shrink-0 flex-col border-r border-border bg-surface-1 overflow-hidden',
           selectedId ? 'hidden md:flex' : 'flex'
@@ -740,7 +743,7 @@ export default function Clients() {
             ) : clients.length === 0 ? (
               <EmptyState
                 icon={UserPlus}
-                emoji="👥"
+                emoji="ðŸ‘¥"
                 title="Sin clientes"
                 description={search ? 'Ningun cliente coincide.' : 'Crea tu primer cliente para empezar.'}
                 size="sm"
@@ -768,7 +771,7 @@ export default function Clients() {
           </div>
         </div>
 
-        {/* PANEL DERECHO — en móvil solo se muestra cuando hay un cliente seleccionado */}
+        {/* PANEL DERECHO –” en móvil solo se muestra cuando hay un cliente seleccionado */}
         <div className={clsx(
           'flex-1 flex-col overflow-hidden bg-surface-0',
           selectedId ? 'flex' : 'hidden md:flex'
@@ -822,6 +825,11 @@ export default function Clients() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notifications (New) */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }
+
+

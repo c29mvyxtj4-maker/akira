@@ -1,8 +1,8 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 /*
  * Bandeja de menciones (tabla mentions). Cada usuario ve las suyas. Las
- * menciones se crean desde acciones (asignar tarea, añadir a proyecto…).
+ * menciones se crean desde acciones (asignar tarea, añadir a proyecto│).
  */
 
 async function currentUserId() {
@@ -69,3 +69,4 @@ export async function createMention(m) {
   if (res.error) throw res.error
   return res.data
 }
+

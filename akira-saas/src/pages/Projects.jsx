@@ -1,17 +1,19 @@
-import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, SlidersHorizontal, FolderPlus, Archive,
   Edit3, ChevronRight, ChevronLeft, AlertTriangle, CheckCircle2,
   Calendar, DollarSign, TrendingUp, Flag,
 } from 'lucide-react'
-import { useProjects } from '@/hooks/useProjects'
-import { useAddRecent } from '@/hooks/useAddRecent'
-import { useCurrentItem } from '@/context/CurrentItemContext'
-import { useOrg } from '@/context/OrgContext'
+import Toast, { useToast } from '@/components/ui/Toast'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { useProjects } from '@/shared/hooks/useProjects'
+import { useAddRecent } from '@/shared/hooks/useAddRecent'
+import { useCurrentItem } from '@/shared/context/CurrentItemContext'
+import { useOrg } from '@/shared/context/OrgContext'
 import { getProjectMembers, addProjectMember, removeProjectMember, getOrgTeam } from '@/services/projectMembers.service'
 import { createMention } from '@/services/mentions.service'
-import { DUR, EASE, SPRING } from '@/config/motion'
+import { DUR, EASE, SPRING } from '@/shared/config/motion'
 import { PROJECT_STATUS_MAP, PROJECT_STAGE_MAP, PROJECT_PRIORITY_MAP } from '@/services/projects.service'
 import { getProjectTemplates } from '@/services/templates.service'
 import {
@@ -22,13 +24,13 @@ import { supabase } from '@/lib/supabase'
 import KanbanBoard from '@/components/projects/KanbanBoard'
 import ProjectPage from '@/components/projects/ProjectPage'
 import TaskTemplateSelector from '@/components/projects/TaskTemplateSelector'
-import PageHeader      from '@/components/layout/PageHeader'
-import Modal           from '@/components/ui/Modal'
-import Badge           from '@/components/ui/Badge'
-import Button          from '@/components/ui/Button'
-import EmptyState      from '@/components/ui/EmptyState'
-import { PageSpinner } from '@/components/ui/Spinner'
-import { SkeletonCard } from '@/components/ui/Skeleton'
+import PageHeader      from '@/shared/components/layout/PageHeader'
+import Modal           from '@/shared/components/ui/Modal'
+import Badge           from '@/shared/components/ui/Badge'
+import Button          from '@/shared/components/ui/Button'
+import EmptyState      from '@/shared/components/ui/EmptyState'
+import { PageSpinner } from '@/shared/components/ui/Spinner'
+import { SkeletonCard } from '@/shared/components/ui/Skeleton'
 import clsx            from 'clsx'
 import ProjectSummaryCard from '@/components/projects/ProjectSummaryCard'
 import ProjectFilesTab from '@/components/projects/ProjectFilesTab'
@@ -38,7 +40,7 @@ function fmtDate(d) {
   if (!d) return '--'
   return new Date(d).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
 }
-function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '€' }
+function fmtCur(n) { return (Number(n) || 0).toLocaleString('es-ES') + '–‚¬' }
 function daysLeft(d) { if (!d) return null; return Math.ceil((new Date(d) - Date.now()) / 86400000) }
 
 var PRIO_COLOR = { low: '#6b7280', medium: '#3b82f6', high: '#f59e0b', urgent: '#ef4444' }
@@ -179,7 +181,7 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, o
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
-          {t.done && <span style={{ color: '#000', fontSize: '10px', fontWeight: 900 }}>✓</span>}
+          {t.done && <span style={{ color: '#000', fontSize: '10px', fontWeight: 900 }}>–œ“</span>}
         </button>
 
         <span style={{
@@ -334,7 +336,7 @@ function TaskPanel({ project, onAddTask, onToggle, onDelete, onPriorityChange, o
   )
 }
 
-function TimePanel({ project }) {
+function TimePanel({ project, show }) {
   var [entries, setEntries] = useState([])
   var [running, setRunning] = useState(null)
   var [loading, setLoading] = useState(true)
@@ -391,14 +393,28 @@ function TimePanel({ project }) {
     if (!manualHours || Number(manualHours) <= 0) return
     setBusy(true)
     addManualEntry(project.id, { hours: manualHours, description: manualDesc, date: manualDate })
-      .then(function() { setManualHours(''); setManualDesc(''); setShowManual(false); load() })
-      .catch(function(e) { window.alert(e.message) })
+      .then(function() { setManualHours(''); setManualDesc(''); setShowManual(false); load(); show('Entrada añadida', 'success', 3000) })
+      .catch(function(e) { show('Error: ' + (e.message || e), 'error', 3000) })
       .finally(function() { setBusy(false) })
   }
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
+  const { toasts, show: showToast, dismiss } = useToast()
+
   function handleDelete(id) {
-    if (!window.confirm('Eliminar esta entrada de tiempo?')) return
-    deleteTimeEntry(id).then(load)
+    setShowDeleteConfirm(id)
+  }
+
+  function confirmDelete() {
+    if (!showDeleteConfirm) return
+    deleteTimeEntry(showDeleteConfirm).then(() => {
+      setShowDeleteConfirm(null)
+      load()
+      showToast('Entrada eliminada', 'success', 3000)
+    }).catch((e) => {
+      showToast('Error al eliminar: ' + (e.message || e), 'error', 3000)
+      setShowDeleteConfirm(null)
+    })
   }
 
   function fmtElapsed(sec) {
@@ -529,8 +545,8 @@ function ProgressBar({ progress, onUpdate, projectId }) {
   )
 }
 
-/* ── Fase 1: equipo del proyecto (vincular personas) ─────── */
-function TeamPanel({ project }) {
+/* –”€–”€ Fase 1: equipo del proyecto (vincular personas) –”€–”€–”€–”€–”€–”€–”€ */
+function TeamPanel({ project, show }) {
   var { org } = useOrg()
   var [members, setMembers] = useState([])
   var [team, setTeam] = useState([])
@@ -560,11 +576,11 @@ function TeamPanel({ project }) {
     addProjectMember(project.id, userId).then(function () {
       createMention({ target_user: userId, org_id: project.org_id, type: 'project_added', source_type: 'project', source_id: project.id, project_id: project.id, text: 'Te han añadido al proyecto "' + (project.name || '') + '"' }).catch(function () {})
       return load()
-    }).catch(function (e) { window.alert('No se pudo añadir: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+    }).catch(function (e) { show('No se pudo añadir: ' + (e.message || e), 'error', 3000) }).finally(function () { setBusy(false) })
   }
   function handleRemove(id) {
     setBusy(true)
-    removeProjectMember(id).then(load).catch(function (e) { window.alert('No se pudo quitar: ' + (e.message || e)) }).finally(function () { setBusy(false) })
+    removeProjectMember(id).then(load).catch(function (e) { show('No se pudo quitar: ' + (e.message || e), 'error', 3000) }).finally(function () { setBusy(false) })
   }
 
   return (
@@ -572,9 +588,9 @@ function TeamPanel({ project }) {
       <div>
         <p className="text-xs font-semibold text-text-4 uppercase tracking-wide mb-2">Miembros del proyecto</p>
         {loading ? (
-          <p className="text-sm text-text-4">Cargando…</p>
+          <p className="text-sm text-text-4">Cargando│</p>
         ) : members.length === 0 ? (
-          <p className="text-sm text-text-4">Aún no hay nadie asignado a este proyecto. Añade a alguien de tu equipo abajo.</p>
+          <p className="text-sm text-text-4">AÀºn no hay nadie asignado a este proyecto. Añade a alguien de tu equipo abajo.</p>
         ) : (
           <div className="flex flex-col gap-2">
             {members.map(function (m) {
@@ -615,7 +631,7 @@ function TeamPanel({ project }) {
   )
 }
 
-function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateTaskAssignee, onUpdateProgress, onBack, onSavePage }) {
+function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggleTask, onDeleteTask, onUpdateTaskPriority, onUpdateTaskAssignee, onUpdateProgress, onBack, onSavePage, show }) {
   var [tab, setTab] = useState('overview')
 
   if (loading) return <div className="flex-1 flex items-center justify-center"><PageSpinner label="Cargando..." /></div>
@@ -632,14 +648,14 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
   var days   = daysLeft(project.due_date)
   var over   = days !== null && days < 0 && project.status !== 'completed' && project.status !== 'cancelled'
 
-  // Contexto para Akira — se calcula aqui, DENTRO de ProjectDetail, donde "project" si existe ← CORREGIDO
+  // Contexto para Akira –” se calcula aqui, DENTRO de ProjectDetail, donde "project" si existe –† CORREGIDO
   var akiraContext = [
     'Proyecto: ' + project.name,
     'Cliente: ' + (project.clients ? project.clients.name : 'Sin cliente'),
     'Estado: ' + (sc ? sc.label : project.status),
     'Etapa: ' + (sgc ? sgc.label : project.stage),
     'Progreso: ' + (project.progress || 0) + '%',
-    budget > 0 ? 'Presupuesto: ' + budget + '€, coste real: ' + cost + '€' : null,
+    budget > 0 ? 'Presupuesto: ' + budget + '–‚¬, coste real: ' + cost + '–‚¬' : null,
     tasks.length > 0 ? 'Tareas: ' + doneT + ' completadas de ' + tasks.length : null,
     project.due_date ? 'Entrega prevista: ' + project.due_date : null,
     project.description ? 'Descripcion: ' + project.description : null,
@@ -779,7 +795,7 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
         </div>
 
         <div style={{ display: tab === 'team' ? 'block' : 'none' }}>
-          {tab === 'team' && <TeamPanel project={project} />}
+          {tab === 'team' && <TeamPanel project={project} show={show} />}
         </div>
 
         <div style={{ display: tab === 'files' ? 'block' : 'none' }}>
@@ -787,7 +803,7 @@ function ProjectDetail({ project, loading, onEdit, onArchive, onAddTask, onToggl
         </div>
 
         <div style={{ display: tab === 'time' ? 'block' : 'none' }}>
-          {tab === 'time' && <TimePanel project={project} />}
+          {tab === 'time' && <TimePanel project={project} show={show} />}
         </div>
 
         <div style={{ display: tab === 'dates' ? 'block' : 'none' }}>
@@ -1008,7 +1024,7 @@ export default function Projects() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <PageHeader
-        title="🎯 Proyectos"
+        title="ðŸŽ¯ Proyectos"
         description={hook.projects.length + ' proyecto' + (hook.projects.length !== 1 ? 's' : '')}
         actions={
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -1088,7 +1104,7 @@ export default function Projects() {
             ) : hook.projects.length === 0 ? (
               <EmptyState
                 icon={FolderPlus}
-                emoji="📁"
+                emoji="ðŸ“"
                 title="Sin proyectos"
                 description={hook.search ? 'Ningun proyecto coincide.' : 'Crea tu primer proyecto.'}
                 size="sm"
@@ -1122,6 +1138,7 @@ export default function Projects() {
             onUpdateProgress={hook.handleUpdateProgress}
             onBack={function() { hook.setSelectedId(null) }}
             onSavePage={hook.savePage}
+            show={show}
           />
         </div>
       </div>
@@ -1145,6 +1162,23 @@ export default function Projects() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onDismiss={dismiss} />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm !== null}
+        title="Eliminar entrada de tiempo"
+        message="¿Estás seguro de que deseas eliminar esta entrada? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteConfirm(null)}
+      />
     </div>
   )
 }
+
+

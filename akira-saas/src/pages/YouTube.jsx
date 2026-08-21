@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react'
+import { ResponsiveGrid } from '@/components/responsive'
+﻿import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, ChevronRight, Film } from 'lucide-react'
-import AppShell from '@/components/layout/AppShell'
+import AppShell from '@/shared/components/layout/AppShell'
 import { YouTubeProjectForm } from '@/components/YouTube/YouTubeProjectForm'
 import { YouTubeTimeline } from '@/components/YouTube/YouTubeTimeline'
 import { YouTubeMetrics } from '@/components/YouTube/YouTubeMetrics'
-import { useYouTube } from '@/hooks/useYouTube'
-import { useAuth } from '@/context/AuthContext'
-import { useOrg } from '@/context/OrgContext'
-import { useApp } from '@/context/AppContext'
+import { useYouTube } from '@/shared/hooks/useYouTube'
+import { useAuth } from '@/shared/context/AuthContext'
+import { useOrg } from '@/shared/context/OrgContext'
+import { useApp } from '@/shared/context/AppContext'
 
 export default function YouTubePage() {
   const { user } = useAuth()
@@ -89,7 +90,7 @@ export default function YouTubePage() {
                     onClick={() => setShowForm(false)}
                     className="text-text-3 hover:text-text-1 transition-colors"
                   >
-                    ✕
+                    –œ•
                   </button>
                 </div>
                 <YouTubeProjectForm projectId={currentOrg?.id} onSubmit={handleCreateProject} isLoading={loading} />
@@ -220,3 +221,6 @@ export default function YouTubePage() {
     </AppShell>
   )
 }
+
+
+

@@ -1,9 +1,9 @@
-import { usePrefs } from '@/hooks/usePreferences'
-import { useOrg } from '@/context/OrgContext'
+﻿import { usePrefs } from '@/shared/hooks/usePreferences'
+import { useOrg } from '@/shared/context/OrgContext'
 import { Row, RowSection, Toggle, MiniBtn } from './_shared'
 
 /*
- * Espacio de equipo (grupo Administración) — gestión de los espacios de equipo
+ * Espacio de equipo (grupo Administración) –” gestión de los espacios de equipo
  * dentro del workspace. Para un solo dueño es básico; se ampliará con equipos.
  */
 function TeamspaceTab() {
@@ -34,3 +34,5 @@ function TeamspaceTab() {
 }
 
 export default TeamspaceTab
+
+

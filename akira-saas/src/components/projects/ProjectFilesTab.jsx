@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Upload, Trash2, Download, Image as ImageIcon, Video, Music, FileText, File as FileIcon } from 'lucide-react'
 import { getProjectFiles, uploadProjectFile, deleteProjectFile, fmtFileSize, fileKind } from '@/services/projectFiles.service'

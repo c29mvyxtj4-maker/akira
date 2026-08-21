@@ -1,8 +1,8 @@
-import { usePrefs } from '@/hooks/usePreferences'
+﻿import { usePrefs } from '@/shared/hooks/usePreferences'
 import { Row, RowSection, Toggle, RowSelect, MiniBtn } from './_shared'
 
 /*
- * Notificaciones (grupo Cuenta) — push y por correo, estilo Notion. Cada opción
+ * Notificaciones (grupo Cuenta) –” push y por correo, estilo Notion. Cada opción
  * se persiste en localStorage y lleva su descripción. "Enviar notificación de
  * prueba" pide permiso al navegador y lanza una notificación local.
  */
@@ -24,7 +24,7 @@ function NotificationsTab() {
   function sendTest() {
     if (!('Notification' in window)) { window.alert('Tu navegador no soporta notificaciones.'); return }
     function fire() {
-      try { new Notification('AKIRA', { body: 'Notificación de prueba — todo funciona 🔔' }) }
+      try { new Notification('AKIRA', { body: 'Notificación de prueba –” todo funciona ðŸ””' }) }
       catch (_) { window.alert('Notificación de prueba enviada.') }
     }
     if (Notification.permission === 'granted') fire()
@@ -60,7 +60,7 @@ function NotificationsTab() {
         <Row title="Enviar siempre notificaciones por correo" description="Recibe correos aunque estés usando AKIRA en ese momento.">
           <Toggle checked={prefs.eml_always} onClick={toggle('eml_always')} />
         </Row>
-        <Row title="Actualizaciones de la página" description="Resúmenes de las páginas para las que activaste avisos.">
+        <Row title="Actualizaciones de la página" description="ResÀºmenes de las páginas para las que activaste avisos.">
           <Toggle checked={prefs.eml_page_updates} onClick={toggle('eml_page_updates')} />
         </Row>
         <Row title="Resumen del espacio de trabajo" description="Un resumen periódico de lo que pasa en tu negocio.">
@@ -75,3 +75,4 @@ function NotificationsTab() {
 }
 
 export default NotificationsTab
+

@@ -1,10 +1,10 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ChevronLeft } from 'lucide-react'
-import { DUR, EASE } from '@/config/motion'
+import { DUR, EASE } from '@/shared/config/motion'
 
 /*
- * Página base para funciones planificadas pero aún sin backend. Deja el botón
+ * Página base para funciones planificadas pero aÀºn sin backend. Deja el botón
  * llevando a un sitio real (no a un enlace roto) y explica qué hará.
  */
 export default function ComingSoonPage({ icon: Icon, title, description, bullets }) {
@@ -43,3 +43,4 @@ export default function ComingSoonPage({ icon: Icon, title, description, bullets
     </div>
   )
 }
+

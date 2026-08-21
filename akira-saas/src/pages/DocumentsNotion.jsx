@@ -2,6 +2,14 @@ import { FileText } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function DocumentsNotion() {
+  const [showEditor, setShowEditor] = useState(false)
+  const [demoDoc] = useState({
+    id: 'demo-1',
+    title: 'Mi Primer Documento',
+    content: '<p>Comienza a escribir aquí... Prueba escribiendo / para ver las opciones</p>',
+    icon: '📝'
+  })
+
   return (
     <div className="flex-1 flex flex-col h-full overflow-auto bg-surface-0">
       {/* Main content container */}

@@ -1,8 +1,8 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Trash2, Clock, Edit2, ChevronRight } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import EmptyState from '@/components/ui/EmptyState'
+import Button from '@/shared/components/ui/Button'
+import EmptyState from '@/shared/components/ui/EmptyState'
 
 /**
  * TimeEntriesList component - Enhanced list with swipe actions
@@ -91,7 +91,7 @@ export default function TimeEntriesList({
     return (
       <EmptyState
         icon={Clock}
-        emoji="⏱️"
+        emoji="–±ï¸"
         title="No time entries"
         description="Start tracking time with the timer to create your first entry."
         size="sm"
@@ -303,3 +303,4 @@ export default function TimeEntriesList({
     </motion.div>
   )
 }
+

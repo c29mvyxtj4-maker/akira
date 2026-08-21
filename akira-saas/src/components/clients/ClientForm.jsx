@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   User, Building2, Mail, Phone, Globe,
   Instagram, Hash, DollarSign, FileText, Calendar,
 } from 'lucide-react'
+import { validateForm, validateEmail } from '@/utils/formValidation'
 import { CLIENT_NICHES, CLIENT_SOURCES_MAP } from '@/services/clients.service'
-import Input   from '@/components/ui/Input'
-import Select  from '@/components/ui/Select'
-import Button  from '@/components/ui/Button'
+import Input   from '@/shared/components/ui/Input'
+import Select  from '@/shared/components/ui/Select'
+import Button  from '@/shared/components/ui/Button'
 
 const EMPTY = {
   name: '', company: '', email: '', phone: '',
@@ -56,7 +57,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
     const e = {}
     if (!form.name.trim()) e.name = 'El nombre es obligatorio'
     if (form.email && !/^[^@]+@[^@]+\.[^@]+$/.test(form.email)) e.email = 'Email inválido'
-    if (form.monthly_value !== '' && isNaN(Number(form.monthly_value))) e.monthly_value = 'Debe ser un número'
+    if (form.monthly_value !== '' && isNaN(Number(form.monthly_value))) e.monthly_value = 'Debe ser un nÀºmero'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -129,7 +130,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
             label="Sitio web"
             value={form.website}
             onChange={set('website')}
-            placeholder="https://…"
+            placeholder="https://│"
             icon={<Globe className="w-3.5 h-3.5" />}
           />
           <Input
@@ -159,7 +160,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
             options={SOURCE_OPTS}
           />
           <Input
-            label="Valor mensual (€)"
+            label="Valor mensual (–‚¬)"
             type="number"
             min="0"
             value={form.monthly_value}
@@ -182,7 +183,7 @@ export default function ClientForm({ initial, onSave, onCancel, loading }) {
             value={form.notes}
             onChange={set('notes')}
             rows={3}
-            placeholder="Observaciones, contexto, referencias…"
+            placeholder="Observaciones, contexto, referencias│"
             className="input-base w-full resize-none mt-1"
           />
         </div>

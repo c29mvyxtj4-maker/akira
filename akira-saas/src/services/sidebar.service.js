@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 
 // ALL EVENT FETCHING MOVED TO SIDEBAR.COMPONENT TO BYPASS CACHE ISSUES
 // DO NOT USE THIS FUNCTION - USE INLINE CODE IN SIDEBAR.JSX
@@ -6,7 +6,7 @@ export async function getUpcomingEventsFixed() {
   return []
 }
 
-// Obtener últimas 10 páginas abiertas
+// Obtener Àºltimas 10 páginas abiertas
 export async function getRecentPages() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -27,7 +27,7 @@ export async function getRecentPages() {
   }
 }
 
-// Obtener movimientos de las últimas 24h
+// Obtener movimientos de las Àºltimas 24h
 export async function getActivity24h() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -236,3 +236,4 @@ export async function getRecentProjects() {
     return []
   }
 }
+

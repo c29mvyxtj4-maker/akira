@@ -1,4 +1,4 @@
-import { Agent, AgentType } from '../types'
+﻿import { Agent, AgentType } from '../types'
 import { supabase } from '@/lib/supabase'
 
 export abstract class BaseAgent implements Agent {
@@ -61,3 +61,4 @@ export abstract class BaseAgent implements Agent {
     }
   }
 }
+

@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase'
-import { scopeToOrg, getActiveOrgId } from '@/lib/activeOrg'
+﻿import { supabase } from '@/lib/supabase'
+import { scopeToOrg, getActiveOrgId } from '@/shared/lib/activeOrg'
 
 export var SUB_PERIODS = {
   weekly:    { label: 'Semanal',    months: 1 / 4.33 },
@@ -91,7 +91,7 @@ export async function getClientsForSelect() {
   return res.data || []
 }
 
-// ← CORREGIDO: quitamos "period" del select, esa columna no existe en la tabla "services"
+// –† CORREGIDO: quitamos "period" del select, esa columna no existe en la tabla "services"
 export async function getServicesForSelect() {
   var res = await supabase.from('services').select('id, name, price, category').eq('archived', false).eq('active', true).order('name')
   if (res.error) throw res.error

@@ -1,8 +1,8 @@
-import { usePrefs } from '@/hooks/usePreferences'
+﻿import { usePrefs } from '@/shared/hooks/usePreferences'
 import { Row, RowSection, Toggle } from './_shared'
 
 /*
- * Sin conexión (grupo Funciones) — comportamiento de AKIRA cuando no hay red.
+ * Sin conexión (grupo Funciones) –” comportamiento de AKIRA cuando no hay red.
  */
 function OfflineTab() {
   var [prefs, setPref] = usePrefs({ offline_cache: true, offline_banner: true })
@@ -22,3 +22,4 @@ function OfflineTab() {
 }
 
 export default OfflineTab
+

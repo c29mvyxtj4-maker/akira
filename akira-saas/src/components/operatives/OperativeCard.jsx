@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { Play, Clock, CheckCircle, AlertCircle } from 'lucide-react'
-import Button from '@/components/ui/Button'
+import Button from '@/shared/components/ui/Button'
 
 /**
  * Display operative with status and quick actions
@@ -110,7 +110,7 @@ export default function OperativeCard({
               display: 'flex',
               gap: '6px',
             }}>
-              <span>→</span>
+              <span>–†’</span>
               <span>{step}</span>
             </div>
           ))}
@@ -163,3 +163,4 @@ export default function OperativeCard({
     </motion.div>
   )
 }
+

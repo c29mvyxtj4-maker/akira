@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase'
-import { scopeToOrg } from '@/lib/activeOrg'
+﻿import { supabase } from '@/lib/supabase'
+import { scopeToOrg } from '@/shared/lib/activeOrg'
 
 function calcMonthlyValue(price, period) {
   var p = Number(price) || 0
